@@ -4,9 +4,9 @@ sudo apt-get -qq update
 supo apt-get -qq -y install lib32stdc++6
 
 DEB_NAME=unity-editor_amd64-5.6.1xf1Linux.deb
-DEB_LOCATION=./.travis_linux/$DEB_NAME
+DEB_LOCATION=.travis_linux/$DEB_NAME
 if [ ! -f $DEB_LOCATION ]; then
-    wget -P ./.travis_linux http://beta.unity3d.com/download/6a86e542cf5c/$DEB_NAME
+    wget -P .travis_linux http://beta.unity3d.com/download/6a86e542cf5c/$DEB_NAME
 fi
 sudo dpkg -i DEB_LOCATION
 
