@@ -1,6 +1,8 @@
 language: java
 
 matrix:
+  allow_failures:
+    - os: linux
   include:
     - os: linux
       sudo: true
@@ -15,7 +17,6 @@ matrix:
 
 before_install:
   - ./travis/setup_$TRAVIS_OS_NAME.sh
-  - mono --version
 
 env:
     global:
@@ -26,6 +27,7 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/Library/Caches/Homebrew
 
 after_success:
 - ./gradlew jacocoTestReport coveralls

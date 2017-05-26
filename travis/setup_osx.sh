@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
+brew tap wooga/unityversions
 brew update
-brew install mono
+brew cask install unity@5.6.0f3
