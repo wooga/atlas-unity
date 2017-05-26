@@ -46,27 +46,29 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private File customUnityPath
 
     File getUnityPath() {
-        if (customUnityPath) {
-            return customUnityPath
+        File unityPath = customUnityPath
+
+        if (unityPath == null) {
+            String osName = System.getProperty("os.name").toLowerCase()
+            String osArch = System.getProperty("os.arch").toLowerCase()
+
+            if (osName.contains("windows")) {
+                if (osArch.contains("64")) {
+                    unityPath = UNITY_PATH_WIN
+                } else {
+                    unityPath = UNITY_PATH_WIN_32
+                }
+            } else if (osName.contains("linux")) {
+                unityPath = UNITY_PATH_LINUX
+            } else if (osName.contains("mac os x")) {
+                unityPath = UNITY_PATH_MAC_OS
+            } else {
+                throw new IllegalArgumentException("os: $osName not supported")
+            }
         }
 
-        File unityPath
-
-        String osName = System.getProperty("os.name").toLowerCase()
-        String osArch = System.getProperty("os.arch").toLowerCase()
-
-        if (osName.contains("windows")) {
-            if (osArch.contains("64")) {
-                unityPath = UNITY_PATH_WIN
-            } else {
-                unityPath = UNITY_PATH_WIN_32
-            }
-        } else if (osName.contains("linux")) {
-            unityPath = UNITY_PATH_LINUX
-        } else if (osName.contains("mac os x")) {
-            unityPath = UNITY_PATH_MAC_OS
-        } else {
-            throw new IllegalArgumentException("os: $osName not supported")
+        if (!unityPath.exists()) {
+            throw new IllegalArgumentException("unitypath $unityPath.path doesn't exist")
         }
 
         return unityPath

@@ -18,6 +18,9 @@ matrix:
 before_install:
   - ./travis/setup_$TRAVIS_OS_NAME.sh
 
+script:
+  - ./gradlew check --stacktrace --info
+
 env:
     global:
         - CI=true
