@@ -31,6 +31,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/Library/Caches/Homebrew
+    - $HOME/.travis_linux
+
+after_script:
+  - ./travis/after_$TRAVIS_OS_NAME.sh
 
 after_success:
 - ./gradlew jacocoTestReport coveralls

@@ -33,9 +33,9 @@ import static org.gradle.util.ConfigureUtil.configureUsing
 class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
-    static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
-    static File UNITY_PATH_WIN_32 = new File("C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe")
-    static File UNITY_PATH_LINUX = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
+    static File UNITY_PATH_WIN = new File("C:/Program Files/Unity/Editor/Unity.exe")
+    static File UNITY_PATH_WIN_32 = new File("C:/Program Files (x86)/Unity/Editor/Unity.exe")
+    static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
 
     private final Instantiator instantiator
     private final FileResolver fileResolver
