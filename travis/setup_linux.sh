@@ -10,6 +10,8 @@ if [ ! -f $DEB_LOCATION ]; then
 fi
 sudo dpkg -i DEB_LOCATION
 
+echo "install unity"
 sudo apt-get -qq -y -f install
 
+echo "activate link unity"
 /opt/Unity/Editor/Unity -quit -batchmode -serial $UNITY_SERIAL -username $UNITY_USER -password $UNITY_PASSWORD
