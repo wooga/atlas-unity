@@ -47,6 +47,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     AbstractUnityTask(Class<T> taskType) {
         this.batchModeAction = getBatchModeActionFactory().newExecAction()
+        this.batchModeAction.logFile("${project.buildDir}/logs/${name}.log")
         this.taskType = taskType
     }
 
@@ -99,13 +100,13 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     }
 
     @Override
-    T logFile(File file) {
+    T logFile(Object file) {
         batchModeAction.logFile = file
         return taskType.cast(this)
     }
 
     @Override
-    void setLogFile(File file) {
+    void setLogFile(Object file) {
         batchModeAction.logFile = file
     }
 

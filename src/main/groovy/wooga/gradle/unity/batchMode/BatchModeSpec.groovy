@@ -40,8 +40,8 @@ interface BatchModeSpec extends BaseExecSpec{
 
     File getLogFile()
 
-    BatchModeSpec logFile(File file)
-    void setLogFile(File file)
+    BatchModeSpec logFile(Object file)
+    void setLogFile(Object file)
 
     BuildTarget getBuildTarget()
 

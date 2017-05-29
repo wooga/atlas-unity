@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity.batchMode
 
+import org.gradle.internal.Factory
 import org.gradle.internal.file.PathToFileResolver
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
@@ -26,10 +27,20 @@ import wooga.gradle.unity.UnityPluginExtension
 class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction {
 
     private final UnityPluginExtension extension
-
+    private final PathToFileResolver fileResolver
     File unityPath
     File projectPath
-    File logFile
+
+    private Factory<File> logFile
+
+    File getLogFile() {
+        logFile.create()
+    }
+
+    void setLogFile(Object file) {
+        logFile = fileResolver.resolveLater(file)
+    }
+
     BuildTarget buildTarget = BuildTarget.undefined
 
     Boolean quit = true
@@ -38,6 +49,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     DefaultBatchModeAction(UnityPluginExtension extension, PathToFileResolver fileResolver) {
         super(fileResolver)
+        this.fileResolver = fileResolver
         this.extension = extension
         unityPath = extension.unityPath
         projectPath = extension.projectPath
@@ -59,7 +71,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         }
 
         if(logFile) {
-            batchModeArgs << BatchModeFlags.LOG_FILE << logFile.path
+            batchModeArgs << BatchModeFlags.LOG_FILE << getLogFile().path
         }
 
         if (buildTarget != BuildTarget.undefined) {
@@ -97,8 +109,8 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     @Override
-    DefaultBatchModeAction logFile(File file) {
-        this.logFile = file
+    DefaultBatchModeAction logFile(Object file) {
+        logFile = fileResolver.resolveLater(file)
         this
     }
 
