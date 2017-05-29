@@ -17,30 +17,17 @@
 
 package wooga.gradle.unity
 
-import nebula.test.IntegrationSpec
-import org.apache.commons.lang.StringEscapeUtils
-import spock.lang.Ignore
+import wooga.gradle.unity.batchMode.BatchModeFlags
 
-@Ignore("Need to figure out how to run these on CI")
-class BaseUnityActionIntegrationSpec extends IntegrationSpec {
-
-    def escapedPath(String path) {
-        StringEscapeUtils.escapeJava(path)
-    }
+class BaseUnityActionIntegrationSpec extends UnityIntegrationSpec {
 
     def "runs batchmode action"() {
-        given: "path to future project"
-        def project_path = new File( projectDir,"build/test")
-
-        and: "a build script"
+        given: "a build script"
         buildFile << """
-            group = 'test'
-            ${applyPlugin(UnityPlugin)}
-         
             task mUnity {
                 doLast {
                     unity.batchMode {
-                        args "-createProject", "${escapedPath(project_path.path)}"
+                        args "-createProject", "Test"
                     }
                 }
             }
@@ -50,21 +37,17 @@ class BaseUnityActionIntegrationSpec extends IntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains(DefaultUnityPluginExtension.defaultUnityLocation().path)
-        fileExists(project_path.path)
+        result.standardOutput.contains(BatchModeFlags.CREATE_PROJECT + " Test")
     }
 
     def "runs batchmode task"() {
-        given: "path to future project"
-        def project_path = new File( projectDir,"build/test")
-
-        and: "a build script"
+        given: "a build script"
         buildFile << """
             group = 'test'
             ${applyPlugin(UnityPlugin)}
          
             task (mUnity, type: wooga.gradle.unity.tasks.Unity) {
-                args "-createProject", "${escapedPath(project_path.path)}"
+                args "-createProject", "Test"
             }
         """.stripIndent()
 
@@ -72,7 +55,55 @@ class BaseUnityActionIntegrationSpec extends IntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains(DefaultUnityPluginExtension.defaultUnityLocation().path)
-        fileExists(project_path.path)
+        result.standardOutput.contains(BatchModeFlags.CREATE_PROJECT + " Test")
     }
+
+//    @IgnoreRest()
+//    def "runs batchmode action in Unity"() {
+//        given: "path to future project"
+//        def project_path = new File( projectDir,"build/test")
+//
+//        and: "a build script"
+//        buildFile << """
+//            group = 'test'
+//            ${applyPlugin(UnityPlugin)}
+//
+//            task mUnity {
+//                doLast {
+//                    unity.batchMode {
+//                        args "-createProject", "${escapedPath(project_path.path)}"
+//                    }
+//                }
+//            }
+//        """.stripIndent()
+//
+//        when:
+//        def result = runTasksSuccessfully("mUnity")
+//
+//        then:
+//        result.standardOutput.contains(DefaultUnityPluginExtension.defaultUnityLocation().path)
+//        fileExists(project_path.path)
+//    }
+//
+//    def "runs batchmode task in Unity"() {
+//        given: "path to future project"
+//        def project_path = new File( projectDir,"build/test")
+//
+//        and: "a build script"
+//        buildFile << """
+//            group = 'test'
+//            ${applyPlugin(UnityPlugin)}
+//
+//            task (mUnity, type: wooga.gradle.unity.tasks.Unity) {
+//                args "-createProject", "${escapedPath(project_path.path)}"
+//            }
+//        """.stripIndent()
+//
+//        when:
+//        def result = runTasksSuccessfully("mUnity")
+//
+//        then:
+//        result.standardOutput.contains(DefaultUnityPluginExtension.defaultUnityLocation().path)
+//        fileExists(project_path.path)
+//    }
 }

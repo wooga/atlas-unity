@@ -25,6 +25,8 @@ class BatchModeFlags {
     static String QUIT = "-quit"
     static String NO_GRAPHICS = "-nographics"
 
+    static String CREATE_PROJECT = "-createProject"
+
     // Editor Test Flags
     static String RUN_EDITOR_TESTS = "-runEditorTests"
     static String EDITOR_TEST_VERBOSE_LOG = "-editorTestsVerboseLog"
