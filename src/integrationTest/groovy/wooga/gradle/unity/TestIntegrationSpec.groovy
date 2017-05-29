@@ -17,7 +17,6 @@
 
 package wooga.gradle.unity
 
-import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BatchModeFlags
 
 class TestIntegrationSpec extends UnityIntegrationSpec {
@@ -40,12 +39,13 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
         !result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_CATEGORIES)
     }
 
-    @Unroll
-    def "can set reports results location as method with value #testValue"(String testValue) {
-        given: "a build script with fake test unity location"
+    def "can set reports location via reports extension in task"() {
+        given: "destination path"
+        def destination = "/out/reports/test.xml"
+        and: "a build script with fake test unity location"
         buildFile << """
             task (mUnity, type: wooga.gradle.unity.tasks.Test) {
-                reportsPath $testValue
+                reports.xml.destination = "$destination"
             }
         """.stripIndent()
 
@@ -55,19 +55,16 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.standardOutput.contains(BatchModeFlags.RUN_EDITOR_TESTS)
         result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_RESULTS_FILE)
-        result.standardOutput.contains(new File("/reports/Test.xml").path)
-
-        where:
-        testValue << ['project.file("/reports/Test.xml")', '{"/reports/Test.xml"}', '"/reports/Test.xml"']
+        result.standardOutput.contains(new File(destination).path)
     }
 
-    @Unroll
-    def "can set reports results location as assignment with value #testValue"(String testValue) {
-        given: "a build script with fake test unity location"
+    def "can set reports destination via reports extension in plugin"() {
+        given: "destination path"
+        def destination = "/out/reports"
+        and: "a build script with fake test unity location"
         buildFile << """
-            task (mUnity, type: wooga.gradle.unity.tasks.Test) {
-                reportsPath = $testValue
-            }
+            unity.reportsDir = "$destination"
+            task (mUnity, type: wooga.gradle.unity.tasks.Test)
         """.stripIndent()
 
         when:
@@ -76,10 +73,38 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.standardOutput.contains(BatchModeFlags.RUN_EDITOR_TESTS)
         result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_RESULTS_FILE)
-        result.standardOutput.contains(new File("/reports/Test.xml").path)
+        result.standardOutput.contains(new File(destination + "/mUnity/mUnity.xml").path)
+    }
 
-        where:
-        testValue << ['project.file("/reports/Test.xml")', '{"/reports/Test.xml"}', '"/reports/Test.xml"']
+    def "can disable reports via reports extension in task"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (mUnity, type: wooga.gradle.unity.tasks.Test) {
+                reports.xml.enabled = false
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        result.standardOutput.contains(BatchModeFlags.RUN_EDITOR_TESTS)
+        !result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_RESULTS_FILE)
+    }
+
+    def "has default reports location"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (mUnity, type: wooga.gradle.unity.tasks.Test)
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        result.standardOutput.contains(BatchModeFlags.RUN_EDITOR_TESTS)
+        result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_RESULTS_FILE)
+        result.standardOutput.contains(new File("reports/unity/mUnity/mUnity.xml").path)
     }
 
     def "can set test categories as assignment"() {

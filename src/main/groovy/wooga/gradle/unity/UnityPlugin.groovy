@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -17,15 +17,24 @@
 
 package wooga.gradle.unity
 
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.plugins.ReportingBasePlugin
+import org.gradle.api.reporting.Report
+import org.gradle.api.reporting.ReportingExtension
 import org.gradle.internal.reflect.Instantiator
+import wooga.gradle.unity.tasks.Test
 
 import javax.inject.Inject
+import java.util.concurrent.Callable
 
 class UnityPlugin implements Plugin<Project> {
 
+    private Project project
     private final FileResolver fileResolver
     private final Instantiator instantiator
 
@@ -37,6 +46,40 @@ class UnityPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.extensions.create("unity", DefaultUnityPluginExtension, project, fileResolver, instantiator)
+        this.project = project
+        project.pluginManager.apply(ReportingBasePlugin.class)
+        UnityPluginExtension extension = project.extensions.create("unity", DefaultUnityPluginExtension, project, fileResolver, instantiator)
+
+        final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
+        ((IConventionAware) extension).getConventionMapping().map("reportsDir", new Callable<Object>() {
+            @Override
+            Object call() {
+                return reportingExtension.file("unity")
+            }
+        })
+
+        addDefaultReportTasks(extension)
+    }
+
+    private void addDefaultReportTasks(final UnityPluginExtension extension) {
+        project.getTasks().withType(Test.class, new Action<Test>() {
+            @Override
+            void execute(Test task) {
+                configureUnityReportDefaults(extension, task)
+            }
+        })
+    }
+
+    private void configureUnityReportDefaults(final UnityPluginExtension extension, final Test task) {
+        task.getReports().all(new Action<Report>() {
+            void execute(final Report report) {
+                ConventionMapping mapping = ((IConventionAware) report).conventionMapping
+                mapping.map("destination", new Callable<File>() {
+                    File call() {
+                        new File(extension.reportsDir, task.name + "/" + task.name + "." + report.name)
+                    }
+                })
+            }
+        })
     }
 }

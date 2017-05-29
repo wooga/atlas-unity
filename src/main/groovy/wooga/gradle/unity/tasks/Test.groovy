@@ -17,35 +17,29 @@
 
 package wooga.gradle.unity.tasks
 
+import org.gradle.api.Action
+import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.internal.file.FileResolver
-import org.gradle.api.tasks.*
+import org.gradle.api.reporting.Reporting
+import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.reflect.Instantiator
 import org.gradle.util.GUtil
+import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.batchMode.BatchModeFlags
-import org.gradle.internal.Factory
+import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
+
 import javax.inject.Inject
 
-class Test extends AbstractUnityTask {
+class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
     private final List<Object> filter = new ArrayList()
     private final List<Object> categories = new ArrayList()
     private final FileResolver fileResolver
 
-    private Factory<File> reportsPath
-
-    @Internal
-    @Optional
-    File getReportsPath() {
-        reportsPath.create()
-    }
-
-    void setReportsPath(Object path) {
-        reportsPath = fileResolver.resolveLater(path)
-    }
-
-    Test reportsPath(Object path) {
-        reportsPath = fileResolver.resolveLater(path)
-        this
-    }
+    private final UnityTestTaskReport reports
 
     @Input
     @Optional
@@ -114,10 +108,34 @@ class Test extends AbstractUnityTask {
     boolean teamcity = false
 
     @Inject
+    protected Instantiator getInstantiator() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Inject
     Test(FileResolver fileResolver) {
         super(Test.class)
         this.fileResolver = fileResolver
         description = "Executes Unity in batch mode and executes specified method"
+
+        reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
+        reports.xml.enabled = true
+    }
+
+    @Override
+    UnityTestTaskReport getReports() {
+        return reports
+    }
+
+    @Override
+    UnityTestTaskReport reports(Closure closure) {
+        return reports(new ClosureBackedAction<UnityTestTaskReport>(closure));
+    }
+
+    @Override
+    UnityTestTaskReport reports(Action<? super UnityTestTaskReport> configureAction) {
+        configureAction.execute(reports)
+        return reports
     }
 
     @TaskAction
@@ -125,12 +143,11 @@ class Test extends AbstractUnityTask {
     protected void exec() {
         def testArgs = []
 
-        if (reportsPath == null) {
-            reportsPath = fileResolver.resolveLater("${project.buildDir}/reports/${name}-results.xml")
-        }
-
         testArgs << BatchModeFlags.RUN_EDITOR_TESTS
-        testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << getReportsPath().path
+
+        if(reports.getXml().enabled) {
+            testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
+        }
 
         if (verbose) {
             testArgs << BatchModeFlags.EDITOR_TEST_VERBOSE_LOG

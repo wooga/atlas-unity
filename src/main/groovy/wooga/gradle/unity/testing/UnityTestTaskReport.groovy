@@ -15,28 +15,13 @@
  *
  */
 
-package wooga.gradle.unity
+package wooga.gradle.unity.testing
 
-import org.gradle.api.Action
-import org.gradle.process.ExecResult
-import wooga.gradle.unity.batchMode.BatchModeSpec
+import org.gradle.api.reporting.Report
+import org.gradle.api.reporting.ReportContainer
+import org.gradle.api.reporting.SingleFileReport
 
-interface UnityPluginExtension {
 
-    File getUnityPath()
-    void setUnityPath(Object path)
-
-    UnityPluginExtension unityPath(Object path)
-
-    File getProjectPath()
-    void setProjectPath(File path)
-
-    File getReportsDir()
-    void setReportsDir(File reportsDir)
-    void setReportsDir(Object reportsDir)
-
-    UnityPluginExtension projectPath(File path)
-
-    ExecResult batchMode (Closure closure)
-    ExecResult batchMode (Action<? super BatchModeSpec> action)
+interface UnityTestTaskReport extends ReportContainer<Report>{
+    SingleFileReport getXml()
 }

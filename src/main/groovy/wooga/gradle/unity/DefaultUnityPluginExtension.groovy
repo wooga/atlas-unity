@@ -30,7 +30,6 @@ import wooga.gradle.unity.batchMode.DefaultBatchModeActionFactory
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
-
 class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
@@ -65,6 +64,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     BatchModeActionFactory batchModeActionFactory
 
+    private Factory<File> reportsDir
     private Factory<File> customUnityPath
 
     File getUnityPath() {
@@ -86,6 +86,21 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     void setUnityPath(Object path) {
         customUnityPath = fileResolver.resolveLater(path)
+    }
+
+    File getReportsDir() {
+        if(reportsDir) {
+            return reportsDir.create()
+        }
+        return null
+    }
+
+    void setReportsDir(File file) {
+        reportsDir = fileResolver.resolveLater(file)
+    }
+
+    void setReportsDir(Object file) {
+        reportsDir = fileResolver.resolveLater(file)
     }
 
     File projectPath
