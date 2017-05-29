@@ -117,6 +117,7 @@ class Test extends AbstractUnityTask {
     Test(FileResolver fileResolver) {
         super(Test.class)
         this.fileResolver = fileResolver
+        description = "Executes Unity in batch mode and executes specified method"
     }
 
     @TaskAction

@@ -26,7 +26,7 @@ import org.gradle.util.GUtil
 
 //class UnityPackage extends AbstractUnityTask {
 //
-//    public static final String UNITYPACKAGE_EXTENSION = "unitypackage"
+//    public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
 //
 //    @Internal("Represented as part of archivePath")
 //    File destinationDir = project.file("${project.buildDir}/outputs/")
@@ -43,7 +43,7 @@ import org.gradle.util.GUtil
 //    String version
 //
 //    @Internal("Represented as part of archiveName")
-//    String extension = UNITYPACKAGE_EXTENSION
+//    String extension = UNITY_PACKAGE_EXTENSION
 //
 //    @Internal("Represented as part of archivePath")
 //    String getArchiveName() {

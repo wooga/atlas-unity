@@ -39,20 +39,13 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     DefaultBatchModeAction(UnityPluginExtension extension, PathToFileResolver fileResolver) {
         super(fileResolver)
         this.extension = extension
-
+        unityPath = extension.unityPath
+        projectPath = extension.projectPath
     }
 
     ExecResult execute() {
         def additionalArguments = getAllArguments()
         def batchModeArgs = []
-
-        if (unityPath == null) {
-            unityPath = extension.unityPath
-        }
-
-        if (projectPath == null) {
-            projectPath = extension.projectPath
-        }
 
         batchModeArgs << unityPath.path
 

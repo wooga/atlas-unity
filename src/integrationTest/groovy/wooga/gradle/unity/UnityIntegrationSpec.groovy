@@ -18,10 +18,19 @@
 package wooga.gradle.unity
 
 import nebula.test.IntegrationSpec
+import org.apache.commons.lang.StringEscapeUtils
 
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     File unityTestLocation
+
+    def escapedPath(String path) {
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            return StringEscapeUtils.escapeJava(path)
+        }
+        path
+    }
 
     def setup() {
         String osName = System.getProperty("os.name").toLowerCase()

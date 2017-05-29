@@ -22,10 +22,6 @@ import wooga.gradle.unity.batchMode.BatchModeFlags
 
 class TestIntegrationSpec extends UnityIntegrationSpec {
 
-    def setup() {
-
-    }
-
     def "calls unity test mode"() {
         given: "a build script with fake test unity location"
         buildFile << """
