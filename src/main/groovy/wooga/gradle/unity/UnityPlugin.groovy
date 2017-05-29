@@ -23,6 +23,7 @@ import org.gradle.api.Project
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
@@ -33,6 +34,10 @@ import javax.inject.Inject
 import java.util.concurrent.Callable
 
 class UnityPlugin implements Plugin<Project> {
+
+    static String TEST_TASK_NAME = "test"
+    static String EXTENSION_NAME = "unity"
+    static String GROUP = "unity"
 
     private Project project
     private final FileResolver fileResolver
@@ -47,6 +52,7 @@ class UnityPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         this.project = project
+        project.pluginManager.apply(BasePlugin.class)
         project.pluginManager.apply(ReportingBasePlugin.class)
         UnityPluginExtension extension = project.extensions.create("unity", DefaultUnityPluginExtension, project, fileResolver, instantiator)
 
@@ -58,7 +64,13 @@ class UnityPlugin implements Plugin<Project> {
             }
         })
 
+        addTestTask()
         addDefaultReportTasks(extension)
+    }
+
+    private void addTestTask() {
+        def task = project.tasks.create(name: TEST_TASK_NAME, type: Test, group: GROUP)
+        project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
     private void addDefaultReportTasks(final UnityPluginExtension extension) {
