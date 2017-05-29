@@ -53,6 +53,11 @@ interface BatchModeSpec extends BaseExecSpec{
     BatchModeSpec quit(Boolean value)
     void setQuit(Boolean value)
 
+    Boolean getBatchMode()
+
+    BatchModeSpec batchMode(Boolean value)
+    void setBatchMode(Boolean value)
+
     Boolean getNoGraphics()
 
     BatchModeSpec noGraphics(Boolean value)

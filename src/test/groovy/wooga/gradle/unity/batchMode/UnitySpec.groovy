@@ -15,24 +15,17 @@
  *
  */
 
-package wooga.gradle.unity
+package wooga.gradle.unity.batchMode
 
-import org.gradle.api.Action
-import org.gradle.process.ExecResult
-import wooga.gradle.unity.batchMode.BatchModeSpec
+import spock.lang.Specification
+import wooga.gradle.unity.tasks.Unity
 
-interface UnityPluginExtension {
-
-    File getUnityPath()
-    void setUnityPath(Object path)
-
-    UnityPluginExtension unityPath(Object path)
-
-    File getProjectPath()
-    void setProjectPath(File path)
-
-    UnityPluginExtension projectPath(File path)
-
-    ExecResult batchMode (Closure closure)
-    ExecResult batchMode (Action<? super BatchModeSpec> action)
-}
+//class UnitySpec extends AbstractTaskTest {
+//
+//    Unity unityTask
+//    def batchModeAction = Mock(BatchModeAction)
+//
+//    def setup() {
+//        unityTask = createTask
+//    }
+//}

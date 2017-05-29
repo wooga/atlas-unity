@@ -130,6 +130,29 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     @Optional
     @Input
     @Override
+    Boolean getBatchMode() {
+        return batchModeAction.batchMode
+    }
+
+    @Optional
+    @Input
+    @Override
+    BatchModeSpec batchMode(Boolean value) {
+        batchModeAction.batchMode = value
+        return taskType.cast(this)
+
+    }
+
+    @Optional
+    @Input
+    @Override
+    void setBatchMode(Boolean value) {
+        batchModeAction.batchMode = value
+    }
+
+    @Optional
+    @Input
+    @Override
     Boolean getQuit() {
         return batchModeAction.quit
     }

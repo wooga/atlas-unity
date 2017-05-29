@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import wooga.gradle.unity.batchMode.BatchModeAction
@@ -33,9 +34,30 @@ import static org.gradle.util.ConfigureUtil.configureUsing
 class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
-    static File UNITY_PATH_WIN = new File("C:/Program Files/Unity/Editor/Unity.exe")
-    static File UNITY_PATH_WIN_32 = new File("C:/Program Files (x86)/Unity/Editor/Unity.exe")
+    static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
+    static File UNITY_PATH_WIN_32 = new File("C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe")
     static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
+
+    static File defaultUnityLocation() {
+        File unityPath
+        String osName = System.getProperty("os.name").toLowerCase()
+        String osArch = System.getProperty("os.arch").toLowerCase()
+
+        if (osName.contains("windows")) {
+            if (osArch.contains("64")) {
+                unityPath = UNITY_PATH_WIN
+            } else {
+                unityPath = UNITY_PATH_WIN_32
+            }
+        } else if (osName.contains("linux")) {
+            unityPath = UNITY_PATH_LINUX
+        } else if (osName.contains("mac os x")) {
+            unityPath = UNITY_PATH_MAC_OS
+        } else {
+            throw new IllegalArgumentException("os: $osName not supported")
+        }
+        unityPath
+    }
 
     private final Instantiator instantiator
     private final FileResolver fileResolver
@@ -43,28 +65,16 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     BatchModeActionFactory batchModeActionFactory
 
-    private File customUnityPath
+    private Factory<File> customUnityPath
 
     File getUnityPath() {
-        File unityPath = customUnityPath
+        File unityPath
+        if(customUnityPath) {
+            unityPath = customUnityPath.create()
+        }
 
         if (unityPath == null) {
-            String osName = System.getProperty("os.name").toLowerCase()
-            String osArch = System.getProperty("os.arch").toLowerCase()
-
-            if (osName.contains("windows")) {
-                if (osArch.contains("64")) {
-                    unityPath = UNITY_PATH_WIN
-                } else {
-                    unityPath = UNITY_PATH_WIN_32
-                }
-            } else if (osName.contains("linux")) {
-                unityPath = UNITY_PATH_LINUX
-            } else if (osName.contains("mac os x")) {
-                unityPath = UNITY_PATH_MAC_OS
-            } else {
-                throw new IllegalArgumentException("os: $osName not supported")
-            }
+            unityPath = defaultUnityLocation()
         }
 
         if (!unityPath.exists()) {
@@ -74,15 +84,15 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         return unityPath
     }
 
-    void setUnityPath(File path) {
-        customUnityPath = path
+    void setUnityPath(Object path) {
+        customUnityPath = fileResolver.resolveLater(path)
     }
 
     File projectPath
 
     @Override
-    DefaultUnityPluginExtension unityPath(File path) {
-        customUnityPath = path
+    DefaultUnityPluginExtension unityPath(Object path) {
+        customUnityPath = fileResolver.resolveLater(path)
         this
     }
 

@@ -25,13 +25,6 @@ import wooga.gradle.unity.UnityPluginExtension
 
 class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction {
 
-    static String BATCHMODE_FLAG = "-batchmode"
-    static String PROJECT_PATH_FLAG = "-projectPath"
-    static String LOG_FILE_FLAG = "-logFile"
-    static String BUILD_TARGET_FLAG = "-buildTarget"
-    static String QUIT_FLAG = "-quit"
-    static String NO_GRAPHICS_FLAG = "-nographics"
-
     private final UnityPluginExtension extension
 
     File unityPath
@@ -40,6 +33,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     BuildTarget buildTarget = BuildTarget.undefined
 
     Boolean quit = true
+    Boolean batchMode = true
     Boolean noGraphics = false
 
     DefaultBatchModeAction(UnityPluginExtension extension, PathToFileResolver fileResolver) {
@@ -61,25 +55,30 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         }
 
         batchModeArgs << unityPath.path
-        batchModeArgs << BATCHMODE_FLAG
+
+        if(batchMode)
+        {
+            batchModeArgs << BatchModeFlags.BATCH_MODE
+        }
+
         if (projectPath) {
-            batchModeArgs << PROJECT_PATH_FLAG << projectPath.path
+            batchModeArgs << BatchModeFlags.PROJECT_PATH << projectPath.path
         }
 
         if(logFile) {
-            batchModeArgs << LOG_FILE_FLAG << logFile.path
+            batchModeArgs << BatchModeFlags.LOG_FILE << logFile.path
         }
 
         if (buildTarget != BuildTarget.undefined) {
-            batchModeArgs << BUILD_TARGET_FLAG << buildTarget.toString()
+            batchModeArgs << BatchModeFlags.BUILD_TARGET << buildTarget.toString()
         }
 
         if (quit) {
-            batchModeArgs << QUIT_FLAG
+            batchModeArgs << BatchModeFlags.QUIT
         }
 
         if (noGraphics) {
-            batchModeArgs << NO_GRAPHICS_FLAG
+            batchModeArgs << BatchModeFlags.NO_GRAPHICS
         }
 
         ignoreExitValue = true
@@ -113,6 +112,12 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     @Override
     DefaultBatchModeAction buildTarget(BuildTarget target) {
         this.buildTarget = target
+        this
+    }
+
+    @Override
+    BatchModeSpec batchMode(Boolean value) {
+        this.batchMode = value
         this
     }
 
