@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity.batchMode
 
+import org.gradle.api.GradleException
 import org.gradle.internal.Factory
 import org.gradle.internal.file.PathToFileResolver
 import org.gradle.process.ExecResult
@@ -58,6 +59,10 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     ExecResult execute() {
         def additionalArguments = getAllArguments()
         def batchModeArgs = []
+
+        if(unityPath == null || !unityPath.exists()) {
+            throw new GradleException("Unity does not exist")
+        }
 
         batchModeArgs << unityPath.path
 

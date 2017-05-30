@@ -38,7 +38,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
 
     static File defaultUnityLocation() {
-        File unityPath
+        File unityPath = null
         String osName = System.getProperty("os.name").toLowerCase()
         String osArch = System.getProperty("os.arch").toLowerCase()
 
@@ -52,8 +52,6 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
             unityPath = UNITY_PATH_LINUX
         } else if (osName.contains("mac os x")) {
             unityPath = UNITY_PATH_MAC_OS
-        } else {
-            throw new IllegalArgumentException("os: $osName not supported")
         }
         unityPath
     }
@@ -75,10 +73,6 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
         if (unityPath == null) {
             unityPath = defaultUnityLocation()
-        }
-
-        if (!unityPath.exists()) {
-            throw new IllegalArgumentException("unitypath $unityPath.path doesn't exist")
         }
 
         return unityPath
