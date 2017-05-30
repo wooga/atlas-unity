@@ -22,6 +22,7 @@ import org.gradle.internal.Factory
 import org.gradle.internal.file.PathToFileResolver
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
+import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
 import wooga.gradle.unity.UnityPluginExtension
 
@@ -97,6 +98,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
         ExecHandle execHandle = this.build()
         ExecResult execResult = execHandle.start().waitForFinish()
+
+        if(execResult.exitValue != 0) {
+            String errorMessage = UnityLogErrorReader.readErrorMessageFromLog(getLogFile())
+            throw new ExecException(String.format("Unity batchmode finished with non-zero exit value %d and error '%s'", Integer.valueOf(execResult.exitValue), errorMessage))
+        }
 
         return execResult
     }

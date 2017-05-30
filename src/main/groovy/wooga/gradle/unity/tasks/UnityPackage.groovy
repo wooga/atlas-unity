@@ -146,6 +146,7 @@ class UnityPackage extends AbstractUnityTask {
         super(UnityPackage.class)
         this.fileResolver = fileResolver
         this.extension = UNITY_PACKAGE_EXTENSION
+        outputs.upToDateWhen {false}
     }
 
     @TaskAction
