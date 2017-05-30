@@ -33,36 +33,71 @@ import javax.inject.Inject
 class UnityPackage extends AbstractUnityTask {
 
     private final FileResolver fileResolver
-    private Factory<File> exportFile
     private FileCollection inputFiles
+    private String baseName
+    private String appendix
+    private String version
+    private String extension
 
     public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
 
     @Internal("Represented as part of archivePath")
-    File destinationDir = project.file("${project.buildDir}/outputs/")
+    File destinationDir
 
     private String customName
 
-    @Internal("Represented as part of archiveName")
-    String baseName = name
+    File getDestinationDir() {
+        return destinationDir
+    }
+
+    void setDestinationDir(File destinationDir) {
+        this.destinationDir = destinationDir
+    }
 
     @Internal("Represented as part of archiveName")
-    String appendix
+    String getBaseName() {
+        return baseName
+    }
+
+    void setBaseName(String baseName) {
+        this.baseName = baseName
+    }
 
     @Internal("Represented as part of archiveName")
-    String version = project.version
+    String getAppendix() {
+        return appendix
+    }
+
+    void setAppendix(String appendix) {
+        this.appendix = appendix
+    }
 
     @Internal("Represented as part of archiveName")
-    String extension = UNITY_PACKAGE_EXTENSION
+    String getVersion() {
+        return version
+    }
+
+    void setVersion(String version) {
+        this.version = version
+    }
+
+    @Internal("Represented as part of archiveName")
+    String getExtension() {
+        return extension
+    }
+
+    void setExtension(String extension) {
+        this.extension = extension
+    }
 
     @Internal("Represented as part of archivePath")
     String getArchiveName() {
         if (this.customName != null) {
             return this.customName
         } else {
-            String name = (String) GUtil.elvis(baseName, "") + maybe(baseName, appendix)
-            name = name + this.maybe(name, version)
-            name = name + (GUtil.isTrue(extension) ? "." + extension : "")
+            String name = (String) GUtil.elvis(getBaseName(), "") + maybe(getBaseName(), getAppendix())
+            name = name + this.maybe(name, getVersion())
+            name = name + (GUtil.isTrue(getExtension()) ? "." + getExtension() : "")
             return name
         }
     }
@@ -77,7 +112,7 @@ class UnityPackage extends AbstractUnityTask {
 
     @OutputFile
     File getArchivePath() {
-        return new File(this.destinationDir, archiveName)
+        return new File(this.getDestinationDir(), getArchiveName())
     }
 
     @SkipWhenEmpty
@@ -110,6 +145,7 @@ class UnityPackage extends AbstractUnityTask {
     UnityPackage(FileResolver fileResolver) {
         super(UnityPackage.class)
         this.fileResolver = fileResolver
+        this.extension = UNITY_PACKAGE_EXTENSION
     }
 
     @TaskAction

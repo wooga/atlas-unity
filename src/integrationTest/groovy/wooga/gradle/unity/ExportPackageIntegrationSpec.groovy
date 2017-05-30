@@ -32,7 +32,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.standardOutput.contains(":mUnity NO-SOURCE")
         !result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE)
-        !result.standardOutput.contains("mUnity-unspecified.unitypackage")
+        !result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
     def "calls unity with -export-package and relative input sources as tree"() {
@@ -54,7 +54,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString)
-        result.standardOutput.contains("mUnity-unspecified.unitypackage")
+        result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
     def "calls unity with -export-package and relative input sources as file tree and removes file duplications"() {
@@ -81,7 +81,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString + " " + assetsDirString2)
-        result.standardOutput.contains("mUnity-unspecified.unitypackage")
+        result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
     def "calls unity with -export-package and relative input sources as file collection and removes file duplications"() {
@@ -111,7 +111,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString + " " + assetsDirString2)
-        result.standardOutput.contains("mUnity-unspecified.unitypackage")
+        result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
     def "calls unity with -export-package and relative input sources as file collection directories and removes file duplications"() {
@@ -134,7 +134,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString + " " + assetsDirString2)
-        result.standardOutput.contains("mUnity-unspecified.unitypackage")
+        result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
     def "archive name can be changed"() {
@@ -202,7 +202,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
         when:
         def result = runTasksSuccessfully("mUnity")
         then:
-        !result.standardOutput.contains("mUnity-unspecified.unitypackage")
-        result.standardOutput.contains("mUnity-3.0.0.unitypackage")
+        !result.standardOutput.contains("${moduleName}.unitypackage")
+        result.standardOutput.contains("${moduleName}-3.0.0.unitypackage")
     }
 }

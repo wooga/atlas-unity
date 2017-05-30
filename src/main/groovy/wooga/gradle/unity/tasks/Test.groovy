@@ -109,7 +109,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
     @Inject
     protected Instantiator getInstantiator() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException()
     }
 
     @Inject

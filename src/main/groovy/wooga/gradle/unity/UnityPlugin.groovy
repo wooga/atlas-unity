@@ -24,11 +24,14 @@ import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.internal.reflect.Instantiator
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.tasks.Test
+import wooga.gradle.unity.tasks.UnityPackage
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -64,13 +67,16 @@ class UnityPlugin implements Plugin<Project> {
             }
         })
 
+        BasePluginConvention convention = new BasePluginConvention(project)
+
         addTestTask()
         addDefaultReportTasks(extension)
+        configureArchiveDefaults(project, convention)
     }
 
     private void addTestTask() {
         def task = project.tasks.create(name: TEST_TASK_NAME, type: Test, group: GROUP)
-        project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
+        project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn task
     }
 
     private void addDefaultReportTasks(final UnityPluginExtension extension) {
@@ -78,6 +84,33 @@ class UnityPlugin implements Plugin<Project> {
             @Override
             void execute(Test task) {
                 configureUnityReportDefaults(extension, task)
+            }
+        })
+    }
+
+    private void configureArchiveDefaults(final Project project, final BasePluginConvention pluginConvention) {
+        project.getTasks().withType(UnityPackage.class, new Action<UnityPackage>() {
+            void execute(UnityPackage task) {
+                ConventionMapping taskConventionMapping = task.getConventionMapping()
+                Callable destinationDir
+
+                destinationDir = new Callable<File>() {
+                    File call() throws Exception {
+                        return pluginConvention.getDistsDir()
+                    }
+                }
+
+                taskConventionMapping.map("destinationDir", destinationDir)
+                taskConventionMapping.map("version", new Callable<String>() {
+                    String call() throws Exception {
+                        return project.getVersion() == "unspecified" ? null : project.getVersion().toString()
+                    }
+                })
+                taskConventionMapping.map("baseName", new Callable<String>() {
+                    String call() throws Exception {
+                        return pluginConvention.getArchivesBaseName()
+                    }
+                })
             }
         })
     }
