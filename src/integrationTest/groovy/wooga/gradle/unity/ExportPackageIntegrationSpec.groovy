@@ -37,7 +37,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "calls unity with -export-package and relative input sources as tree"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
+        def assetsDirString = "Assets/Test"
         def assetsDir = directory(assetsDirString)
         createFile("fakeFile.cs", assetsDir)
         createFile("fakeFile2.cs", assetsDir)
@@ -59,8 +59,8 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "calls unity with -export-package and relative input sources as file tree and removes file duplications"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
-        def assetsDirString2 = "Assets" + File.separator + "Test2"
+        def assetsDirString = "Assets/Test"
+        def assetsDirString2 = "Assets/Test2"
         def assetsDir = directory(assetsDirString)
         def assetsDir2 = directory(assetsDirString2)
         createFile("fakeFile.cs", assetsDir)
@@ -86,8 +86,8 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "calls unity with -export-package and relative input sources as file collection and removes file duplications"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
-        def assetsDirString2 = "Assets" + File.separator + "Test2"
+        def assetsDirString = "Assets/Test"
+        def assetsDirString2 = "Assets/Test2"
         def assetsDir = directory(assetsDirString)
         def assetsDir2 = directory(assetsDirString2)
         File fake1 = createFile("fakeFile.cs", assetsDir)
@@ -116,8 +116,8 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "calls unity with -export-package and relative input sources as file collection directories and removes file duplications"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
-        def assetsDirString2 = "Assets" + File.separator + "Test2"
+        def assetsDirString = "Assets/Test"
+        def assetsDirString2 = "Assets/Test2"
         def assetsDir = directory(assetsDirString)
         def assetsDir2 = directory(assetsDirString2)
 
@@ -139,7 +139,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "archive name can be changed"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
+        def assetsDirString = "Assets/Test"
         def assetsDir = directory(assetsDirString)
         createFile("fakeFile.cs", assetsDir)
         createFile("fakeFile2.cs", assetsDir)
@@ -161,7 +161,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "archive name can be changed by setting archive name values"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
+        def assetsDirString = "Assets/Test"
         def assetsDir = directory(assetsDirString)
         createFile("fakeFile.cs", assetsDir)
         createFile("fakeFile2.cs", assetsDir)
@@ -186,7 +186,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
 
     def "archive name takes project version by default"() {
         given: "a fake file"
-        def assetsDirString = "Assets" + File.separator + "Test"
+        def assetsDirString = "Assets/Test"
         def assetsDir = directory(assetsDirString)
         createFile("fakeFile.cs", assetsDir)
         createFile("fakeFile2.cs", assetsDir)
