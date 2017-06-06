@@ -26,6 +26,7 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.util.GUtil
+import wooga.gradle.FileUtils
 import wooga.gradle.unity.batchMode.BatchModeFlags
 
 import javax.inject.Inject
@@ -167,6 +168,8 @@ class UnityPackage extends AbstractUnityTask {
             exportFiles << relative
         }
         exportArgs << exportFiles.join(" ")
+
+        FileUtils.ensureFile(getArchivePath())
         exportArgs << getArchivePath().path
         args(exportArgs)
         super.exec()

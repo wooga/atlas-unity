@@ -27,6 +27,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.util.GUtil
+import wooga.gradle.FileUtils
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
@@ -146,6 +147,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         testArgs << BatchModeFlags.RUN_EDITOR_TESTS
 
         if(reports.getXml().enabled) {
+            FileUtils.ensureFile(reports.getXml().destination)
             testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
         }
 
