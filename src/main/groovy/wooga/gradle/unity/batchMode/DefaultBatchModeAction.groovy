@@ -24,6 +24,7 @@ import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
+import wooga.gradle.FileUtils
 import wooga.gradle.unity.UnityPluginExtension
 
 class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction {
@@ -65,7 +66,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
             throw new GradleException("Unity does not exist")
         }
 
-        batchModeArgs << unityPath.path
+        batchModeArgs <<  unityPath.path
 
         if(batchMode)
         {
@@ -74,10 +75,6 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
         if (projectPath) {
             batchModeArgs << BatchModeFlags.PROJECT_PATH << projectPath.path
-        }
-
-        if(logFile) {
-            batchModeArgs << BatchModeFlags.LOG_FILE << getLogFile().path
         }
 
         if (buildTarget != BuildTarget.undefined) {
@@ -90,6 +87,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
         if (noGraphics) {
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
+        }
+
+        if (logFile) {
+            FileUtils.ensureFile(getLogFile())
+            batchModeArgs << BatchModeFlags.LOG_FILE << getLogFile().path
         }
 
         ignoreExitValue = true
