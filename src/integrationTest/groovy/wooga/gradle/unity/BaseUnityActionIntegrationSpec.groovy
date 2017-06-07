@@ -57,7 +57,6 @@ class BaseUnityActionIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.standardOutput.contains(BatchModeFlags.CREATE_PROJECT + " Test")
     }
-
 //    @IgnoreRest()
 //    def "runs batchmode action in Unity"() {
 //        given: "path to future project"

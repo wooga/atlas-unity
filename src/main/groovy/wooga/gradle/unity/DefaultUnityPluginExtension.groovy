@@ -23,6 +23,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeActionFactory
 import wooga.gradle.unity.batchMode.BatchModeSpec
@@ -36,6 +37,9 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
     static File UNITY_PATH_WIN_32 = new File("C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe")
     static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
+
+    static final String UNITY_PATH_OPTION = "unity.path"
+    static final String UNITY_PATH_ENV_VAR = "UNITY_PATH"
 
     static File defaultUnityLocation() {
         File unityPath = null
@@ -65,11 +69,22 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Factory<File> reportsDir
     private Factory<File> customUnityPath
 
+    File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
+        if (unityPath) {
+            return new File(unityPath)
+        } else {
+            return null
+        }
+    }
+
     File getUnityPath() {
         File unityPath
-        if(customUnityPath) {
-            unityPath = customUnityPath.create()
+        if (customUnityPath) {
+            return customUnityPath.create()
         }
+
+        unityPath = getUnityPathFromEnv(project.properties, System.getenv())
 
         if (unityPath == null) {
             unityPath = defaultUnityLocation()

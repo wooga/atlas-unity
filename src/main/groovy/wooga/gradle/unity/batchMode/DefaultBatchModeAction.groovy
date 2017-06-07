@@ -31,8 +31,33 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     private final UnityPluginExtension extension
     private final PathToFileResolver fileResolver
-    File unityPath
-    File projectPath
+
+    private File customUnityPath
+    private File customProjectPath
+
+    File getUnityPath() {
+        if(customUnityPath) {
+            return customUnityPath
+        }
+
+        return extension.unityPath
+    }
+
+    void setUnityPath(File path) {
+        customUnityPath = path
+    }
+
+    File getProjectPath() {
+        if(customProjectPath) {
+            return customProjectPath
+        }
+
+        return extension.projectPath
+    }
+
+    void setProjectPath(File path) {
+        customProjectPath = path
+    }
 
     private Factory<File> logFile
 
@@ -54,19 +79,18 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         super(fileResolver)
         this.fileResolver = fileResolver
         this.extension = extension
-        unityPath = extension.unityPath
-        projectPath = extension.projectPath
+
     }
 
     ExecResult execute() {
         def additionalArguments = getAllArguments()
         def batchModeArgs = []
 
-        if(unityPath == null || !unityPath.exists()) {
+        if(getUnityPath() == null || !getUnityPath().exists()) {
             throw new GradleException("Unity does not exist")
         }
 
-        batchModeArgs <<  unityPath.path
+        batchModeArgs <<  getUnityPath().path
 
         if(batchMode)
         {
