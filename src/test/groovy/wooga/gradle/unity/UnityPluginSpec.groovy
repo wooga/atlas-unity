@@ -21,6 +21,7 @@ import nebula.test.PluginProjectSpec
 import nebula.test.ProjectSpec
 import spock.lang.Unroll
 import wooga.gradle.unity.tasks.Test
+import wooga.gradle.unity.tasks.UnityPackage
 
 class UnityPluginActivationSpec extends PluginProjectSpec {
     @Override
@@ -43,17 +44,23 @@ class UnityPluginSpec extends ProjectSpec {
         extension instanceof DefaultUnityPluginExtension
     }
 
-    def 'Creates the test  task'() {
+    @Unroll("creates the task #taskName")
+    def 'Creates the test  task'(String taskName, Class taskType) {
         given:
         assert !project.plugins.hasPlugin(PLUGIN_NAME)
-        assert !project.tasks.findByName(UnityPlugin.TEST_TASK_NAME)
+        assert !project.tasks.findByName(taskName)
 
         when:
         project.plugins.apply(PLUGIN_NAME)
 
         then:
-        def task = project.tasks.findByName(UnityPlugin.TEST_TASK_NAME)
-        task instanceof Test
+        def task = project.tasks.findByName(taskName)
+        taskType.isInstance(task)
+
+        where:
+        taskName                                  | taskType
+        UnityPlugin.TEST_TASK_NAME                | Test
+        UnityPlugin.EXPORT_PACKAGE_TASK_NAME      | UnityPackage
     }
 
     @Unroll

@@ -20,6 +20,8 @@ package wooga.gradle.unity
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
@@ -39,7 +41,9 @@ import java.util.concurrent.Callable
 class UnityPlugin implements Plugin<Project> {
 
     static String TEST_TASK_NAME = "test"
+    static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
     static String EXTENSION_NAME = "unity"
+    static String UNITY_PACKAGE_CONFIGURATION_NAME = "unitypackage"
     static String GROUP = "unity"
 
     private Project project
@@ -70,8 +74,15 @@ class UnityPlugin implements Plugin<Project> {
         BasePluginConvention convention = new BasePluginConvention(project)
 
         addTestTask()
+        addPackageTask()
+        createUnityPackageConfiguration()
         addDefaultReportTasks(extension)
         configureArchiveDefaults(project, convention)
+    }
+
+    private void addPackageTask() {
+        def task = project.tasks.create(name: EXPORT_PACKAGE_TASK_NAME, type: UnityPackage, group:GROUP)
+        project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
     private void addTestTask() {
@@ -111,8 +122,16 @@ class UnityPlugin implements Plugin<Project> {
                         return pluginConvention.getArchivesBaseName()
                     }
                 })
+
+                project.artifacts.add(UNITY_PACKAGE_CONFIGURATION_NAME, [file: task.archivePath, builtBy: task])
             }
         })
+    }
+
+    private void createUnityPackageConfiguration() {
+        Configuration unityPackage = project.configurations.maybeCreate(UNITY_PACKAGE_CONFIGURATION_NAME)
+        unityPackage.description = "unity package resource"
+        unityPackage.transitive = false
     }
 
     private void configureUnityReportDefaults(final UnityPluginExtension extension, final Test task) {
