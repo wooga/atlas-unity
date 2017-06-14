@@ -47,3 +47,11 @@ class BatchModeFlags {
         throw new AssertionError()
     }
 }
+
+enum BuildTarget {
+    undefined, win32, win64, osx, linux, linux64, ios, android, web, webstreamed, webgl, xboxone, ps4, psp2, wsaplayer, tizen, samsungtv
+}
+
+enum TestPlatform {
+    editmode, playmode
+}

@@ -32,6 +32,7 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
 import org.gradle.util.GUtil
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
 
@@ -44,6 +45,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     private final List<Object> filter = new ArrayList()
     private final List<Object> categories = new ArrayList()
     private final FileResolver fileResolver
+    private TestPlatform testPlatform = TestPlatform.editmode
 
     private final UnityTestTaskReport reports
 
@@ -104,6 +106,30 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     Test setFilter(Iterable<?> var1) {
         this.filter.clear()
         GUtil.addToCollection(filter, var1)
+        return this
+    }
+
+    @Input
+    @Optional
+    TestPlatform getTestPlatform() {
+        return testPlatform
+    }
+
+    void setTestPlatform(TestPlatform value) {
+        testPlatform = value
+    }
+
+    void setTestPlatform(String value) {
+        testPlatform = TestPlatform.valueOf(value)
+    }
+
+    Test testPlatform(TestPlatform value) {
+        setTestPlatform(value)
+        return this
+    }
+
+    Test testPlatform(String value) {
+        setTestPlatform(value)
         return this
     }
 
@@ -196,6 +222,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             if(reports.getXml().enabled) {
                 testArgs << BatchModeFlags.TEST_RESULTS << reports.getXml().destination
             }
+
+            testArgs << BatchModeFlags.TEST_PLATFORM << testPlatform
         }
         else
         {
