@@ -147,7 +147,6 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         testArgs << BatchModeFlags.RUN_EDITOR_TESTS
 
         if(reports.getXml().enabled) {
-            FileUtils.ensureFile(reports.getXml().destination)
             testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
         }
 
@@ -169,4 +168,5 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         args(testArgs)
         super.exec()
     }
+
 }
