@@ -34,6 +34,12 @@ class BatchModeFlags {
     static String EDITOR_TEST_FILTER = "-editorTestsFilter"
     static String EDITOR_TEST_RESULTS_FILE = "-editorTestsResultFile"
 
+    // Unit Testing >5.6
+
+    static String RUN_TESTS = "-runTests"
+    static String TEST_RESULTS = "-testResults"
+    static String TEST_PLATFORM = "-testPlatform"
+
     static String EXECUTE_METHOD = "-executeMethod"
     static String EXPORT_PACKAGE = "-exportPackage"
 

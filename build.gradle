@@ -65,6 +65,7 @@ pluginBundle {
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -77,6 +78,7 @@ dependencies {
         exclude module: 'logback-classic'
     }
 
+    compile 'org.apache.maven:maven-artifact:3.0.3'
     compile gradleApi()
     compile localGroovy()
 }

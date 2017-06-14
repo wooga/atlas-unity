@@ -23,7 +23,6 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeActionFactory
 import wooga.gradle.unity.batchMode.BatchModeSpec

@@ -17,24 +17,29 @@
 
 package wooga.gradle.unity.tasks
 
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.gradle.api.Action
 import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
 import org.gradle.api.tasks.Console
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
+import org.gradle.process.ExecSpec
 import org.gradle.util.GUtil
-import wooga.gradle.FileUtils
-import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
 
 import javax.inject.Inject
 
 class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
+
+    static org.gradle.api.logging.Logger logger = Logging.getLogger(Test)
 
     private final List<Object> filter = new ArrayList()
     private final List<Object> categories = new ArrayList()
@@ -143,30 +148,84 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     @Override
     protected void exec() {
         def testArgs = []
+        DefaultArtifactVersion unityVersion = getUnityVersion(getUnityPath())
 
-        testArgs << BatchModeFlags.RUN_EDITOR_TESTS
+        if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
+            logger.info("execute unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
 
-        if(reports.getXml().enabled) {
-            testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
-        }
+            testArgs << BatchModeFlags.RUN_EDITOR_TESTS
 
-        if (verbose) {
-            testArgs << BatchModeFlags.EDITOR_TEST_VERBOSE_LOG
-            if (teamcity) {
-                testArgs << 'teamcity'
+            if(reports.getXml().enabled) {
+                testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
+            }
+
+            if (verbose) {
+                testArgs << BatchModeFlags.EDITOR_TEST_VERBOSE_LOG
+                if (teamcity) {
+                    testArgs << 'teamcity'
+                }
+            }
+
+            if (filter.size() > 0) {
+                testArgs << BatchModeFlags.EDITOR_TEST_FILTER << filter.join(",")
+            }
+
+            if (categories.size() > 0) {
+                testArgs << BatchModeFlags.EDITOR_TEST_CATEGORIES << categories.join(",")
             }
         }
+        else if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6) {
+            logger.info("execute unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
-        if (filter.size() > 0) {
-            testArgs << BatchModeFlags.EDITOR_TEST_FILTER << filter.join(",")
+            if (verbose) {
+                logger.warn("Option [verbose] not supported with unity version: ${unityVersion.toString()}")
+            }
+
+            if(filter.size() > 0) {
+                logger.warn("Option [filter] not supported with unity version: ${unityVersion.toString()}")
+            }
+
+            if (categories.size() > 0) {
+                logger.warn("Option [categories] not supported with unity version: ${unityVersion.toString()}")
+            }
+
+            testArgs << BatchModeFlags.RUN_TESTS
+
+            if(reports.getXml().enabled) {
+                testArgs << BatchModeFlags.TEST_RESULTS << reports.getXml().destination
+            }
         }
-
-        if (categories.size() > 0) {
-            testArgs << BatchModeFlags.EDITOR_TEST_CATEGORIES << categories.join(",")
+        else
+        {
+            logger.warn("Unit test feature not supported with unity version: ${unityVersion.toString()}")
+            throw new StopExecutionException()
         }
 
         args(testArgs)
         super.exec()
     }
 
+    DefaultArtifactVersion getUnityVersion(File path) {
+        String osName = System.getProperty("os.name").toLowerCase()
+        def versionString = "5.5.0"
+        if(osName.contains("mac os x")) {
+            File infoPlist = new File(path.parentFile.parentFile, "Info.plist")
+            def standardOutput = new ByteArrayOutputStream()
+            if(infoPlist.exists()) {
+                def readResult = project.exec(new Action<ExecSpec>() {
+                    @Override
+                    void execute(ExecSpec execSpec) {
+                        execSpec.standardOutput = standardOutput
+                        execSpec.ignoreExitValue = true
+                        execSpec.commandLine "defaults", "read", infoPlist.path, "CFBundleVersion"
+                    }
+                })
+                if(readResult.exitValue == 0) {
+                    versionString = standardOutput.toString()
+                }
+            }
+        }
+
+        new DefaultArtifactVersion(versionString)
+    }
 }
