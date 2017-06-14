@@ -205,6 +205,10 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         else if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6) {
             logger.info("execute unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
+            //new unit test runner does not work in batchmode
+            batchMode = false
+            quit = false
+
             if (verbose) {
                 logger.warn("Option [verbose] not supported with unity version: ${unityVersion.toString()}")
             }
