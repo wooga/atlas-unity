@@ -150,6 +150,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         def testArgs = []
         DefaultArtifactVersion unityVersion = getUnityVersion(getUnityPath())
 
+        logger.info("unity version major:${unityVersion.majorVersion} minor: ${unityVersion.minorVersion}")
+
         if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
             logger.info("execute unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
 
@@ -197,8 +199,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         }
         else
         {
-            logger.warn("Unit test feature not supported with unity version: ${unityVersion.toString()}")
-            throw new StopExecutionException()
+            throw new StopExecutionException("Unit test feature not supported with unity version: ${unityVersion.toString()}")
         }
 
         args(testArgs)
@@ -221,11 +222,12 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                     }
                 })
                 if(readResult.exitValue == 0) {
-                    versionString = standardOutput.toString()
+                    versionString = standardOutput.toString().trim()
+                    logger.info("Found unity version $versionString")
                 }
             }
         }
 
-        new DefaultArtifactVersion(versionString)
+        return new DefaultArtifactVersion(versionString.split(/f|p/).first())
     }
 }
