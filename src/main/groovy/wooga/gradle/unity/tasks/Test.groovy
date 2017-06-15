@@ -241,6 +241,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     DefaultArtifactVersion getUnityVersion(File path) {
         String osName = System.getProperty("os.name").toLowerCase()
         def versionString = "5.5.0"
+
         if(osName.contains("mac os x")) {
             File infoPlist = new File(path.parentFile.parentFile, "Info.plist")
             def standardOutput = new ByteArrayOutputStream()
@@ -255,6 +256,26 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                 })
                 if(readResult.exitValue == 0) {
                     versionString = standardOutput.toString().trim()
+                    logger.info("Found unity version $versionString")
+                }
+            }
+        }
+
+        if(osName.contains("windows")) {
+            def standardOutput = new ByteArrayOutputStream()
+            def readResult = project.exec(new Action<ExecSpec>() {
+                @Override
+                void execute(ExecSpec execSpec) {
+                    execSpec.standardOutput = standardOutput
+                    execSpec.ignoreExitValue = true
+                    execSpec.commandLine "wmic", "datafile", "where", "Name=\"${path.path}\"", "get", "Version"
+                }
+            })
+            if(readResult.exitValue == 0) {
+                versionString = standardOutput.toString().trim()
+                def versionMatch = versionString =~ /(\d+)\.(\d+)\.(\d+)/
+                if(versionMatch) {
+                    versionString = versionMatch[0][0]
                     logger.info("Found unity version $versionString")
                 }
             }
