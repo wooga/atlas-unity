@@ -34,6 +34,13 @@ class BatchModeFlags {
     static String EDITOR_TEST_FILTER = "-editorTestsFilter"
     static String EDITOR_TEST_RESULTS_FILE = "-editorTestsResultFile"
 
+    // Authentication
+    static String SERIAL = "-serial"
+    static String USER_NAME = "-username"
+    static String PASSWORD = "-password"
+
+    static String RETURN_LICENSE = "-returnlicense"
+
     // Unit Testing >5.6
 
     static String RUN_TESTS = "-runTests"

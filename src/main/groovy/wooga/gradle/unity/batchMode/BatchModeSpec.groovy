@@ -19,7 +19,7 @@ package wooga.gradle.unity.batchMode
 
 import org.gradle.process.BaseExecSpec
 
-interface BatchModeSpec extends BaseExecSpec{
+interface BatchModeSpec extends BaseBatchModeSpec, BaseExecSpec{
     BatchModeSpec args(Object... var1)
 
     BatchModeSpec args(Iterable<?> var1)
@@ -27,21 +27,6 @@ interface BatchModeSpec extends BaseExecSpec{
     BatchModeSpec setArgs(Iterable<?> var1)
 
     List<String> getArgs()
-
-    File getUnityPath()
-
-    BatchModeSpec unityPath(File path)
-    void setUnityPath(File path)
-
-    File getProjectPath()
-
-    BatchModeSpec projectPath(File path)
-    void setProjectPath(File path)
-
-    File getLogFile()
-
-    BatchModeSpec logFile(Object file)
-    void setLogFile(Object file)
 
     BuildTarget getBuildTarget()
 

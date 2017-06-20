@@ -179,7 +179,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         logger.info("unity version major:${unityVersion.majorVersion} minor: ${unityVersion.minorVersion}")
 
         if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
-            logger.info("execute unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
+            logger.info("activate unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
 
             testArgs << BatchModeFlags.RUN_EDITOR_TESTS
 
@@ -203,7 +203,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             }
         }
         else if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6) {
-            logger.info("execute unittests with ${BatchModeFlags.RUN_TESTS} switch")
+            logger.info("activate unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
             //new unit test runner does not work in batchmode
             batchMode = false

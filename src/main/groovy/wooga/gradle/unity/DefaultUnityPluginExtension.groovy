@@ -23,10 +23,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
-import wooga.gradle.unity.batchMode.BatchModeAction
-import wooga.gradle.unity.batchMode.BatchModeActionFactory
-import wooga.gradle.unity.batchMode.BatchModeSpec
-import wooga.gradle.unity.batchMode.DefaultBatchModeActionFactory
+import wooga.gradle.unity.batchMode.*
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
@@ -36,6 +33,9 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
     static File UNITY_PATH_WIN_32 = new File("C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe")
     static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
+
+    static File UNITY_LICENSE_DIRECTORY_MAC_OS = new File("/Library/Application Support/Unity/")
+    static File UNITY_LICENSE_DIRECTORY_WIN = new File("C:\\ProgramData\\Unity")
 
     static final String UNITY_PATH_OPTION = "unity.path"
     static final String UNITY_PATH_ENV_VAR = "UNITY_PATH"
@@ -59,11 +59,16 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         unityPath
     }
 
+    private Boolean autoReturnLicense
+    private Boolean autoActivateUnity
+
     private final Instantiator instantiator
     private final FileResolver fileResolver
     private final Project project
+    private final UnityAuthentication authentication
 
-    BatchModeActionFactory batchModeActionFactory
+    Factory<BatchModeAction> batchModeActionFactory
+    Factory<ActivationAction> activationActionFactory
 
     private Factory<File> reportsDir
     private Factory<File> customUnityPath
@@ -96,8 +101,21 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         customUnityPath = fileResolver.resolveLater(path)
     }
 
+    @Override
+    File getUnityLicenseDirectory() {
+        File licensePath = null
+        String osName = System.getProperty("os.name").toLowerCase()
+
+        if (osName.contains("windows")) {
+            licensePath = UNITY_LICENSE_DIRECTORY_WIN
+        } else if (osName.contains("mac os x")) {
+            licensePath = UNITY_LICENSE_DIRECTORY_MAC_OS
+        }
+        licensePath
+    }
+
     File getReportsDir() {
-        if(reportsDir) {
+        if (reportsDir) {
             return reportsDir.create()
         }
         return null
@@ -125,12 +143,68 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         this
     }
 
+    UnityAuthentication getAuthentication() {
+        return authentication
+    }
+
+    void setAuthentication(UnityAuthentication authentication) {
+        this.authentication.username = authentication.username
+        this.authentication.password = authentication.password
+        this.authentication.serial = authentication.serial
+    }
+
+    UnityPluginExtension authentication(Closure closure) {
+        return authentication(configureUsing(closure))
+    }
+
+    UnityPluginExtension authentication(Action<? super UnityAuthentication> action) {
+        action.execute(this.authentication)
+        return this
+    }
+
+    @Override
+    Boolean getAutoReturnLicense() {
+        return autoActivateUnity && autoReturnLicense
+    }
+
+    @Override
+    void setAutoReturnLicense(Boolean value) {
+        autoReturnLicense = value
+    }
+
+    @Override
+    UnityPluginExtension autoReturnLicense(Boolean value) {
+        autoReturnLicense = value
+        return this
+    }
+
+    @Override
+    Boolean getAutoActivateUnity() {
+        return autoActivateUnity
+    }
+
+    @Override
+    void setAutoActivateUnity(Boolean value) {
+        autoActivateUnity = value
+    }
+
+    @Override
+    UnityPluginExtension autoActivateUnity(Boolean value) {
+        autoActivateUnity = value
+        return this
+    }
+
     DefaultUnityPluginExtension(Project project, FileResolver fileResolver, Instantiator instantiator) {
         this.project = project
         this.fileResolver = fileResolver
         this.instantiator = instantiator
+        this.authentication = new UnityAuthentication(project.rootProject.properties, System.getenv())
         this.batchModeActionFactory = instantiator.newInstance(DefaultBatchModeActionFactory, this, instantiator, fileResolver)
+        this.activationActionFactory = instantiator.newInstance(DefaultActivationActionFactory, this, instantiator, fileResolver, authentication)
         projectPath = project.projectDir
+
+        autoActivateUnity = true
+        autoReturnLicense = true
     }
 
     ExecResult batchMode(Closure closure) {
@@ -138,8 +212,32 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     }
 
     ExecResult batchMode(Action<? super BatchModeSpec> action) {
-        BatchModeAction batchModeAction = batchModeActionFactory.newExecAction()
+        BatchModeAction batchModeAction = batchModeActionFactory.create()
         action.execute(batchModeAction)
         return batchModeAction.execute()
+    }
+
+    @Override
+    ExecResult activate(Closure closure) {
+        return activate(configureUsing(closure))
+    }
+
+    @Override
+    ExecResult activate(Action<? super ActivationSpec> action) {
+        ActivationAction activationAction = activationActionFactory.create()
+        action.execute(activationAction)
+        return activationAction.activate()
+    }
+
+    @Override
+    ExecResult returnLicense(Closure closure) {
+        return returnLicense(configureUsing(closure))
+    }
+
+    @Override
+    ExecResult returnLicense(Action<? super BaseBatchModeSpec> action) {
+        ActivationAction activationAction = activationActionFactory.create()
+        action.execute(activationAction)
+        return activationAction.returnLicense()
     }
 }

@@ -24,11 +24,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.ProcessForkOptions
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.BatchModeAction
-import wooga.gradle.unity.batchMode.BatchModeActionFactory
 import wooga.gradle.unity.batchMode.BatchModeSpec
 import wooga.gradle.unity.batchMode.BuildTarget
 
@@ -41,12 +41,12 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     private BatchModeAction batchModeAction
     private ExecResult batchModeResult
 
-    protected BatchModeActionFactory getBatchModeActionFactory() {
+    protected Factory<BatchModeAction> getBatchModeActionFactory() {
         return project.extensions.getByType(UnityPluginExtension).batchModeActionFactory
     }
 
     AbstractUnityTask(Class<T> taskType) {
-        this.batchModeAction = getBatchModeActionFactory().newExecAction()
+        this.batchModeAction = getBatchModeActionFactory().create()
         this.batchModeAction.logFile("${project.buildDir}/logs/${name}.log")
         this.taskType = taskType
     }
