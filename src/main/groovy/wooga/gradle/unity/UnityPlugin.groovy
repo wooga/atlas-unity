@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License")
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -17,9 +17,11 @@
 
 package wooga.gradle.unity
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
@@ -29,10 +31,10 @@ import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.specs.Spec
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import wooga.gradle.unity.tasks.Test
-import wooga.gradle.unity.tasks.UnityPackage
+import wooga.gradle.unity.tasks.*
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -40,6 +42,8 @@ import java.util.concurrent.Callable
 class UnityPlugin implements Plugin<Project> {
 
     static String TEST_TASK_NAME = "test"
+    static String ACTIVATE_TASK_NAME = "activateUnity"
+    static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
     static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
     static String EXTENSION_NAME = "unity"
     static String UNITY_PACKAGE_CONFIGURATION_NAME = "unitypackage"
@@ -74,13 +78,57 @@ class UnityPlugin implements Plugin<Project> {
 
         addTestTask()
         addPackageTask()
+        addActivateAndReturnLicenseTasks(extension)
+
         createUnityPackageConfiguration()
+
         addDefaultReportTasks(extension)
-        configureArchiveDefaults(project, convention)
+        configureArchiveDefaults(convention)
+        project.afterEvaluate(new Action<Project>() {
+            @Override
+            void execute(Project p) {
+                configureAutoActivationDeactivation(p, extension)
+            }
+        })
+    }
+
+    private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
+        Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
+        Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
+
+        project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+            @Override
+            void execute(AbstractUnityTask task) {
+                if (extension.autoActivateUnity) {
+                    task.dependsOn activationTask
+                }
+
+                if (extension.autoReturnLicense) {
+                    returnLicenseTask.mustRunAfter task
+                    activationTask.finalizedBy returnLicenseTask
+                }
+            }
+        })
+    }
+
+    private void addActivateAndReturnLicenseTasks(final UnityPluginExtension extension) {
+        Task activateTask = project.tasks.create(name: ACTIVATE_TASK_NAME, type: Activate, group: GROUP)
+        ReturnLicense returnLicense = (ReturnLicense) project.tasks.create(name: RETURN_LICENSE_TASK_NAME, type: ReturnLicense, group: GROUP)
+        returnLicense.licenseDirectory = extension.unityLicenseDirectory
+        returnLicense.onlyIf(new Spec<Task>() {
+            @Override
+            boolean isSatisfiedBy(Task task) {
+                def cliTasks = project.gradle.startParameter.taskNames
+                Boolean cliReturnLicense = cliTasks.contains(RETURN_LICENSE_TASK_NAME)
+                Boolean activateDidWork = activateTask.didWork
+                Boolean didRunUnityTasks = project.gradle.taskGraph.allTasks.any { AbstractUnityTask.isInstance(it) }
+                return cliReturnLicense || (activateDidWork && didRunUnityTasks)
+            }
+        })
     }
 
     private void addPackageTask() {
-        def task = project.tasks.create(name: EXPORT_PACKAGE_TASK_NAME, type: UnityPackage, group:GROUP)
+        def task = project.tasks.create(name: EXPORT_PACKAGE_TASK_NAME, type: UnityPackage, group: GROUP)
         project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
@@ -98,7 +146,7 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void configureArchiveDefaults(final Project project, final BasePluginConvention pluginConvention) {
+    private void configureArchiveDefaults(final BasePluginConvention pluginConvention) {
         project.getTasks().withType(UnityPackage.class, new Action<UnityPackage>() {
             void execute(UnityPackage task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()

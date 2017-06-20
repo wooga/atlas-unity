@@ -18,25 +18,72 @@
 package wooga.gradle.unity
 
 import org.gradle.api.Action
+import org.gradle.api.artifacts.repositories.PasswordCredentials
+import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
+import wooga.gradle.unity.batchMode.ActivationAction
+import wooga.gradle.unity.batchMode.ActivationSpec
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeSpec
+
+import static org.gradle.util.ConfigureUtil.configureUsing
 
 interface UnityPluginExtension {
 
     File getUnityPath()
+
     void setUnityPath(Object path)
+
+    File getUnityLicenseDirectory()
 
     UnityPluginExtension unityPath(Object path)
 
     File getProjectPath()
+
     void setProjectPath(File path)
 
     File getReportsDir()
+
     void setReportsDir(File reportsDir)
+
     void setReportsDir(Object reportsDir)
 
     UnityPluginExtension projectPath(File path)
 
-    ExecResult batchMode (Closure closure)
-    ExecResult batchMode (Action<? super BatchModeSpec> action)
+    ExecResult batchMode(Closure closure)
+
+    ExecResult batchMode(Action<? super BatchModeSpec> action)
+
+    ExecResult activate(Closure closure)
+
+    ExecResult activate(Action<? super ActivationSpec> action)
+
+    ExecResult returnLicense(Closure closure)
+
+    ExecResult returnLicense(Action<? super BaseBatchModeSpec> action)
+
+    Factory<BatchModeAction> getBatchModeActionFactory()
+
+    Factory<ActivationAction> getActivationActionFactory()
+
+    Boolean getAutoReturnLicense()
+
+    void setAutoReturnLicense(Boolean value)
+
+    UnityPluginExtension autoReturnLicense(Boolean value)
+
+    Boolean getAutoActivateUnity()
+
+    void setAutoActivateUnity(Boolean value)
+
+    UnityPluginExtension autoActivateUnity(Boolean value)
+
+    UnityAuthentication getAuthentication()
+
+    void setAuthentication(UnityAuthentication authentication)
+
+    UnityPluginExtension authentication(Closure closure)
+
+    UnityPluginExtension authentication(Action<? super UnityAuthentication> action)
 }

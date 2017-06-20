@@ -15,16 +15,9 @@
  *
  */
 
-package wooga.gradle
+package wooga.gradle.unity
 
-class FileUtils {
-    static void ensureFile(File file) {
-        if(!file.exists()) {
-            File parent = file.getParentFile()
-            if (!parent.exists() && !parent.mkdirs()) {
-                throw new IllegalStateException("Couldn't create dir: " + parent)
-            }
-            file.createNewFile()
-        }
-    }
+interface UnitySerial {
+    String getSerialKey()
+    void setSerialKey(String serial)
 }

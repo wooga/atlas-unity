@@ -15,16 +15,21 @@
  *
  */
 
-package wooga.gradle
+package wooga.gradle.unity.batchMode
 
-class FileUtils {
-    static void ensureFile(File file) {
-        if(!file.exists()) {
-            File parent = file.getParentFile()
-            if (!parent.exists() && !parent.mkdirs()) {
-                throw new IllegalStateException("Couldn't create dir: " + parent)
-            }
-            file.createNewFile()
-        }
-    }
+interface BaseBatchModeSpec {
+    File getUnityPath()
+
+    BaseBatchModeSpec unityPath(File path)
+    void setUnityPath(File path)
+
+    File getProjectPath()
+
+    BaseBatchModeSpec projectPath(File path)
+    void setProjectPath(File path)
+
+    File getLogFile()
+
+    BaseBatchModeSpec logFile(Object file)
+    void setLogFile(Object file)
 }

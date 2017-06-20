@@ -62,7 +62,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     private Factory<File> logFile
 
     File getLogFile() {
-        logFile.create()
+        if(logFile)
+        {
+            return logFile.create()
+        }
+        return null
     }
 
     void setLogFile(Object file) {

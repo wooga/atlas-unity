@@ -21,7 +21,7 @@ class UnityLogErrorReader {
 
     static String DEFAULT_MESSAGE = "no error"
 
-    static String readErrorMessageFromLog(File logfile) {
+    static String  readErrorMessageFromLog(File logfile) {
         def message = DEFAULT_MESSAGE
         if(!logfile.exists()) {
             return message
@@ -29,6 +29,7 @@ class UnityLogErrorReader {
 
         boolean foundErrorMarker = false
         String errorMarker = "Aborting batchmode due to failure:"
+        String dialogError = "Cancelling DisplayDialog:"
         String line
         logfile.withReader { reader ->
             while ((line = reader.readLine())!=null) {
@@ -38,6 +39,11 @@ class UnityLogErrorReader {
                 }
                 if(line.startsWith(errorMarker)) {
                     foundErrorMarker = true
+                }
+
+                if(line.startsWith(dialogError)) {
+                    message = line.replace(dialogError, "").trim()
+                    break
                 }
             }
         }
