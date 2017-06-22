@@ -3,7 +3,7 @@
 
 pipeline {
     agent {
-        label 'windows&&unity5.5'
+        label 'windows&&unity_5.5'
     }
 
     environment {
