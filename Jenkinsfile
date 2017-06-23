@@ -29,7 +29,7 @@ pipeline {
     post {
         always {
             sendSlackNotification currentBuild.result, true
-            junit allowEmptyResults: true, testResults: 'build/test-result/**/*.xml'
+            junit allowEmptyResults: true, testResults: 'build/test-results/**/*.xml'
             gradleWrapper "clean"
         }
     }
