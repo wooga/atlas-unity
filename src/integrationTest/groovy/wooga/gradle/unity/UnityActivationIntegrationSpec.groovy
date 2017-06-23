@@ -210,7 +210,7 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
             }    
             
             returnUnityLicense {
-                licenseDirectory = project.file("${File.createTempDir().path}")
+                licenseDirectory = project.file("${File.createTempDir().path.replace('\\','\\\\')}")
             }               
         """.stripIndent()
 
