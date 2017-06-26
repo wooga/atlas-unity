@@ -45,6 +45,8 @@ class UnityPlugin implements Plugin<Project> {
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
     static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
+    static String ASSEMBLE_RESOURCES_TASK_NAME = "assembleResources"
+    static String SETUP_TASK_NAME = "setup"
     static String EXTENSION_NAME = "unity"
     static String UNITY_PACKAGE_CONFIGURATION_NAME = "unitypackage"
     static String GROUP = "unity"
@@ -76,6 +78,7 @@ class UnityPlugin implements Plugin<Project> {
 
         BasePluginConvention convention = new BasePluginConvention(project)
 
+        addLifecycleTasks()
         addTestTask()
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
@@ -125,6 +128,13 @@ class UnityPlugin implements Plugin<Project> {
                 return cliReturnLicense || (activateDidWork && didRunUnityTasks)
             }
         })
+    }
+
+    private void addLifecycleTasks() {
+        def assembleTask = project.tasks.create(name: ASSEMBLE_RESOURCES_TASK_NAME, group: GROUP)
+        assembleTask.description 'gathers all iOS and Android resources into Plugins/ directory of the unity project'
+        project.tasks.create(name: SETUP_TASK_NAME, group: GROUP, dependsOn: assembleTask)
+
     }
 
     private void addPackageTask() {
