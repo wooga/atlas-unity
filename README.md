@@ -77,12 +77,12 @@ task(performMultipleBuilds) {
     doLast {
         unity.batchMode {
             unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
-            args "-executeMethod", "MyEditorScript.PerformBuild"           
+            args "-executeMethod", "MyEditorScript.PerformBuild"
         }
 
         unity.batchMode {
             unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
-            args "-executeMethod", "MyEditorScript.PerformBuild"           
+            args "-executeMethod", "MyEditorScript.PerformBuild"
         }
     }
 }
@@ -177,9 +177,18 @@ Built with Oracle JDK7
 Tested with Oracle JDK8
 
 | Gradle Version | Works |
-| :------------: | :---: |
+| :------------- | :---: |
+| <= 2.13        | no    |
+| 2.14           | yes   |
+| 3.0            | yes   |
+| 3.1            | yes   |
+| 3.2            | yes   |
+| 3.4            | yes   |
 | 3.4.1          | yes   |
 | 3.5            | yes   |
+| 3.5.1          | yes   |
+| 4.0            | yes   |
+
 
 LICENSE
 =======
