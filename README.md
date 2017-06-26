@@ -176,18 +176,18 @@ Gradle and Java Compatibility
 Built with Oracle JDK7
 Tested with Oracle JDK8
 
-| Gradle Version | Works |
-| :------------- | :---: |
-| <= 2.13        | no    |
-| 2.14           | yes   |
-| 3.0            | yes   |
-| 3.1            | yes   |
-| 3.2            | yes   |
-| 3.4            | yes   |
-| 3.4.1          | yes   |
-| 3.5            | yes   |
-| 3.5.1          | yes   |
-| 4.0            | yes   |
+| Gradle Version | Works       |
+| :------------- | :---------: |
+| <= 2.13        | ![UNCHECK]  |
+| 2.14           | ![CHECK]    |
+| 3.0            | ![CHECK]    |
+| 3.1            | ![CHECK]    |
+| 3.2            | ![CHECK]    |
+| 3.4            | ![CHECK]    |
+| 3.4.1          | ![CHECK]    |
+| 3.5            | ![CHECK]    |
+| 3.5.1          | ![CHECK]    |
+| 4.0            | ![CHECK]    |
 
 
 LICENSE
@@ -213,3 +213,6 @@ limitations under the License.
 [gradle]:               https://gradle.org/ "Gradle"
 [gradle_finalizedBy]:   https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:finalizedBy
 [gradle_dependsOn]:     https://docs.gradle.org/3.5/dsl/org.gradle.api.Task.html#org.gradle.api.Task:dependsOn
+
+[CHECK]:                http://atlas-resources.wooga.com/icons/icon_check.svg "Check"
+[UNCHECK]:              http://atlas-resources.wooga.com/icons/icon_uncheck.svg "Uncheck"
