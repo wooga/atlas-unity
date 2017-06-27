@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import nebula.test.IntegrationSpec
 import spock.lang.Unroll
 
@@ -45,9 +46,18 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
     }
 
     def createAARPackage(File path) {
+        createAARPackage(path, false)
+    }
+
+    def createAARPackage(File path, Boolean internalLibraries ) {
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(path))
         out.putNextEntry(new ZipEntry("classes.jar"))
         out.putNextEntry(new ZipEntry("AndroidManifest.xml"))
+        if(internalLibraries) {
+            out.putNextEntry(new ZipEntry("libs/"))
+            out.putNextEntry(new ZipEntry("libs/test1.jar"))
+            out.putNextEntry(new ZipEntry("libs/test2.jar"))
+        }
         out.close()
     }
 
@@ -176,6 +186,39 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
         unpackedAARDir.list().contains("AndroidManifest.xml")
         libsDir.exists()
         libsDir.list().contains("WGDeviceInfo.jar")
+    }
+
+    def "syncs android resources and unpacks aars with internal libraries"() {
+        given: "a test aar package"
+        createAARPackage(createFile("WGDeviceInfo.aar", androidResourcebase), true)
+
+        and: "an empty output directory"
+        assert !androidPlugins.list()
+
+        and: "a build file with artifact dependency to that file"
+        buildFile << """
+            ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
+
+            unity.androidResourceCopyMethod = "arrUnpack"
+            
+            dependencies {
+                android fileTree(dir: "${androidResourcebase.path.replace('\\', '/')}")
+            }
+
+        """.stripIndent()
+
+        when: "running the setup task"
+        runTasksSuccessfully(UnityPlugin.SETUP_TASK_NAME)
+
+        then:
+        def unpackedAARDir = new File(androidPlugins, "WGDeviceInfo")
+        def libsDir = new File(unpackedAARDir, "libs")
+
+        androidPlugins.list()
+        unpackedAARDir.exists()
+        libsDir.exists()
+        libsDir.list().contains("test1.jar")
+        libsDir.list().contains("test2.jar")
     }
 
     def "can set plugins folder in extension"() {

@@ -33,7 +33,6 @@ import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.Sync
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.tasks.*
@@ -238,7 +237,7 @@ class UnityPlugin implements Plugin<Project> {
                                 copySpec.from project.zipTree(artifact)
                                 copySpec.into "$collectDir/$artifactName"
                                 copySpec.include 'AndroidManifest.xml'
-                                copySpec.include '*.jar'
+                                copySpec.include '**/*.jar'
                                 copySpec.rename(/classes\.jar/, "${artifactName}.jar")
                             }
                         })
