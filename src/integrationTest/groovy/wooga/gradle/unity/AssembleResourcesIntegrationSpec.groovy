@@ -18,6 +18,7 @@
 package wooga.gradle.unity
 
 import nebula.test.IntegrationSpec
+import spock.lang.Unroll
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -178,10 +179,10 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
         buildFile << """
             ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
 
-            unity.pluginsDir = "${androidPlugins.path.replace('\\','/')}"
+            unity.pluginsDir = "${androidPlugins.path.replace('\\', '/')}"
             
             dependencies {
-                android fileTree(dir: "${androidResourcebase.path.replace('\\', '/')}")
+                android fileTree(dir: "${androidResourcebase.parentFile.path.replace('\\', '/')}")
             }
 
         """.stripIndent()
@@ -191,5 +192,45 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
 
         then:
         androidPlugins.list()
+    }
+
+    @Unroll()
+    def "clean deletes iOS and Android plugins dir with pluginsDir set to #pluginsDir"() {
+        given: "a jar file mock to copy"
+        createFile("WGDeviceInfo.jar", androidResourcebase)
+
+        and: "a .framework mock"
+        createFile("Test.framework", iOSResourcebase)
+
+        and: "custom set pluginsDir"
+        androidPlugins = new File(projectDir, pluginsDir + '/Android')
+        iOSPlugins = new File(projectDir, pluginsDir + '/iOS')
+
+        and: "a build file with artifact dependency to that file"
+        buildFile << """
+            ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
+
+            unity.pluginsDir = "${pluginsDir}"
+            dependencies {
+                ios fileTree(dir: "${iOSResourcebase.path.replace('\\', '/')}")
+                android fileTree(dir: "${androidResourcebase.path.replace('\\', '/')}")
+            }
+
+        """.stripIndent()
+
+        and: "and setup run"
+        runTasksSuccessfully(UnityPlugin.SETUP_TASK_NAME)
+        assert androidPlugins.list()
+        assert iOSPlugins.list()
+
+        when:
+        runTasksSuccessfully('clean')
+
+        then:
+        !androidPlugins.exists()
+        !iOSPlugins.exists()
+
+        where:
+        pluginsDir << ["Assets/Plugins", "Assets/Plugins/Custom"]
     }
 }

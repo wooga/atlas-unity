@@ -32,6 +32,7 @@ import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.specs.Spec
+import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.Sync
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -116,6 +117,7 @@ class UnityPlugin implements Plugin<Project> {
 
         addDefaultReportTasks(extension)
         configureArchiveDefaults(convention)
+        configureCleanObjects()
         project.afterEvaluate(new Action<Project>() {
             @Override
             void execute(Project p) {
@@ -296,6 +298,14 @@ class UnityPlugin implements Plugin<Project> {
         Configuration runtimeConfiguration = project.configurations.maybeCreate(RUNTIME_CONFIGURATION_NAME)
         runtimeConfiguration.transitive = true
         runtimeConfiguration.extendsFrom(androidConfiguration, iosConfiguration)
+    }
+
+    private void configureCleanObjects() {
+        UnityPluginExtension extension = project.extensions.getByName(EXTENSION_NAME)
+        Delete cleanTask = (Delete) project.tasks[BasePlugin.CLEAN_TASK_NAME]
+
+        cleanTask.delete({ new File(extension.getPluginsDir(), "iOS") })
+        cleanTask.delete({ new File(extension.getPluginsDir(), "Android") })
     }
 
     private void configureUnityReportDefaults(final UnityPluginExtension extension, final Test task) {
