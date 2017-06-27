@@ -51,6 +51,16 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
         out.close()
     }
 
+    def createFrameworkZip(File path) {
+        String frameworkName = path.name.replace('.zip', '')
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(path))
+
+        out.putNextEntry(new ZipEntry("$frameworkName/"))
+        out.putNextEntry(new ZipEntry("$frameworkName/binary"))
+        out.putNextEntry(new ZipEntry("$frameworkName/Headers/"))
+        out.putNextEntry(new ZipEntry("$frameworkName/Versions/"))
+        out.close()
+    }
 
     def "skips copy tasks when no dependencies are set"() {
         given: "a build file without external dependencies"
@@ -74,8 +84,8 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
         given: "a test class to copy"
         createFile("WGTestClass.mm", iOSResourcebase)
 
-        and: "a .framework mock"
-        createFile("Test.framework", iOSResourcebase)
+        and: "a .framework zip mock"
+        createFrameworkZip(createFile("Test.framework.zip", iOSResourcebase))
 
         and: "an empty output directory"
         assert !iOSPlugins.list()
@@ -200,7 +210,7 @@ class AssembleResourcesIntegrationSpec extends IntegrationSpec {
         createFile("WGDeviceInfo.jar", androidResourcebase)
 
         and: "a .framework mock"
-        createFile("Test.framework", iOSResourcebase)
+        createFrameworkZip(createFile("Test.framework.zip", iOSResourcebase))
 
         and: "custom set pluginsDir"
         androidPlugins = new File(projectDir, pluginsDir + '/Android')

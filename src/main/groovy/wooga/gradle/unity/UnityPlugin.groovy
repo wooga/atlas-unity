@@ -176,11 +176,38 @@ class UnityPlugin implements Plugin<Project> {
 
         def assembleTask = project.tasks[ASSEMBLE_RESOURCES_TASK_NAME]
 
-        Sync iOSResourceCopy = (Sync) project.tasks.create(name: "assembleIOSResources", group: GROUP, type: Sync)
+        Task iOSResourceCopy = project.tasks.create(name: "assembleIOSResources", group: GROUP)
         iOSResourceCopy.description = "gathers all additional iOS files into the Plugins/iOS directory of the unity project"
         iOSResourceCopy.dependsOn(iOSResources)
-        iOSResourceCopy.from({ iOSResources })
-        iOSResourceCopy.into({ "${extension.getPluginsDir()}/iOS" })
+        iOSResourceCopy.doLast(new Action<Task>() {
+            @Override
+            void execute(Task task) {
+                String collectDir = "${extension.getPluginsDir()}/iOS"
+                def artifacts = iOSResources.resolve()
+                def zipFrameworkArtifacts = artifacts.findAll { it.path =~ /\.framework.zip$/ }
+
+                zipFrameworkArtifacts.each { artifact ->
+                    def artifactName = artifact.name.replace(".zip", "")
+                    project.sync(new Action<CopySpec>() {
+                        @Override
+                        void execute(CopySpec copySpec) {
+                            copySpec.from project.zipTree(artifact)
+                            copySpec.into "$collectDir/$artifactName"
+                        }
+                    })
+                }
+
+                project.copy(new Action<CopySpec>() {
+                    @Override
+                    void execute(CopySpec copySpec) {
+                        copySpec.from iOSResources
+                        copySpec.into "$collectDir"
+                        copySpec.exclude "*.framework"
+                        copySpec.exclude "*.framework.zip"
+                    }
+                })
+            }
+        })
 
         Task androidResourceCopy = project.tasks.create(name: "assembleAndroidResources", group: GROUP)
         androidResourceCopy.description = "gathers all *.jar and AndroidManifest.xml files into the Plugins/Android directory of the unity project"
