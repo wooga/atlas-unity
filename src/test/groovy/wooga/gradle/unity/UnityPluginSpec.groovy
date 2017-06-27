@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import nebula.test.PluginProjectSpec
 import nebula.test.ProjectSpec
+import org.gradle.api.DefaultTask
 import spock.lang.Unroll
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
@@ -45,7 +46,7 @@ class UnityPluginSpec extends ProjectSpec {
     }
 
     @Unroll("creates the task #taskName")
-    def 'Creates the test  task'(String taskName, Class taskType) {
+    def 'Creates needed tasks'(String taskName, Class taskType) {
         given:
         assert !project.plugins.hasPlugin(PLUGIN_NAME)
         assert !project.tasks.findByName(taskName)
@@ -58,9 +59,11 @@ class UnityPluginSpec extends ProjectSpec {
         taskType.isInstance(task)
 
         where:
-        taskName                                  | taskType
-        UnityPlugin.TEST_TASK_NAME                | Test
-        UnityPlugin.EXPORT_PACKAGE_TASK_NAME      | UnityPackage
+        taskName                                 | taskType
+        UnityPlugin.TEST_TASK_NAME               | Test
+        UnityPlugin.EXPORT_PACKAGE_TASK_NAME     | UnityPackage
+        UnityPlugin.ASSEMBLE_RESOURCES_TASK_NAME | DefaultTask
+        UnityPlugin.SETUP_TASK_NAME              | DefaultTask
     }
 
     @Unroll

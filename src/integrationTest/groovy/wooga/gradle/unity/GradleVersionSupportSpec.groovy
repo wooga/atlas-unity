@@ -17,12 +17,21 @@
 
 package wooga.gradle.unity
 
+import spock.lang.Ignore
 import spock.lang.Unroll
 
+@Ignore
 class GradleVersionSupportSpec extends UnityIntegrationSpec {
 
     def gradleVersions() {
         ["2.14", "3.0", "3.1", "3.2", "3.4", "3.4.1", "3.5", "3.5.1", "4.0"]
+    }
+
+    def setup() {
+
+        jvmArguments = ['-Xms1g', '-Xmx2g']
+        fork = true
+        memorySafeMode = true
     }
 
     @Unroll("verify plugin activation with gradle #gradleVersionToTest")

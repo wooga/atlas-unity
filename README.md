@@ -15,7 +15,7 @@ This plugin provides tasks to run unity batchmode commands in [gradle][gradle]. 
 **build.gradle**
 ```groovy
 plugins {
-    id 'net.wooga.unity' version '0.9.0'
+    id 'net.wooga.unity' version '0.10.0'
 }
 ```
 
@@ -29,7 +29,7 @@ plugins {
 
 ```groovy
 plugins {
-    id "net.wooga.unity" version "0.9.0"
+    id "net.wooga.unity" version "0.10.0"
 }
 
 unity {
@@ -45,6 +45,10 @@ unity {
 
     //autoActivateUnity = true
     //autoReturnLicense = true
+    
+    //assetsDir = "Assets"
+    //pluginsDir = "Assets/Plugins"
+    //androidResourceCopyMethod = "arrUnpack" | "sync"
 }
 
 exportUnityPackage {
@@ -97,12 +101,14 @@ tasks.returnUnityLicense.mustRunAfter performMultipleBuilds
 ## Tasks
 The plugin will add a number of tasks you can use
 
-| Task name          | Depends on     | Type                                           | Description |
-| ------------------ | -------------- | ---------------------------------------------- | ----------- |
-| activateUnity      |                | `wooga.gradle.unity.tasks.Activate`            | Activates unity with provides credentials. Gets skipped when credentials are missing |
-| returnUnityLicense |                | `wooga.gradle.unity.tasks.ReturnLicense`       | Returns the current licesne to license server. Gets skipped when license directory is empty |
-| exportUnityPackage | activationTask | `wooga.gradle.unity.tasks.UnityPackage`        | exports configured assets into an `.unitypackage` file |
-| test               | activationTask | `wooga.gradle.unity.tasks.Test`                | runs unity editor tests and writes reports to `reportsDir` |
+| Task name          | Depends on            | Type                                           | Description |
+| ------------------ | --------------------- | ---------------------------------------------- | ----------- |
+| activateUnity      |                       | `wooga.gradle.unity.tasks.Activate`            | Activates unity with provides credentials. Gets skipped when credentials are missing |
+| returnUnityLicense |                       | `wooga.gradle.unity.tasks.ReturnLicense`       | Returns the current licesne to license server. Gets skipped when license directory is empty |
+| exportUnityPackage | activationTask, setup | `wooga.gradle.unity.tasks.UnityPackage`        | exports configured assets into an `.unitypackage` file |
+| test               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity editor tests and writes reports to `reportsDir` |
+| setup              |                       | `DefaultTask`                                  | lifecycle task to initialize unity project and all dependencies |
+| assembleResources  | setup                 | `DefaultTask`                                  | copies all android/ios dependencies to the unity `Plugins` folder |
 
 ### Custom Batchmode task
 You can call any abitary unity batchmode command either with the `BatchModeSpec` or the `wooga.gradle.unity.tasks.Unity` task type:
@@ -169,6 +175,29 @@ test {
     testPlatform = "editmode" || "playmode"
 }
 ```
+
+### iOS/Android dependencies
+
+You can set local or project dependencies to external `*.jar`, `*.aar`, iOS source files (`*.m`, `*.mm`, `*.h`, etc) or `zipped` `framework files`.
+Every task which extends `AbstractUnityTask` will execute the `assembleResources` task. This task copies the dependencies into the `Plugins` directory in the `Assets` directory. You can set the `Plugins` directory destination with `unity.pluginsDir`.
+
+**build.gradle**
+```groovy
+plugins {
+    id "net.wooga.unity" version "0.10.0"
+}
+
+dependencies {
+    android fileTree(dir: "libs", include: "*.jar")
+    android project(':android:SubProject')
+    
+    ios fileTree(dir: "ios/classes")
+    ios project(':android:SubProject') //which bundles an .framework.zip
+}
+```
+
+`.framework` artifacts are a little tricky since gradle defines that an artifact is one file. A `.framework` is a directory. So to make framework files work with gradle's dependency management we need to zip it. The unity plugin will unzip all files `*.framework.zip`
+
 
 Gradle and Java Compatibility
 =============================
