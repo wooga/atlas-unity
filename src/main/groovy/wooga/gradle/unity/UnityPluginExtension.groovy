@@ -49,6 +49,18 @@ interface UnityPluginExtension {
 
     void setReportsDir(Object reportsDir)
 
+    File getPluginsDir()
+
+    void setPluginsDir(File reportsDir)
+
+    void setPluginsDir(Object reportsDir)
+
+    File getAssetsDir()
+
+    void setAssetsDir(File reportsDir)
+
+    void setAssetsDir(Object reportsDir)
+
     UnityPluginExtension projectPath(File path)
 
     ExecResult batchMode(Closure closure)
@@ -86,4 +98,10 @@ interface UnityPluginExtension {
     UnityPluginExtension authentication(Closure closure)
 
     UnityPluginExtension authentication(Action<? super UnityAuthentication> action)
+
+    AndroidResourceCopyMethod getAndroidResourceCopyMethod()
+
+    void setAndroidResourceCopyMethod(AndroidResourceCopyMethod value)
+
+    UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value)
 }

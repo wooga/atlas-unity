@@ -62,6 +62,8 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Boolean autoReturnLicense
     private Boolean autoActivateUnity
 
+    private AndroidResourceCopyMethod androidResourceCopyMethod
+
     private final Instantiator instantiator
     private final FileResolver fileResolver
     private final Project project
@@ -71,6 +73,8 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     Factory<ActivationAction> activationActionFactory
 
     private Factory<File> reportsDir
+    private Factory<File> assetsDir
+    private Factory<File> pluginsDir
     private Factory<File> customUnityPath
 
     File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
@@ -127,6 +131,44 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     void setReportsDir(Object file) {
         reportsDir = fileResolver.resolveLater(file)
+    }
+
+    @Override
+    File getPluginsDir() {
+        if (pluginsDir) {
+            return pluginsDir.create()
+        }
+
+        return null
+    }
+
+    @Override
+    void setPluginsDir(File reportsDir) {
+        pluginsDir = fileResolver.resolveLater(reportsDir)
+    }
+
+    @Override
+    void setPluginsDir(Object reportsDir) {
+        pluginsDir = fileResolver.resolveLater(reportsDir)
+    }
+
+    @Override
+    File getAssetsDir() {
+        if (assetsDir) {
+            return assetsDir.create()
+        }
+
+        return null
+    }
+
+    @Override
+    void setAssetsDir(File path) {
+        assetsDir = fileResolver.resolveLater(path)
+    }
+
+    @Override
+    void setAssetsDir(Object path) {
+        assetsDir = fileResolver.resolveLater(path)
     }
 
     File projectPath
@@ -191,6 +233,22 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     @Override
     UnityPluginExtension autoActivateUnity(Boolean value) {
         autoActivateUnity = value
+        return this
+    }
+
+    @Override
+    AndroidResourceCopyMethod getAndroidResourceCopyMethod() {
+        return androidResourceCopyMethod
+    }
+
+    @Override
+    void setAndroidResourceCopyMethod(AndroidResourceCopyMethod value) {
+        androidResourceCopyMethod = value
+    }
+
+    @Override
+    UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value) {
+        androidResourceCopyMethod = value
         return this
     }
 
