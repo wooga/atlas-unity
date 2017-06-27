@@ -117,6 +117,7 @@ class UnityPlugin implements Plugin<Project> {
 
         addDefaultReportTasks(extension)
         configureArchiveDefaults(convention)
+        configureUnityTaskDependencies()
         configureCleanObjects()
         project.afterEvaluate(new Action<Project>() {
             @Override
@@ -317,6 +318,15 @@ class UnityPlugin implements Plugin<Project> {
                         new File(extension.reportsDir, task.name + "/" + task.name + "." + report.name)
                     }
                 })
+            }
+        })
+    }
+
+    private void configureUnityTaskDependencies() {
+        project.tasks.withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+            @Override
+            void execute(AbstractUnityTask task) {
+                task.dependsOn project.tasks[SETUP_TASK_NAME]
             }
         })
     }
