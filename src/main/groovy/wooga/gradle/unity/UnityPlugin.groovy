@@ -302,7 +302,7 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private void configureCleanObjects() {
-        UnityPluginExtension extension = project.extensions.getByName(EXTENSION_NAME)
+        UnityPluginExtension extension = (UnityPluginExtension) project.extensions.getByName(EXTENSION_NAME)
         Delete cleanTask = (Delete) project.tasks[BasePlugin.CLEAN_TASK_NAME]
 
         cleanTask.delete({ new File(extension.getPluginsDir(), "iOS") })
