@@ -182,10 +182,10 @@ class UnityPlugin implements Plugin<Project> {
         iOSResourceCopy.from({ iOSResources })
         iOSResourceCopy.into({ "${extension.getPluginsDir()}/iOS" })
 
-        Task androidResouceCopy = project.tasks.create(name: "assembleAndroidResources", group: GROUP)
-        androidResouceCopy.description = "gathers all *.jar and AndroidManifest.xml files into the Plugins/Android directory of the unity project"
-        androidResouceCopy.dependsOn(androidResources)
-        androidResouceCopy.doLast(new Action<Task>() {
+        Task androidResourceCopy = project.tasks.create(name: "assembleAndroidResources", group: GROUP)
+        androidResourceCopy.description = "gathers all *.jar and AndroidManifest.xml files into the Plugins/Android directory of the unity project"
+        androidResourceCopy.dependsOn(androidResources)
+        androidResourceCopy.doLast(new Action<Task>() {
             @Override
             void execute(Task task) {
                 String collectDir = "${extension.pluginsDir}/Android"
@@ -229,7 +229,7 @@ class UnityPlugin implements Plugin<Project> {
             }
         })
 
-        assembleTask.dependsOn androidResouceCopy
+        assembleTask.dependsOn androidResourceCopy
         assembleTask.dependsOn iOSResourceCopy
     }
 
