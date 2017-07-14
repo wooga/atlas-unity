@@ -173,17 +173,21 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     @TaskAction
     @Override
     protected void exec() {
-        def testArgs = []
         DefaultArtifactVersion unityVersion = getUnityVersion(getUnityPath())
-
         logger.info("unity version major:${unityVersion.majorVersion} minor: ${unityVersion.minorVersion}")
 
-        if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
+        args(buildTestArguments(unityVersion))
+        super.exec()
+    }
+
+    protected List<String> buildTestArguments(DefaultArtifactVersion unityVersion) {
+        def testArgs = []
+        if (unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
             logger.info("activate unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
 
             testArgs << BatchModeFlags.RUN_EDITOR_TESTS
 
-            if(reports.getXml().enabled) {
+            if (reports.getXml().enabled) {
                 testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
             }
 
@@ -201,8 +205,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             if (categories.size() > 0) {
                 testArgs << BatchModeFlags.EDITOR_TEST_CATEGORIES << categories.join(",")
             }
-        }
-        else if(unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6) {
+        } else if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
+                || (unityVersion.majorVersion == 2017 && unityVersion.minorVersion == 1)) {
             logger.info("activate unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
             //new unit test runner does not work in batchmode
@@ -210,42 +214,38 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             quit = false
 
             if (verbose) {
-                logger.warn("Option [verbose] not supported with unity version: ${unityVersion.toString()}")
+                logger.info("Option [verbose] not supported with unity version: ${unityVersion.toString()}")
             }
 
-            if(filter.size() > 0) {
-                logger.warn("Option [filter] not supported with unity version: ${unityVersion.toString()}")
+            if (filter.size() > 0) {
+                logger.info("Option [filter] not supported with unity version: ${unityVersion.toString()}")
             }
 
             if (categories.size() > 0) {
-                logger.warn("Option [categories] not supported with unity version: ${unityVersion.toString()}")
+                logger.info("Option [categories] not supported with unity version: ${unityVersion.toString()}")
             }
 
             testArgs << BatchModeFlags.RUN_TESTS
 
-            if(reports.getXml().enabled) {
+            if (reports.getXml().enabled) {
                 testArgs << BatchModeFlags.TEST_RESULTS << reports.getXml().destination
             }
 
             testArgs << BatchModeFlags.TEST_PLATFORM << testPlatform
-        }
-        else
-        {
+        } else {
             throw new StopExecutionException("Unit test feature not supported with unity version: ${unityVersion.toString()}")
         }
-
-        args(testArgs)
-        super.exec()
+        testArgs
     }
 
     DefaultArtifactVersion getUnityVersion(File path) {
         String osName = System.getProperty("os.name").toLowerCase()
         def versionString = "5.5.0"
 
-        if(osName.contains("mac os x")) {
+        if (osName.contains("mac os x")) {
             File infoPlist = new File(path.parentFile.parentFile, "Info.plist")
             def standardOutput = new ByteArrayOutputStream()
-            if(infoPlist.exists()) {
+            if (infoPlist.exists()) {
                 def readResult = project.exec(new Action<ExecSpec>() {
                     @Override
                     void execute(ExecSpec execSpec) {
@@ -254,14 +254,14 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                         execSpec.commandLine "defaults", "read", infoPlist.path, "CFBundleVersion"
                     }
                 })
-                if(readResult.exitValue == 0) {
+                if (readResult.exitValue == 0) {
                     versionString = standardOutput.toString().trim()
                     logger.info("Found unity version $versionString")
                 }
             }
         }
 
-        if(osName.contains("windows")) {
+        if (osName.contains("windows")) {
             def standardOutput = new ByteArrayOutputStream()
             def readResult = project.exec(new Action<ExecSpec>() {
                 @Override
@@ -271,10 +271,10 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                     execSpec.commandLine "wmic", "datafile", "where", "Name=\"${path.path}\"", "get", "Version"
                 }
             })
-            if(readResult.exitValue == 0) {
+            if (readResult.exitValue == 0) {
                 versionString = standardOutput.toString().trim()
                 def versionMatch = versionString =~ /(\d+)\.(\d+)\.(\d+)/
-                if(versionMatch) {
+                if (versionMatch) {
                     versionString = versionMatch[0][0]
                     logger.info("Found unity version $versionString")
                 }
