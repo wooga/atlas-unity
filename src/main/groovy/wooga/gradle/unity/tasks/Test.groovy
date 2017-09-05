@@ -35,6 +35,7 @@ import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
+import wooga.gradle.unity.utils.NUnitReportNormalizer
 
 import javax.inject.Inject
 
@@ -46,8 +47,21 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     private final List<Object> categories = new ArrayList()
     private final FileResolver fileResolver
     private TestPlatform testPlatform = TestPlatform.editmode
+    private DefaultArtifactVersion unityVersion
 
     private final UnityTestTaskReport reports
+
+    @Override
+    AbstractUnityTask unityPath(File path) {
+        unityVersion = null
+        return super.unityPath(path)
+    }
+
+    @Override
+    void setUnityPath(File path) {
+        unityVersion = null
+        super.setUnityPath(path)
+    }
 
     @Input
     @Optional
@@ -178,6 +192,18 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
         args(buildTestArguments(unityVersion))
         super.exec()
+
+        //normalize test result file
+        normalizeTestResult()
+    }
+
+    //https://issues.jenkins-ci.org/browse/JENKINS-44072
+    protected void normalizeTestResult() {
+        File report = this.getReports().getXml().getDestination()
+        if(report.exists()) {
+            def result = NUnitReportNormalizer.normalize(report)
+            logger.info("NUnitReportNormalizer result ${result}")
+        }
     }
 
     protected List<String> buildTestArguments(DefaultArtifactVersion unityVersion) {
@@ -239,6 +265,10 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     }
 
     DefaultArtifactVersion getUnityVersion(File path) {
+        if(unityVersion != null) {
+            return unityVersion
+        }
+
         String osName = System.getProperty("os.name").toLowerCase()
         def versionString = "5.5.0"
 
@@ -281,6 +311,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             }
         }
 
-        return new DefaultArtifactVersion(versionString.split(/f|p/).first())
+        unityVersion = new DefaultArtifactVersion(versionString.split(/f|p/).first())
+        unityVersion
     }
 }
