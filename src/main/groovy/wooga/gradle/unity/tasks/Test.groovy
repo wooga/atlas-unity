@@ -199,15 +199,10 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
     //https://issues.jenkins-ci.org/browse/JENKINS-44072
     protected void normalizeTestResult() {
-        DefaultArtifactVersion unityVersion = getUnityVersion(getUnityPath())
-        if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
-                || (unityVersion.majorVersion == 2017 && unityVersion.minorVersion == 1)) {
-
-            File report = this.getReports().getXml().getDestination()
-            if(report.exists()) {
-                def result = NUnitReportNormalizer.normalize(report)
-                logger.info("NUnitReportNormalizer result ${result}")
-            }
+        File report = this.getReports().getXml().getDestination()
+        if(report.exists()) {
+            def result = NUnitReportNormalizer.normalize(report)
+            logger.info("NUnitReportNormalizer result ${result}")
         }
     }
 
