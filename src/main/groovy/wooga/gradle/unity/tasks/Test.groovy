@@ -191,10 +191,14 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         logger.info("unity version major:${unityVersion.majorVersion} minor: ${unityVersion.minorVersion}")
 
         args(buildTestArguments(unityVersion))
-        super.exec()
 
-        //normalize test result file
-        normalizeTestResult()
+        try {
+            super.exec()
+        }
+        finally {
+            //normalize test result file
+            normalizeTestResult()
+        }
     }
 
     //https://issues.jenkins-ci.org/browse/JENKINS-44072
