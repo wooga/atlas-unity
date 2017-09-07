@@ -28,6 +28,17 @@ pipeline {
 
     post {
         always {
+            gradleWrapper "jacocoTestReport"
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'build/reports/jacoco/test/html',
+                reportFiles: 'index.html',
+                reportName: 'Coverage',
+                reportTitles: ''
+            ])
+
             sendSlackNotification currentBuild.result, true
             junit allowEmptyResults: true, testResults: 'build/test-results/**/*.xml'
             gradleWrapper "clean"
