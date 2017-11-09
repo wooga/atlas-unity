@@ -55,15 +55,16 @@ exportUnityPackage {
     inputFiles file('Assets')
 }
 
-test {
+testEditMode {
     // unity 5.5
     // categories = [...,]
     // filter = [...,]
     // verbose = true
-    // teamcity = false
-    
-    // unity 5.6
-    // testPlatform 
+    // teamcity = false 
+}
+
+// only runs on > 5.5
+testPlayMode {
 }
 
 task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
@@ -106,7 +107,9 @@ The plugin will add a number of tasks you can use
 | activateUnity      |                       | `wooga.gradle.unity.tasks.Activate`            | Activates unity with provides credentials. Gets skipped when credentials are missing |
 | returnUnityLicense |                       | `wooga.gradle.unity.tasks.ReturnLicense`       | Returns the current licesne to license server. Gets skipped when license directory is empty |
 | exportUnityPackage | activationTask, setup | `wooga.gradle.unity.tasks.UnityPackage`        | exports configured assets into an `.unitypackage` file |
-| test               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity editor tests and writes reports to `reportsDir` |
+| test               | testEditMode, testPlayMode	     | `DefaultTask`                | runs editMode and playMode tasks |
+| testEditMode               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity editor tests and writes reports to `reportsDir` |
+| testPlayMode               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity playMode tests and writes reports to `reportsDir` |
 | setup              |                       | `DefaultTask`                                  | lifecycle task to initialize unity project and all dependencies |
 | assembleResources  | setup                 | `DefaultTask`                                  | copies all android/ios dependencies to the unity `Plugins` folder |
 
