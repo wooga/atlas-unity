@@ -7,27 +7,28 @@ import spock.lang.Unroll
 class ProjectSettingsSpec extends Specification {
 
     static String TEMPLATE_CONTENT = """      
-
-PlayerSettings:
-    wiiUDrcBufferDisabled: 0
-    wiiUProfilerLibPath: 
-    playModeTestRunnerEnabled: 0
-    actionOnDotNetUnhandledException: 1
+    %YAML 1.1
+    %TAG !u! tag:unity3d.com,2011:
+    --- !u!129 &1
+    PlayerSettings:
+        wiiUDrcBufferDisabled: 0
+        wiiUProfilerLibPath: 
+        playModeTestRunnerEnabled: 0
+        actionOnDotNetUnhandledException: 1
     
-    """
+    """.stripIndent()
 
     static String TEMPLATE_CONTENT_ENABLED = """      
-
-PlayerSettings:
-    wiiUDrcBufferDisabled: 0
-    wiiUProfilerLibPath: 
-    playModeTestRunnerEnabled: 1
-    actionOnDotNetUnhandledException: 1
+    %YAML 1.1
+    %TAG !u! tag:unity3d.com,2011:
+    --- !u!129 &1
+    PlayerSettings:
+        wiiUDrcBufferDisabled: 0
+        wiiUProfilerLibPath: 
+        playModeTestRunnerEnabled: 1
+        actionOnDotNetUnhandledException: 1
     
-    """
-
-    @Shared
-    File templateFile = File.createTempFile("ProjectSettings", ".asset")
+    """.stripIndent()
 
     @Unroll
     def "initialize with #objectType"() {
@@ -37,13 +38,13 @@ PlayerSettings:
         where:
         objectType | content
         "String"   | TEMPLATE_CONTENT
-        "File"     | templateFile << TEMPLATE_CONTENT
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT
     }
 
     @Unroll
     def "parse playModeTestRunnerDisabled with #objectType"() {
         when:
-        def settings =new ProjectSettings(content)
+        def settings = new ProjectSettings(content)
 
         then:
         !settings.playModeTestRunnerEnabled
@@ -51,13 +52,13 @@ PlayerSettings:
         where:
         objectType | content
         "String"   | TEMPLATE_CONTENT
-        "File"     | templateFile << TEMPLATE_CONTENT
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT
     }
 
     @Unroll
     def "parse playModeTestRunnerEnabled with #objectType"() {
         when:
-        def settings =new ProjectSettings(content)
+        def settings = new ProjectSettings(content)
 
         then:
         settings.playModeTestRunnerEnabled
@@ -65,7 +66,28 @@ PlayerSettings:
         where:
         objectType | content
         "String"   | TEMPLATE_CONTENT_ENABLED
-        "File"     | templateFile << TEMPLATE_CONTENT_ENABLED
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT_ENABLED
     }
 
+    def "strip unity instructions from content string"() {
+        given: "a test content"
+        def content = """      
+        %YAML 1.1
+        %TAG !u! tag:unity3d.com,2011:
+        --- !u!129 &1
+        PlayerSettings:
+            wiiUDrcBufferDisabled: 0
+            wiiUProfilerLibPath: 
+            playModeTestRunnerEnabled: 0
+            actionOnDotNetUnhandledException: 1
+    
+        """.stripIndent()
+
+        when:
+        def result = ProjectSettings.stripUnityInstructions(content)
+
+        then:
+        result.readLines().every { !it.matches(/%TAG !u! tag:unity3d.com,.*:/) }
+        result.readLines().every { !it.matches(/(--- )!u!\d+( &\d+)/) }
+    }
 }

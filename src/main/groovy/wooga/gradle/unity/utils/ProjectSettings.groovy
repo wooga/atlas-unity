@@ -32,10 +32,27 @@ class ProjectSettings {
     ProjectSettings(String templateContent) {
 
         Yaml parser = new Yaml()
-        content = parser.load(templateContent)
+        content = parser.load(stripUnityInstructions(templateContent))
     }
 
     boolean getPlayModeTestRunnerEnabled() {
         content['PlayerSettings'] && content['PlayerSettings']['playModeTestRunnerEnabled'] && content['PlayerSettings']['playModeTestRunnerEnabled'] == 1
+    }
+
+    static String stripUnityInstructions(String content) {
+        def lines = content.readLines()
+        lines.collect {
+            if(it.matches(/%TAG !u! tag:unity3d.com,.*:/)) {
+                return ""
+            }
+
+            def m = it =~ /(--- )!u!\d+( &\d+)/
+            if(m) {
+                return "${m[0][1]}${m[0][2]}"
+            }
+
+            return it
+        }
+        .join("\n")
     }
 }
