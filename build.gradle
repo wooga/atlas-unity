@@ -79,6 +79,7 @@ dependencies {
     }
 
     compile 'org.apache.maven:maven-artifact:3.0.3'
+    compile "org.yaml:snakeyaml:1.17"
     compile gradleApi()
     compile localGroovy()
 }

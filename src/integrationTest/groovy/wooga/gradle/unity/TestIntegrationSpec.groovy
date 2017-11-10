@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import spock.lang.IgnoreIf
 import wooga.gradle.unity.batchMode.BatchModeFlags
 
 class TestIntegrationSpec extends UnityIntegrationSpec {
@@ -221,4 +222,32 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
         !result.standardOutput.contains(BatchModeFlags.EDITOR_TEST_VERBOSE_LOG + " teamcity")
     }
 
+    @IgnoreIf({ os.windows })
+    def "can set testPlatform to playMode"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (mUnity, type: wooga.gradle.unity.tasks.Test) {
+                testPlatform = "playmode"
+            }
+        """.stripIndent()
+
+        and: "a mocked project setting"
+        def settings = createFile("ProjectSettings/ProjectSettings.asset")
+        settings << """      
+        PlayerSettings:
+            wiiUDrcBufferDisabled: 0
+            wiiUProfilerLibPath: 
+            playModeTestRunnerEnabled: 0
+            actionOnDotNetUnhandledException: 1
+            
+        """.stripIndent()
+
+        and: "unity version > 5.5"
+
+        when:
+        def result = runTasksSuccessfully("mUnity", "-PdefaultUnityTestVersion=2017.1.1f3")
+
+        then:
+        result.standardOutput.contains("PlayMode tests not activated")
+    }
 }

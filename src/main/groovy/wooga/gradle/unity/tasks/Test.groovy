@@ -23,11 +23,7 @@ import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
-import org.gradle.api.tasks.Console
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.StopExecutionException
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
 import org.gradle.util.GUtil
@@ -36,6 +32,7 @@ import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
 import wooga.gradle.unity.utils.NUnitReportNormalizer
+import wooga.gradle.unity.utils.ProjectSettings
 
 import javax.inject.Inject
 
@@ -204,7 +201,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     //https://issues.jenkins-ci.org/browse/JENKINS-44072
     protected void normalizeTestResult() {
         File report = this.getReports().getXml().getDestination()
-        if(report.exists()) {
+        if (report.exists()) {
             def result = NUnitReportNormalizer.normalize(report)
             logger.info("NUnitReportNormalizer result ${result}")
         }
@@ -262,6 +259,11 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             }
 
             testArgs << BatchModeFlags.TEST_PLATFORM << testPlatform
+
+            if (testPlatform == TestPlatform.playmode && !getPlayModeTestsEnabled()) {
+                throw new StopExecutionException("PlayMode tests not activated for this project. please activate playMode tests first")
+            }
+
         } else {
             throw new StopExecutionException("Unit test feature not supported with unity version: ${unityVersion.toString()}")
         }
@@ -269,12 +271,12 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     }
 
     DefaultArtifactVersion getUnityVersion(File path) {
-        if(unityVersion != null) {
+        if (unityVersion != null) {
             return unityVersion
         }
 
         String osName = System.getProperty("os.name").toLowerCase()
-        def versionString = "5.5.0"
+        def versionString = project.properties.get("defaultUnityTestVersion", "5.5.0")
 
         if (osName.contains("mac os x")) {
             File infoPlist = new File(path.parentFile.parentFile, "Info.plist")
@@ -317,5 +319,12 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
         unityVersion = new DefaultArtifactVersion(versionString.split(/f|p/).first())
         unityVersion
+    }
+
+
+    boolean getPlayModeTestsEnabled() {
+        def file = new File(projectPath, "ProjectSettings/ProjectSettings.asset")
+        def settings = new ProjectSettings(file)
+        return settings.playModeTestRunnerEnabled
     }
 }

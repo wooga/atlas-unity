@@ -35,6 +35,7 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Delete
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.*
 
 import javax.inject.Inject
@@ -43,6 +44,8 @@ import java.util.concurrent.Callable
 class UnityPlugin implements Plugin<Project> {
 
     static String TEST_TASK_NAME = "test"
+    static String TEST_EDITOMODE_TASK_NAME = "testEditMode"
+    static String TEST_PLAYMODE_TASK_NAME = "testPlayMode"
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
     static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
@@ -105,7 +108,7 @@ class UnityPlugin implements Plugin<Project> {
         BasePluginConvention convention = new BasePluginConvention(project)
 
         addLifecycleTasks()
-        addTestTask()
+        addTestTasks()
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
 
@@ -264,9 +267,17 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
-    private void addTestTask() {
-        def task = project.tasks.create(name: TEST_TASK_NAME, type: Test, group: GROUP)
-        project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn task
+    private void addTestTasks() {
+        def editModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, type: Test, group: GROUP) as Test
+        editModeTask.testPlatform = TestPlatform.editmode
+
+        def playModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, type: Test, group: GROUP) as Test
+        playModeTask.testPlatform = TestPlatform.playmode
+
+        def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
+        testTask.dependsOn editModeTask, playModeTask
+
+        project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
     }
 
     private void addDefaultReportTasks(final UnityPluginExtension extension) {
