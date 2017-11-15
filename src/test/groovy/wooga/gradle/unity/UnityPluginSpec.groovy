@@ -22,6 +22,7 @@ import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import spock.lang.Unroll
+import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
@@ -88,9 +89,9 @@ class UnityPluginSpec extends ProjectSpec {
         checkTask.dependsOn.contains(testTask)
 
         where:
-        taskName                                 | testPlatform
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME     | TestPlatform.editmode
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME      | TestPlatform.playmode
+        taskName                             | testPlatform
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode
     }
 
     @Unroll
@@ -107,5 +108,29 @@ class UnityPluginSpec extends ProjectSpec {
 
         where:
         pluginToAdd << ['base', 'reporting-base']
+    }
+
+    def 'defaultBuildTarget not set'() {
+        given:
+        project.plugins.apply(PLUGIN_NAME)
+
+        when:
+        def extension = project.extensions.findByName(UnityPlugin.EXTENSION_NAME) as DefaultUnityPluginExtension
+
+        then:
+        extension.defaultBuildTarget == BuildTarget.undefined
+    }
+
+    @Unroll
+    def 'applies defaultBuildTarget from buildFile'() {
+        given:
+        project.plugins.apply(PLUGIN_NAME)
+
+        when:
+        def extension = project.extensions.findByName(UnityPlugin.EXTENSION_NAME) as DefaultUnityPluginExtension
+        extension.defaultBuildTarget = BuildTarget.ios
+
+        then:
+        extension.defaultBuildTarget == BuildTarget.ios
     }
 }

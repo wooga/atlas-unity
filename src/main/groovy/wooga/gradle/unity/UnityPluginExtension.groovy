@@ -26,6 +26,7 @@ import wooga.gradle.unity.batchMode.ActivationSpec
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeSpec
+import wooga.gradle.unity.batchMode.BuildTarget
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
@@ -104,4 +105,13 @@ interface UnityPluginExtension {
     void setAndroidResourceCopyMethod(AndroidResourceCopyMethod value)
 
     UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value)
+
+    BuildTarget getDefaultBuildTarget()
+
+    void setDefaultBuildTarget(BuildTarget value)
+
+    void setDefaultBuildTarget(Object value)
+
+    UnityPluginExtension defaultBuildTarget(BuildTarget value)
+
 }

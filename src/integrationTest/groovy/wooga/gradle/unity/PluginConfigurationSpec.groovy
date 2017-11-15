@@ -60,4 +60,32 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
 
         status = shouldRun ? "executed" : "not executed"
     }
+
+    def "sets defaultBuildTarget for all tasks"() {
+        given: "a build script"
+        buildFile << """
+            
+            task (createProject, type: wooga.gradle.unity.tasks.Unity) {
+                args "-createProject", "Test"
+            }
+            
+            unity {
+                defaultBuildTarget = "android"
+            }
+            
+            task (customTest, type: wooga.gradle.unity.tasks.Test) {
+                doLast{
+                    print customTest.buildTarget
+                }
+            }
+            
+        """.stripIndent()
+
+        when:
+        def result = runTasks("customTest")
+
+        then:
+        result.standardOutput.contains("android")
+
+    }
 }
