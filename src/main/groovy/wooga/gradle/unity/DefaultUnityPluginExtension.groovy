@@ -358,10 +358,19 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     @Override
     Set<BuildTarget> getTestBuildTargets() {
+      if(testBuildTargets.empty && getDefaultBuildTarget() == BuildTarget.undefined) {
+        return EnumSet.noneOf(BuildTarget)
+      }
+
       List<BuildTarget> targets = new ArrayList<BuildTarget>()
       for (Object t : testBuildTargets) {
           targets.add(t.toString() as BuildTarget)
       }
+
+      if(getDefaultBuildTarget() != BuildTarget.undefined) {
+        targets.add(getDefaultBuildTarget())
+      }
+
       return EnumSet.copyOf(targets)
     }
 }

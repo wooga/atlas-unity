@@ -101,6 +101,51 @@ class DefaultUnityPluginExtensionSpec extends Specification {
     }
 
     @Unroll
+    def "set testBuildTargets #timing defaultBuildTarget with #method"() {
+        given:
+        if (!beforeTestBuildTargets.empty) {
+            subject.testBuildTargets(beforeTestBuildTargets)
+        }
+        assert subject.getTestBuildTargets().size() == initialSize
+
+        and: "extension with defaultBuildTarget"
+        subject.defaultBuildTarget = defaultBuildTarget
+
+        when:
+        if (!afterTestBuildTargets.empty) {
+            subject.invokeMethod(method, afterTestBuildTargets)
+        }
+
+        then:
+        subject.getTestBuildTargets().size() == expectedSize
+        if(!expectedTestBuildTargets.empty) {
+            expectedTestBuildTargets.each {
+              subject.testBuildTargets.contains(it)
+            }
+        }
+
+        where:
+        timing    | defaultBuildTarget    | beforeTestBuildTargets             | afterTestBuildTargets | expectedTestBuildTargets                                | useSetter
+        "via"     | BuildTarget.ios       | []                                 | []                    | [BuildTarget.ios]                                       | true
+        "via"     | BuildTarget.ios       | []                                 | []                    | [BuildTarget.ios]                                       | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                    | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                    | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]     | [BuildTarget.ios, BuildTarget.android]                  | true
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]     | [BuildTarget.ios, BuildTarget.android]                  | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]     | [BuildTarget.web, BuildTarget.android]                  | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]     | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]     | [BuildTarget.ios]                                       | true
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]     | [BuildTarget.ios]                                       | false
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]     | [BuildTarget.ios]                                       | true
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]     | [BuildTarget.ios]                                       | false
+        "via"     | BuildTarget.undefined | []                                 | []                    | []                                                      | false
+
+        expectedSize = expectedTestBuildTargets.size
+        initialSize = beforeTestBuildTargets.size
+        method = (useSetter) ? "setTestBuildTargets" : "testBuildTargets"
+    }
+
+    @Unroll
     def "testBuildTargets with List #source"() {
         given: "calling testBuildTargets"
         subject.testBuildTargets(source)
@@ -160,7 +205,7 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         }
 
         @Override
-        String toString(){
+        String toString() {
             return testValue
         }
     }
