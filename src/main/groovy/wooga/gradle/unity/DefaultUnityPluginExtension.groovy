@@ -25,6 +25,8 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import wooga.gradle.unity.batchMode.*
 
+import java.util.concurrent.Callable
+
 import static org.gradle.util.ConfigureUtil.configureUsing
 
 class DefaultUnityPluginExtension implements UnityPluginExtension {
@@ -76,6 +78,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Factory<File> assetsDir
     private Factory<File> pluginsDir
     private Factory<File> customUnityPath
+    private Object defaultBuildTarget
 
     File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
         String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
@@ -250,6 +253,36 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value) {
         androidResourceCopyMethod = value
         return this
+    }
+
+    @Override
+    void setDefaultBuildTarget(BuildTarget value) {
+        this.setDefaultBuildTarget(value as Object)
+    }
+
+    @Override
+    void setDefaultBuildTarget(Object value) {
+        defaultBuildTarget = value
+    }
+
+    @Override
+    UnityPluginExtension defaultBuildTarget(BuildTarget value) {
+        this.setDefaultBuildTarget(value)
+        return this
+    }
+
+    @Override
+    BuildTarget getDefaultBuildTarget() {
+        if (!defaultBuildTarget) {
+            return BuildTarget.undefined
+        }
+        if (defaultBuildTarget instanceof Callable) {
+            defaultBuildTarget.call()
+        } else if (defaultBuildTarget instanceof String) {
+            defaultBuildTarget.toLowerCase() as BuildTarget
+        } else {
+            defaultBuildTarget as BuildTarget
+        }
     }
 
     DefaultUnityPluginExtension(Project project, FileResolver fileResolver, Instantiator instantiator) {

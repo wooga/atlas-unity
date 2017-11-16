@@ -20,12 +20,13 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
-import spock.lang.IgnoreIf
 import spock.lang.Specification
+import spock.lang.Unroll
+import wooga.gradle.unity.batchMode.BuildTarget
 
 class DefaultUnityPluginExtensionSpec extends Specification {
 
-    def subject
+    UnityPluginExtension subject
 
     def setup() {
         def projectMock = Mock(Project)
@@ -79,5 +80,23 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
         then: "file path points to props path"
         f == null
+    }
+
+    @Unroll("use defaultBuildTarget with #source|#result")
+    def "set defaultBuildTarget "() {
+        given: "calling set defaultBuildTarget"
+        subject.defaultBuildTarget = source
+
+        when: "calling get defaultBuildTarget"
+        def defaultBuildTarget = subject.defaultBuildTarget
+
+        then: "file path points to props path"
+        defaultBuildTarget == result
+
+        where:
+        source                          | result
+        BuildTarget.webgl               | BuildTarget.webgl
+        "ios"                           | BuildTarget.ios
+        { it -> BuildTarget.android }   | BuildTarget.android
     }
 }
