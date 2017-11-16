@@ -74,7 +74,7 @@ class UnityPlugin implements Plugin<Project> {
         this.project = project
         project.pluginManager.apply(BasePlugin.class)
         project.pluginManager.apply(ReportingBasePlugin.class)
-        UnityPluginExtension extension = project.extensions.create("unity", DefaultUnityPluginExtension, project, fileResolver, instantiator)
+        UnityPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
 
         final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
         ConventionMapping unityExtensionMapping = ((IConventionAware) extension).getConventionMapping()
@@ -109,7 +109,7 @@ class UnityPlugin implements Plugin<Project> {
         BasePluginConvention convention = new BasePluginConvention(project)
 
         addLifecycleTasks()
-        addTestTasks()
+        createTestTasks(extension)
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
 
@@ -268,17 +268,29 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
-    private void addTestTasks() {
-        def editModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, type: Test, group: GROUP) as Test
-        editModeTask.testPlatform = TestPlatform.editmode
+    private void createTestTasks(final UnityPluginExtension extension) {
+      def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
+      def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
+      def testplayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
+      testTask.dependsOn testEditModeTask, testplayModeTask
 
-        def playModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, type: Test, group: GROUP) as Test
-        playModeTask.testPlatform = TestPlatform.playmode
+      project.afterEvaluate {
+        extension.testBuildTargets.each { target ->
+          def suffix = target.toString().capitalize()
 
-        def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
-        testTask.dependsOn editModeTask, playModeTask
+          testEditModeTask.dependsOn createTestTask(TEST_EDITOMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
+          testplayModeTask.dependsOn   createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
+        }
+      }
 
-        project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
+      project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
+    }
+
+    private Test createTestTask(String name, TestPlatform testPlatform, BuildTarget testBuildTarget){
+      def task = project.tasks.create(name: name, type: Test, group: GROUP) as Test
+      task.testPlatform = testPlatform
+      task.buildTarget = testBuildTarget
+      task
     }
 
     private void addDefaultReportTasks(final UnityPluginExtension extension) {
