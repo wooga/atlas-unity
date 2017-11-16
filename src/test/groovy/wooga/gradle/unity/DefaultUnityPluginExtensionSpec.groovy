@@ -94,9 +94,74 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         defaultBuildTarget == result
 
         where:
-        source                          | result
-        BuildTarget.webgl               | BuildTarget.webgl
-        "ios"                           | BuildTarget.ios
-        { it -> BuildTarget.android }   | BuildTarget.android
+        source            | result
+        BuildTarget.webgl | BuildTarget.webgl
+        "ios"             | BuildTarget.ios
+                { it -> BuildTarget.android } | BuildTarget.android
+    }
+
+    @Unroll
+    def "testBuildTargets with List #source"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets(source)
+
+        expect:
+        def targets = subject.testBuildTargets
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+    }
+
+    @Unroll
+    def "testBuildTargets with variadic arguments #source"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets(source[0], source[1])
+
+        expect:
+        def targets = subject.testBuildTargets
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+    }
+
+    @Unroll
+    def "setTestBuildTargets assigns build targets"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets = source
+
+        when:
+        def targets = subject.testBuildTargets
+
+        then:
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        when:
+        subject.testBuildTargets = [override]
+        targets = subject.testBuildTargets
+        then:
+        targets.size() == 1
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+        override << [BuildTarget.web, "web", new BuildTargetTestObject("web")]
+    }
+
+    class BuildTargetTestObject {
+
+        private def testValue
+
+        BuildTargetTestObject(String value) {
+            this.testValue = value
+        }
+
+        @Override
+        String toString(){
+            return testValue
+        }
     }
 }

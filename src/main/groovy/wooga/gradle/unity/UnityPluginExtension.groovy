@@ -30,7 +30,7 @@ import wooga.gradle.unity.batchMode.BuildTarget
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
-interface UnityPluginExtension {
+interface UnityPluginExtension extends UnityPluginTestExtension {
 
     File getUnityPath()
 

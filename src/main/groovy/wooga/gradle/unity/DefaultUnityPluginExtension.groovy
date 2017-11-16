@@ -23,6 +23,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
+import org.gradle.util.GUtil
 import wooga.gradle.unity.batchMode.*
 
 import java.util.concurrent.Callable
@@ -79,6 +80,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Factory<File> pluginsDir
     private Factory<File> customUnityPath
     private Object defaultBuildTarget
+    private final List<Object> testBuildTargets = new ArrayList<Object>()
 
     File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
         String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
@@ -330,5 +332,36 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         ActivationAction activationAction = activationActionFactory.create()
         action.execute(activationAction)
         return activationAction.returnLicense()
+    }
+
+    @Override
+    UnityPluginTestExtension testBuildTargets(Object... targets) {
+      if (targets == null) {
+          throw new IllegalArgumentException("targets == null!")
+      }
+      testBuildTargets.addAll(Arrays.asList(targets))
+      return this
+    }
+
+    @Override
+    UnityPluginTestExtension testBuildTargets(Iterable<?> targets) {
+      GUtil.addToCollection(testBuildTargets, targets)
+      return this
+    }
+
+    @Override
+    UnityPluginTestExtension setTestBuildTargets(Iterable<?> targets) {
+      testBuildTargets.clear()
+      testBuildTargets.addAll(targets)
+      return this
+    }
+
+    @Override
+    Set<BuildTarget> getTestBuildTargets() {
+      List<BuildTarget> targets = new ArrayList<BuildTarget>()
+      for (Object t : testBuildTargets) {
+          targets.add(t.toString() as BuildTarget)
+      }
+      return EnumSet.copyOf(targets)
     }
 }
