@@ -31,15 +31,15 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
             task (createProject, type: wooga.gradle.unity.tasks.Unity) {
                 args "-createProject", "Test"
             }
-            
+
             task (customTest, type: wooga.gradle.unity.tasks.Test) {
             }
-            
+
             task (customExport, type: wooga.gradle.unity.tasks.UnityPackage) {
             }
-            
+
             task (emptyTask)
-            
+
         """.stripIndent()
 
         when:
@@ -61,31 +61,34 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         status = shouldRun ? "executed" : "not executed"
     }
 
+    @Unroll("sets buildTarget with #taskConfig #useOverride")
     def "sets defaultBuildTarget for all tasks"() {
         given: "a build script"
         buildFile << """
-            
-            task (createProject, type: wooga.gradle.unity.tasks.Unity) {
-                args "-createProject", "Test"
-            }
-            
             unity {
                 defaultBuildTarget = "android"
             }
-            
+
             task (customTest, type: wooga.gradle.unity.tasks.Test) {
+                $taskConfig
                 doLast{
                     print customTest.buildTarget
                 }
             }
-            
+
         """.stripIndent()
 
         when:
         def result = runTasks("customTest")
 
         then:
-        result.standardOutput.contains("android")
+        result.standardOutput.contains(expected)
 
-    }
+        where:
+        taskConfig            | expected
+        'buildTarget = "ios"' | "ios"
+        ''                    | "android"
+
+        useOverride = taskConfig != '' ? "use override" : "fallback to default"
+      }
 }
