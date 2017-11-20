@@ -20,7 +20,6 @@ package wooga.gradle.unity
 import nebula.test.PluginProjectSpec
 import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
@@ -140,13 +139,13 @@ class UnityPluginSpec extends ProjectSpec {
         }
 
         where:
-        baseTestTaskName                     | testPlatform          | testBuildTarget                        | name
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android]                  | "single"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android]                  | "single"
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android, BuildTarget.ios] | "two"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android, BuildTarget.ios] | "two"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.editmode | EnumSet.allOf(BuildTarget).toList()    | "all"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | EnumSet.allOf(BuildTarget).toList()    | "all"
+        baseTestTaskName                     | testPlatform          | testBuildTarget                                                | name
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.editmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
 
         taskNames = testBuildTarget.collect { baseTestTaskName + it.toString().capitalize() }
     }

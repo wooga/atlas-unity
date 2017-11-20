@@ -118,27 +118,30 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
         then:
         subject.getTestBuildTargets().size() == expectedSize
-        if(!expectedTestBuildTargets.empty) {
+        if (!expectedTestBuildTargets.empty) {
             expectedTestBuildTargets.each {
-              subject.testBuildTargets.contains(it)
+                subject.testBuildTargets.contains(it)
             }
         }
 
         where:
-        timing    | defaultBuildTarget    | beforeTestBuildTargets             | afterTestBuildTargets | expectedTestBuildTargets                                | useSetter
-        "via"     | BuildTarget.ios       | []                                 | []                    | [BuildTarget.ios]                                       | true
-        "via"     | BuildTarget.ios       | []                                 | []                    | [BuildTarget.ios]                                       | false
-        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                    | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | true
-        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                    | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
-        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]     | [BuildTarget.ios, BuildTarget.android]                  | true
-        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]     | [BuildTarget.ios, BuildTarget.android]                  | false
-        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]     | [BuildTarget.web, BuildTarget.android]                  | true
-        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]     | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
-        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]     | [BuildTarget.ios]                                       | true
-        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]     | [BuildTarget.ios]                                       | false
-        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]     | [BuildTarget.ios]                                       | true
-        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]     | [BuildTarget.ios]                                       | false
-        "via"     | BuildTarget.undefined | []                                 | []                    | []                                                      | false
+        timing    | defaultBuildTarget    | beforeTestBuildTargets             | afterTestBuildTargets   | expectedTestBuildTargets                                | useSetter
+        "via"     | BuildTarget.ios       | []                                 | []                      | [BuildTarget.ios]                                       | true
+        "via"     | BuildTarget.ios       | []                                 | []                      | [BuildTarget.ios]                                       | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                      | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                      | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]       | [BuildTarget.ios, BuildTarget.android]                  | true
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]       | [BuildTarget.ios, BuildTarget.android]                  | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]       | [BuildTarget.web, BuildTarget.android]                  | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]       | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]       | [BuildTarget.ios]                                       | true
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]       | [BuildTarget.ios]                                       | false
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]       | [BuildTarget.ios]                                       | true
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]       | [BuildTarget.ios]                                       | false
+        "via"     | BuildTarget.undefined | []                                 | []                      | []                                                      | false
+        "via"     | BuildTarget.android   | []                                 | [BuildTarget.undefined] | [BuildTarget.android]                                   | false
+        "via"     | BuildTarget.android   | []                                 | [BuildTarget.undefined] | [BuildTarget.android]                                   | true
+
 
         expectedSize = expectedTestBuildTargets.size
         initialSize = beforeTestBuildTargets.size

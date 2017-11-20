@@ -269,28 +269,27 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private void createTestTasks(final UnityPluginExtension extension) {
-      def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
-      def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
-      def testplayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
-      testTask.dependsOn testEditModeTask, testplayModeTask
+        def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
+        def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
+        def testPlayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
+        testTask.dependsOn testEditModeTask, testPlayModeTask
 
-      project.afterEvaluate {
-        extension.testBuildTargets.each { target ->
-          def suffix = target.toString().capitalize()
-
-          testEditModeTask.dependsOn createTestTask(TEST_EDITOMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
-          testplayModeTask.dependsOn   createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
+        project.afterEvaluate {
+            extension.testBuildTargets.each { target ->
+                def suffix = target.toString().capitalize()
+                testEditModeTask.dependsOn createTestTask(TEST_EDITOMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
+                testPlayModeTask.dependsOn createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
+            }
         }
-      }
 
-      project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
+        project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
     }
 
-    private Test createTestTask(String name, TestPlatform testPlatform, BuildTarget testBuildTarget){
-      def task = project.tasks.create(name: name, type: Test, group: GROUP) as Test
-      task.testPlatform = testPlatform
-      task.buildTarget = testBuildTarget
-      task
+    private Test createTestTask(String name, TestPlatform testPlatform, BuildTarget testBuildTarget) {
+        def task = project.tasks.create(name: name, type: Test, group: GROUP) as Test
+        task.testPlatform = testPlatform
+        task.buildTarget = testBuildTarget
+        task
     }
 
     private void addDefaultReportTasks(final UnityPluginExtension extension) {

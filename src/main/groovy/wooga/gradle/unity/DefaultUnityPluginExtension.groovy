@@ -336,41 +336,43 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     @Override
     UnityPluginTestExtension testBuildTargets(Object... targets) {
-      if (targets == null) {
-          throw new IllegalArgumentException("targets == null!")
-      }
-      testBuildTargets.addAll(Arrays.asList(targets))
-      return this
+        if (targets == null) {
+            throw new IllegalArgumentException("targets == null!")
+        }
+        testBuildTargets.addAll(Arrays.asList(targets))
+        return this
     }
 
     @Override
     UnityPluginTestExtension testBuildTargets(Iterable<?> targets) {
-      GUtil.addToCollection(testBuildTargets, targets)
-      return this
+        GUtil.addToCollection(testBuildTargets, targets)
+        return this
     }
 
     @Override
     UnityPluginTestExtension setTestBuildTargets(Iterable<?> targets) {
-      testBuildTargets.clear()
-      testBuildTargets.addAll(targets)
-      return this
+        testBuildTargets.clear()
+        testBuildTargets.addAll(targets)
+        return this
     }
 
     @Override
     Set<BuildTarget> getTestBuildTargets() {
-      if(testBuildTargets.empty && getDefaultBuildTarget() == BuildTarget.undefined) {
-        return EnumSet.noneOf(BuildTarget)
-      }
+        if (testBuildTargets.empty && getDefaultBuildTarget() == BuildTarget.undefined) {
+            return EnumSet.noneOf(BuildTarget)
+        }
 
-      List<BuildTarget> targets = new ArrayList<BuildTarget>()
-      for (Object t : testBuildTargets) {
-          targets.add(t.toString() as BuildTarget)
-      }
+        List<BuildTarget> targets = new ArrayList<BuildTarget>()
+        for (Object t : testBuildTargets) {
+            if (t != BuildTarget.undefined) {
+                targets.add(t.toString() as BuildTarget)
+            }
+        }
 
-      if(getDefaultBuildTarget() != BuildTarget.undefined) {
-        targets.add(getDefaultBuildTarget())
-      }
+        if (getDefaultBuildTarget() != BuildTarget.undefined) {
+            targets.add(getDefaultBuildTarget())
+        }
 
-      return EnumSet.copyOf(targets)
+        return EnumSet.copyOf(targets)
     }
 }
