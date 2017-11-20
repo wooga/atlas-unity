@@ -25,6 +25,17 @@ import wooga.gradle.unity.batchMode.BatchModeFlags
  */
 class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
 
+
+    def setup() {
+        buildFile << """
+        unity{
+             testBuildTargets = ["android"]
+        }
+        
+        """.stripIndent()
+    }
+
+
     def "skips activation when authentication is empty"() {
         given: "a build script with fake test unity location"
         buildFile << """

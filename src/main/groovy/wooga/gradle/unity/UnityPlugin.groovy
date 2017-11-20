@@ -109,7 +109,7 @@ class UnityPlugin implements Plugin<Project> {
         BasePluginConvention convention = new BasePluginConvention(project)
 
         addLifecycleTasks()
-        createTestTasks(extension)
+        addTestTasks(extension)
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
 
@@ -166,10 +166,10 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private void addLifecycleTasks() {
-        def assembleTask = project.tasks.create(name: ASSEMBLE_RESOURCES_TASK_NAME, group: GROUP)
-        assembleTask.description = "gathers all iOS and Android resources into Plugins/ directory of the unity project"
-        project.tasks.create(name: SETUP_TASK_NAME, group: GROUP, dependsOn: assembleTask)
-        project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn assembleTask
+        def assembleResourcesTask = project.tasks.create(name: ASSEMBLE_RESOURCES_TASK_NAME, group: GROUP)
+        assembleResourcesTask.description = "gathers all iOS and Android resources into Plugins/ directory of the unity project"
+        project.tasks.create(name: SETUP_TASK_NAME, group: GROUP, dependsOn: assembleResourcesTask)
+        project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn assembleResourcesTask
     }
 
     private void addResourceCopyTasks() {
@@ -268,7 +268,7 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
-    private void createTestTasks(final UnityPluginExtension extension) {
+    private void addTestTasks(final UnityPluginExtension extension) {
         def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
         def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
         def testPlayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)

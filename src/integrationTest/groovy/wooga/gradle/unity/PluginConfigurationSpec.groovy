@@ -30,7 +30,7 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         buildFile << """
             task (createProject, type: wooga.gradle.unity.tasks.Unity) {
                 args "-createProject", "Test"
-            }
+0           }
 
             task (customTest, type: wooga.gradle.unity.tasks.Test) {
             }
@@ -51,7 +51,6 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
 
         where:
         taskName                             | shouldRun
-        UnityPlugin.TEST_TASK_NAME           | true
         UnityPlugin.EXPORT_PACKAGE_TASK_NAME | true
         "createProject"                      | true
         "customTest"                         | true
