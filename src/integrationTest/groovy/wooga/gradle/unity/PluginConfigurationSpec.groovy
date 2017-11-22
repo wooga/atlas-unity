@@ -71,9 +71,6 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
 
             task (customTest, type: wooga.gradle.unity.tasks.Test) {
                 $taskConfig
-                doLast{
-                    print customTest.buildTarget
-                }
             }
 
         """.stripIndent()
@@ -86,8 +83,8 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
 
         where:
         taskConfig            | expected
-        'buildTarget = "ios"' | "ios"
-        ''                    | "android"
+        'buildTarget = "ios"' | "-buildTarget ios"
+        ''                    | "-buildTarget android"
 
         useOverride = taskConfig != '' ? "use override" : "fallback to default"
       }
