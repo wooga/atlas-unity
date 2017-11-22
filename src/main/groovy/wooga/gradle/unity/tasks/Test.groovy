@@ -304,7 +304,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                 void execute(ExecSpec execSpec) {
                     execSpec.standardOutput = standardOutput
                     execSpec.ignoreExitValue = true
-                    execSpec.commandLine "wmic", "datafile", "where", "Name=\"${path.path}\"", "get", "Version"
+                    String winPath = path.path.replace('\\',"\\\\")
+                    execSpec.commandLine "wmic", "datafile", "where", "Name=\"${winPath}\"", "get", "Version"
                 }
             })
             if (readResult.exitValue == 0) {
