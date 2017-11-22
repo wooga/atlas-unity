@@ -30,7 +30,7 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         buildFile << """
             task (createProject, type: wooga.gradle.unity.tasks.Unity) {
                 args "-createProject", "Test"
-0           }
+            }
 
             task (customTest, type: wooga.gradle.unity.tasks.Test) {
             }

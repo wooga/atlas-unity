@@ -358,12 +358,18 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     @Override
     Set<BuildTarget> getTestBuildTargets() {
-        if (testBuildTargets.empty && getDefaultBuildTarget() == BuildTarget.undefined) {
+        if (testBuildTargets.empty && project.properties.containsKey("unity.testBuildTargets")) {
+            return EnumSet.copyOf(project.properties.get("unity.testBuildTargets").toString().split(",").collect({
+                it as BuildTarget
+            }))
+        } else if (testBuildTargets.empty && getDefaultBuildTarget() == BuildTarget.undefined) {
             return EnumSet.noneOf(BuildTarget)
         }
 
         List<BuildTarget> targets = new ArrayList<BuildTarget>()
-        for (Object t : testBuildTargets) {
+        for (
+                Object t
+                        : testBuildTargets) {
             if (t != BuildTarget.undefined) {
                 targets.add(t.toString() as BuildTarget)
             }
@@ -375,4 +381,5 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
         return EnumSet.copyOf(targets)
     }
+
 }

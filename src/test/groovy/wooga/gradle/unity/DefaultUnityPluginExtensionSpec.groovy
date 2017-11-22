@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BuildTarget
@@ -28,9 +29,13 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
     UnityPluginExtension subject
 
+    @Shared
+    def projectProperties = [:]
+    def projectMock
+
     def setup() {
         def projectMock = Mock(Project)
-        projectMock.getProperties() >> [:]
+        projectMock.getProperties() >> projectProperties
         projectMock.getRootProject() >> projectMock
         subject = new DefaultUnityPluginExtension(projectMock, Mock(FileResolver), Mock(Instantiator))
     }
@@ -94,10 +99,10 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         defaultBuildTarget == result
 
         where:
-        source            | result
-        BuildTarget.webgl | BuildTarget.webgl
-        "ios"             | BuildTarget.ios
-                { it -> BuildTarget.android } | BuildTarget.android
+        source                        | result
+        BuildTarget.webgl             | BuildTarget.webgl
+        "ios"                         | BuildTarget.ios
+        { it -> BuildTarget.android } | BuildTarget.android
     }
 
     @Unroll
@@ -197,6 +202,23 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         where:
         source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
         override << [BuildTarget.web, "web", new BuildTargetTestObject("web")]
+    }
+
+    @Unroll
+    def "getTestBuildTargets when property unity.testBuildTargets is set with #source"() {
+        given: "mock property in project"
+        projectProperties["unity.testBuildTargets"] = source.join(',')
+
+        when:
+        def targets = subject.testBuildTargets
+
+        then:
+        targets.size() == expectedSize
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [["ios", "android"], ["ios"], ["android"]]
+        expectedSize = source.size()
     }
 
     class BuildTargetTestObject {
