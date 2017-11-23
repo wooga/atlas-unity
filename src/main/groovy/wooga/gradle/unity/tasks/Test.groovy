@@ -309,8 +309,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                 }
             })
             if (readResult.exitValue == 0) {
-                versionString = standardOutput.toString().trim()
-                def versionMatch = versionString =~ /(\d+)\.(\d+)\.(\d+)/
+                def wmicOut = standardOutput.toString().trim()
+                def versionMatch = wmicOut =~ /(\d+)\.(\d+)\.(\d+)/
                 if (versionMatch) {
                     versionString = versionMatch[0][0]
                     logger.info("Found unity version $versionString")

@@ -121,7 +121,6 @@ class UnityPlugin implements Plugin<Project> {
         addDefaultReportTasks(extension)
         configureArchiveDefaults(convention)
         configureUnityTaskDependencies()
-        configureUnityDefaultBuildTarget(extension)
         configureCleanObjects()
         project.afterEvaluate(new Action<Project>() {
             @Override
@@ -366,20 +365,6 @@ class UnityPlugin implements Plugin<Project> {
             @Override
             void execute(AbstractUnityTask task) {
                 task.dependsOn project.tasks[SETUP_TASK_NAME]
-            }
-        })
-    }
-
-    private void configureUnityDefaultBuildTarget(final UnityPluginExtension extension) {
-        project.tasks.withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
-            @Override
-            void execute(AbstractUnityTask task) {
-                ConventionMapping mapping = ((IConventionAware) task).conventionMapping
-                mapping.map("buildTarget", new Callable<BuildTarget>() {
-                    BuildTarget call() {
-                        extension.defaultBuildTarget
-                    }
-                })
             }
         })
     }

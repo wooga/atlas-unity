@@ -34,6 +34,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     private File customUnityPath
     private File customProjectPath
+    private BuildTarget customBuildTarget
 
     File getUnityPath() {
         if(customUnityPath) {
@@ -73,7 +74,13 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         logFile = fileResolver.resolveLater(file)
     }
 
-    BuildTarget buildTarget = BuildTarget.undefined
+    BuildTarget getBuildTarget() {
+        if(customBuildTarget && customBuildTarget != BuildTarget.undefined) {
+            return customBuildTarget
+        }
+
+        extension.defaultBuildTarget
+    }
 
     Boolean quit = true
     Boolean batchMode = true
@@ -157,8 +164,13 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     DefaultBatchModeAction buildTarget(BuildTarget target) {
-        this.buildTarget = target
+        this.customBuildTarget = target
         this
+    }
+
+    @Override
+    void setBuildTarget(BuildTarget target) {
+        buildTarget(target)
     }
 
     @Override
