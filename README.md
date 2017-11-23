@@ -105,6 +105,20 @@ The plugin will add a number of tasks you can use
 | setup              |                       | `DefaultTask`                                  | lifecycle task to initialize unity project and all dependencies |
 | assembleResources  | setup                 | `DefaultTask`                                  | copies all android/ios dependencies to the unity `Plugins` folder |
 
+**Example Test Task structure:**
+
+```
+:check
+\--- :test
+     +--- :testEditMode
+     |    +--- :testEditModeAndroid
+     |    \--- :testEditModeIos
+     \--- :testPlayMode
+          +--- :testPlayModeAndroid
+          \--- :testPlayModeIos
+```
+
+
 ### Custom Batchmode task
 You can call any abitary unity batchmode command either with the `BatchModeSpec` or the `wooga.gradle.unity.tasks.Unity` task type:
 
@@ -153,6 +167,9 @@ exportUnityPackage {
 ### Editor tests
 
 The editor tests comes in two flavors: Unity 5.5 and Unity 5.6. These versions have different commandline parameters and options. The `wooga.gradle.unity.tasks.Test` will adjust the settings based on the unity version. It will figure out at runtime if your version is 5.5 or 5.6. It will always fallback to 5.5 logic if it couldn't figure out the version.
+
+### PlayMode tests
+The plugin automatically detects if `playMode` test are enabled and creates corresponding tasks.
 
 **build.gradle unity 5.5**
 ```
