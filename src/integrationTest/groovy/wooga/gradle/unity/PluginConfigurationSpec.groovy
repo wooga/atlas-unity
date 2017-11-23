@@ -51,7 +51,6 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
 
         where:
         taskName                             | shouldRun
-        UnityPlugin.TEST_TASK_NAME           | true
         UnityPlugin.EXPORT_PACKAGE_TASK_NAME | true
         "createProject"                      | true
         "customTest"                         | true

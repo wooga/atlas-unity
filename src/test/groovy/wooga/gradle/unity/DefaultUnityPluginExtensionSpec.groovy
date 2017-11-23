@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BuildTarget
@@ -28,9 +29,13 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
     UnityPluginExtension subject
 
+    @Shared
+    def projectProperties = [:]
+    def projectMock
+
     def setup() {
         def projectMock = Mock(Project)
-        projectMock.getProperties() >> [:]
+        projectMock.getProperties() >> projectProperties
         projectMock.getRootProject() >> projectMock
         subject = new DefaultUnityPluginExtension(projectMock, Mock(FileResolver), Mock(Instantiator))
     }
@@ -94,9 +99,139 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         defaultBuildTarget == result
 
         where:
-        source                          | result
-        BuildTarget.webgl               | BuildTarget.webgl
-        "ios"                           | BuildTarget.ios
-        { it -> BuildTarget.android }   | BuildTarget.android
+        source                        | result
+        BuildTarget.webgl             | BuildTarget.webgl
+        "ios"                         | BuildTarget.ios
+        { it -> BuildTarget.android } | BuildTarget.android
+    }
+
+    @Unroll
+    def "set testBuildTargets #timing defaultBuildTarget with #method"() {
+        given:
+        if (!beforeTestBuildTargets.empty) {
+            subject.testBuildTargets(beforeTestBuildTargets)
+        }
+        assert subject.getTestBuildTargets().size() == initialSize
+
+        and: "extension with defaultBuildTarget"
+        subject.defaultBuildTarget = defaultBuildTarget
+
+        when:
+        if (!afterTestBuildTargets.empty) {
+            subject.invokeMethod(method, afterTestBuildTargets)
+        }
+
+        then:
+        subject.getTestBuildTargets().size() == expectedSize
+        if (!expectedTestBuildTargets.empty) {
+            expectedTestBuildTargets.each {
+                subject.testBuildTargets.contains(it)
+            }
+        }
+
+        where:
+        timing    | defaultBuildTarget    | beforeTestBuildTargets             | afterTestBuildTargets   | expectedTestBuildTargets                                | useSetter
+        "via"     | BuildTarget.ios       | []                                 | []                      | [BuildTarget.ios]                                       | true
+        "via"     | BuildTarget.ios       | []                                 | []                      | [BuildTarget.ios]                                       | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                      | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios, BuildTarget.web] | []                      | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]       | [BuildTarget.ios, BuildTarget.android]                  | true
+        "after"   | BuildTarget.android   | []                                 | [BuildTarget.ios]       | [BuildTarget.ios, BuildTarget.android]                  | false
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]       | [BuildTarget.web, BuildTarget.android]                  | true
+        "before"  | BuildTarget.android   | [BuildTarget.ios]                  | [BuildTarget.web]       | [BuildTarget.ios, BuildTarget.web, BuildTarget.android] | false
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]       | [BuildTarget.ios]                                       | true
+        "without" | BuildTarget.undefined | []                                 | [BuildTarget.ios]       | [BuildTarget.ios]                                       | false
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]       | [BuildTarget.ios]                                       | true
+        "and"     | BuildTarget.ios       | [BuildTarget.ios]                  | [BuildTarget.ios]       | [BuildTarget.ios]                                       | false
+        "via"     | BuildTarget.undefined | []                                 | []                      | []                                                      | false
+        "via"     | BuildTarget.android   | []                                 | [BuildTarget.undefined] | [BuildTarget.android]                                   | false
+        "via"     | BuildTarget.android   | []                                 | [BuildTarget.undefined] | [BuildTarget.android]                                   | true
+
+
+        expectedSize = expectedTestBuildTargets.size
+        initialSize = beforeTestBuildTargets.size
+        method = (useSetter) ? "setTestBuildTargets" : "testBuildTargets"
+    }
+
+    @Unroll
+    def "testBuildTargets with List #source"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets(source)
+
+        expect:
+        def targets = subject.testBuildTargets
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+    }
+
+    @Unroll
+    def "testBuildTargets with variadic arguments #source"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets(source[0], source[1])
+
+        expect:
+        def targets = subject.testBuildTargets
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+    }
+
+    @Unroll
+    def "setTestBuildTargets assigns build targets"() {
+        given: "calling testBuildTargets"
+        subject.testBuildTargets = source
+
+        when:
+        def targets = subject.testBuildTargets
+
+        then:
+        targets.size() == 2
+        targets.every { BuildTarget.isInstance(it) }
+
+        when:
+        subject.testBuildTargets = [override]
+        targets = subject.testBuildTargets
+        then:
+        targets.size() == 1
+
+        where:
+        source << [[BuildTarget.android, BuildTarget.ios], ["ios", "android"], [new BuildTargetTestObject("ios"), new BuildTargetTestObject("android")]]
+        override << [BuildTarget.web, "web", new BuildTargetTestObject("web")]
+    }
+
+    @Unroll
+    def "getTestBuildTargets when property unity.testBuildTargets is set with #source"() {
+        given: "mock property in project"
+        projectProperties["unity.testBuildTargets"] = source.join(',')
+
+        when:
+        def targets = subject.testBuildTargets
+
+        then:
+        targets.size() == expectedSize
+        targets.every { BuildTarget.isInstance(it) }
+
+        where:
+        source << [["ios", "android"], ["ios"], ["android"]]
+        expectedSize = source.size()
+    }
+
+    class BuildTargetTestObject {
+
+        private def testValue
+
+        BuildTargetTestObject(String value) {
+            this.testValue = value
+        }
+
+        @Override
+        String toString() {
+            return testValue
+        }
     }
 }

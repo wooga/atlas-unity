@@ -20,7 +20,6 @@ package wooga.gradle.unity
 import nebula.test.PluginProjectSpec
 import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
@@ -64,34 +63,11 @@ class UnityPluginSpec extends ProjectSpec {
         where:
         taskName                                 | taskType
         UnityPlugin.TEST_TASK_NAME               | DefaultTask
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME     | Test
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME      | Test
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME     | DefaultTask
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME      | DefaultTask
         UnityPlugin.EXPORT_PACKAGE_TASK_NAME     | UnityPackage
         UnityPlugin.ASSEMBLE_RESOURCES_TASK_NAME | DefaultTask
         UnityPlugin.SETUP_TASK_NAME              | DefaultTask
-    }
-
-    @Unroll("configure as test task #taskName #testPlatform")
-    def 'configures tasks for platform '(String taskName, TestPlatform testPlatform) {
-        given:
-        assert !project.plugins.hasPlugin(PLUGIN_NAME)
-        assert !project.tasks.findByName(taskName)
-
-        when:
-        project.plugins.apply(PLUGIN_NAME)
-
-        then:
-        def task = project.tasks.findByName(taskName) as Test
-        task.testPlatform == testPlatform
-        def testTask = project.tasks.findByName(UnityPlugin.TEST_TASK_NAME)
-        testTask.dependsOn.contains(task)
-        def checkTask = project.tasks.findByName(LifecycleBasePlugin.CHECK_TASK_NAME)
-        checkTask.dependsOn.contains(testTask)
-
-        where:
-        taskName                             | testPlatform
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode
     }
 
     @Unroll
@@ -132,5 +108,45 @@ class UnityPluginSpec extends ProjectSpec {
 
         then:
         extension.defaultBuildTarget == BuildTarget.ios
+    }
+
+    @Unroll("configure test for #name testPlatforms")
+    def 'configures tasks for platform '() {
+        given:
+        assert !project.plugins.hasPlugin(PLUGIN_NAME)
+        taskNames.each { taskName ->
+            assert !project.tasks.findByName(taskName)
+        }
+
+        and:
+        project.plugins.apply(PLUGIN_NAME)
+        def extension = project.extensions.getByName(UnityPlugin.EXTENSION_NAME) as UnityPluginExtension
+        extension.testBuildTargets(testBuildTarget)
+
+        when:
+        project.evaluate()
+
+
+        then:
+        def testTask = project.tasks.findByName(baseTestTaskName)
+
+        taskNames.each { taskName ->
+            def task = project.tasks.findByName(taskName) as Test
+            task != null
+            task.testPlatform == testPlatform
+
+            testTask.dependsOn.contains(task)
+        }
+
+        where:
+        baseTestTaskName                     | testPlatform          | testBuildTarget                                                | name
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.editmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
+
+        taskNames = testBuildTarget.collect { baseTestTaskName + it.toString().capitalize() }
     }
 }
