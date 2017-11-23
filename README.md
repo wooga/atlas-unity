@@ -29,7 +29,7 @@ plugins {
 
 ```groovy
 plugins {
-    id "net.wooga.unity" version "0.10.0"
+    id "net.wooga.unity" version "0.14.2"
 }
 
 unity {
@@ -49,22 +49,12 @@ unity {
     //assetsDir = "Assets"
     //pluginsDir = "Assets/Plugins"
     //androidResourceCopyMethod = "arrUnpack" | "sync"
+    
+    //defaultBuildTarget = "android"
 }
 
 exportUnityPackage {
     inputFiles file('Assets')
-}
-
-testEditMode {
-    // unity 5.5
-    // categories = [...,]
-    // filter = [...,]
-    // verbose = true
-    // teamcity = false 
-}
-
-// only runs on > 5.5
-testPlayMode {
 }
 
 task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
@@ -107,9 +97,11 @@ The plugin will add a number of tasks you can use
 | activateUnity      |                       | `wooga.gradle.unity.tasks.Activate`            | Activates unity with provides credentials. Gets skipped when credentials are missing |
 | returnUnityLicense |                       | `wooga.gradle.unity.tasks.ReturnLicense`       | Returns the current licesne to license server. Gets skipped when license directory is empty |
 | exportUnityPackage | activationTask, setup | `wooga.gradle.unity.tasks.UnityPackage`        | exports configured assets into an `.unitypackage` file |
-| test               | testEditMode, testPlayMode	     | `DefaultTask`                | runs editMode and playMode tasks |
-| testEditMode               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity editor tests and writes reports to `reportsDir` |
-| testPlayMode               | activationTask, setup | `wooga.gradle.unity.tasks.Test`                | runs unity playMode tests and writes reports to `reportsDir` |
+| test               | testEditMode, testPlayMode | `DefaultTask`                             | runs editMode and playMode tasks |
+| testEditMode       | activationTask, setup | `DefaultTask`                                  | runs testEditMode for all testBuildTargets (`testEditModeAndroid`, `testEditModeIos` ...)|
+| testPlayMode       | activationTask, setup | `DefaultTask`                                  | runs testPlayMode for all testBuildTargets (`testPlayModeAndroid`, `testPlayModeIos` ...) |
+| testEditMode[TestBuildTarget]       | testEditMode | `wooga.gradle.unity.tasks.Task`        | runs unity editor tests on `testBuildTarget` and writes reports to `reportsDir` |
+| testPlayMode[TestBuildTarget]       | testPlayMode | `wooga.gradle.unity.tasks.Task`        | runs unity playMode tests on `testBuildTarget` and writes reports to `reportsDir` |
 | setup              |                       | `DefaultTask`                                  | lifecycle task to initialize unity project and all dependencies |
 | assembleResources  | setup                 | `DefaultTask`                                  | copies all android/ios dependencies to the unity `Plugins` folder |
 
