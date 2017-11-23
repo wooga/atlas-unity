@@ -43,10 +43,11 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
     def "can set reports location via reports extension in task"() {
         given: "destination path"
         def destination = "out/reports/test.xml"
+
         and: "a build script with fake test unity location"
         buildFile << """
             task (mUnity, type: wooga.gradle.unity.tasks.Test) {
-                reports.xml.destination = "$destination"
+                reports.xml.destination = file("$destination")
             }
         """.stripIndent()
 

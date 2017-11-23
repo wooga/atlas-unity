@@ -51,6 +51,17 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.taskType = taskType
     }
 
+    @Override
+    void setExecutable(String executable) {
+        batchModeAction.executable(executable)
+
+    }
+
+    @Override
+    void setWorkingDir(File dir) {
+        batchModeAction.setWorkingDir(dir)
+    }
+
     @TaskAction
     protected void exec() {
         batchModeResult = batchModeAction.execute()
