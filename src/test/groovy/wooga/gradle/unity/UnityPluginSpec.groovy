@@ -66,8 +66,6 @@ class UnityPluginSpec extends ProjectSpec {
         UnityPlugin.TEST_EDITOMODE_TASK_NAME     | DefaultTask
         UnityPlugin.TEST_PLAYMODE_TASK_NAME      | DefaultTask
         UnityPlugin.EXPORT_PACKAGE_TASK_NAME     | UnityPackage
-        UnityPlugin.ASSEMBLE_RESOURCES_TASK_NAME | DefaultTask
-        UnityPlugin.SETUP_TASK_NAME              | DefaultTask
     }
 
     @Unroll

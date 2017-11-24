@@ -65,8 +65,6 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Boolean autoReturnLicense
     private Boolean autoActivateUnity
 
-    private AndroidResourceCopyMethod androidResourceCopyMethod
-
     private final Instantiator instantiator
     private final FileResolver fileResolver
     private final Project project
@@ -238,22 +236,6 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     @Override
     UnityPluginExtension autoActivateUnity(Boolean value) {
         autoActivateUnity = value
-        return this
-    }
-
-    @Override
-    AndroidResourceCopyMethod getAndroidResourceCopyMethod() {
-        return androidResourceCopyMethod
-    }
-
-    @Override
-    void setAndroidResourceCopyMethod(AndroidResourceCopyMethod value) {
-        androidResourceCopyMethod = value
-    }
-
-    @Override
-    UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value) {
-        androidResourceCopyMethod = value
         return this
     }
 

@@ -100,12 +100,6 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
 
     UnityPluginExtension authentication(Action<? super UnityAuthentication> action)
 
-    AndroidResourceCopyMethod getAndroidResourceCopyMethod()
-
-    void setAndroidResourceCopyMethod(AndroidResourceCopyMethod value)
-
-    UnityPluginExtension androidResourceCopyMethod(AndroidResourceCopyMethod value)
-
     BuildTarget getDefaultBuildTarget()
 
     void setDefaultBuildTarget(BuildTarget value)

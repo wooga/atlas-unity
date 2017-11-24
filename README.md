@@ -48,7 +48,6 @@ unity {
     
     //assetsDir = "Assets"
     //pluginsDir = "Assets/Plugins"
-    //androidResourceCopyMethod = "arrUnpack" | "sync"
     
     //defaultBuildTarget = "android"
 }
@@ -102,8 +101,6 @@ The plugin will add a number of tasks you can use
 | testPlayMode       | activationTask, setup | `DefaultTask`                                  | runs testPlayMode for all testBuildTargets (`testPlayModeAndroid`, `testPlayModeIos` ...) |
 | testEditMode[TestBuildTarget]       | testEditMode | `wooga.gradle.unity.tasks.Task`        | runs unity editor tests on `testBuildTarget` and writes reports to `reportsDir` |
 | testPlayMode[TestBuildTarget]       | testPlayMode | `wooga.gradle.unity.tasks.Task`        | runs unity playMode tests on `testBuildTarget` and writes reports to `reportsDir` |
-| setup              |                       | `DefaultTask`                                  | lifecycle task to initialize unity project and all dependencies |
-| assembleResources  | setup                 | `DefaultTask`                                  | copies all android/ios dependencies to the unity `Plugins` folder |
 
 **Example Test Task structure:**
 
@@ -187,29 +184,6 @@ test {
     testPlatform = "editmode" || "playmode"
 }
 ```
-
-### iOS/Android dependencies
-
-You can set local or project dependencies to external `*.jar`, `*.aar`, iOS source files (`*.m`, `*.mm`, `*.h`, etc) or `zipped` `framework files`.
-Every task which extends `AbstractUnityTask` will execute the `assembleResources` task. This task copies the dependencies into the `Plugins` directory in the `Assets` directory. You can set the `Plugins` directory destination with `unity.pluginsDir`.
-
-**build.gradle**
-```groovy
-plugins {
-    id "net.wooga.unity" version "0.10.0"
-}
-
-dependencies {
-    android fileTree(dir: "libs", include: "*.jar")
-    android project(':android:SubProject')
-    
-    ios fileTree(dir: "ios/classes")
-    ios project(':android:SubProject') //which bundles an .framework.zip
-}
-```
-
-`.framework` artifacts are a little tricky since gradle defines that an artifact is one file. A `.framework` is a directory. So to make framework files work with gradle's dependency management we need to zip it. The unity plugin will unzip all files `*.framework.zip`
-
 
 Gradle and Java Compatibility
 =============================

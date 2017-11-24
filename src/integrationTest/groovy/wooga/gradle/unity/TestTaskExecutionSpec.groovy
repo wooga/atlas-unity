@@ -21,9 +21,9 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
 
         where:
         task              | testBuildTargets     | includedTasks                                                               | excludedTasks
-        "test"            | '["ios", "android"]' | ["setup", "test", "testPlayMode", "testPlayModeAndroid", "testPlayModeIos"] | ["check"]
-        "testPlayMode"    | '["android"]'        | ["setup", "testPlayMode", "testPlayModeAndroid"]                            | ["test", "testPlayModeIos"]
-        "testPlayModeIos" | '["ios"]'            | ["setup", "testPlayModeIos"]                                                | ["test", "testPlayMode"]
+        "test"            | '["ios", "android"]' | ["test", "testPlayMode", "testPlayModeAndroid", "testPlayModeIos"] | ["check"]
+        "testPlayMode"    | '["android"]'        | ["testPlayMode", "testPlayModeAndroid"]                            | ["test", "testPlayModeIos"]
+        "testPlayModeIos" | '["ios"]'            | ["testPlayModeIos"]                                                | ["test", "testPlayMode"]
     }
 
     @Unroll
