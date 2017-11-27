@@ -156,7 +156,7 @@ class UnityPackage extends AbstractUnityTask {
         def exportArgs = []
         exportArgs << BatchModeFlags.EXPORT_PACKAGE
         Set exportFiles = []
-        inputFiles.each { File f ->
+        getInputFiles().each { File f ->
             if(f.file) {
                 f = f.parentFile
             }
