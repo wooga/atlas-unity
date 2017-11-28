@@ -20,6 +20,9 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
+import org.junit.Rule
+import org.junit.contrib.java.lang.system.ProvideSystemProperty
+import org.junit.contrib.java.lang.system.RestoreSystemProperties
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -85,6 +88,27 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
         then: "file path points to props path"
         f == null
+    }
+
+    @spock.util.environment.RestoreSystemProperties
+    @Unroll
+    def "get default #property with #osName #osArch"() {
+        given:
+        System.setProperty("os.name", osName)
+        System.setProperty("os.arch", osArch)
+
+        expect:
+        subject.invokeMethod(property, null) as File == expectedPath
+
+        where:
+        property                   | osName     | osArch | expectedPath
+        "getUnityPath"             | "windows"  | "64"   | DefaultUnityPluginExtension.UNITY_PATH_WIN
+        "getUnityPath"             | "windows"  | "32"   | DefaultUnityPluginExtension.UNITY_PATH_WIN_32
+        "getUnityPath"             | "linux"    | "64"   | DefaultUnityPluginExtension.UNITY_PATH_LINUX
+        "getUnityPath"             | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_PATH_MAC_OS
+        "getUnityPath"             | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_PATH_MAC_OS
+        "getUnityLicenseDirectory" | "windows"  | "64"   | DefaultUnityPluginExtension.UNITY_LICENSE_DIRECTORY_WIN
+        "getUnityLicenseDirectory" | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_LICENSE_DIRECTORY_MAC_OS
     }
 
     @Unroll("use defaultBuildTarget with #source|#result")

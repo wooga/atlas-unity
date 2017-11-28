@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import spock.lang.Shared
 import spock.lang.Unroll
 
 /**
@@ -50,5 +51,33 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         ''                    | "-buildTarget android"
 
         useOverride = taskConfig != '' ? "use override" : "fallback to default"
-      }
+    }
+
+    @Unroll
+    def "plugin sets default #property"() {
+        given: "a build script"
+
+        buildFile << """
+            task(customTest) {
+                doLast {
+                    print "$property: "
+                    println unity.$property
+                }
+            }
+        """
+
+        and: "a path to the project"
+        def path = new File(projectDir, expectedPath)
+
+        when:
+        def result = runTasks("customTest")
+
+        then:
+        result.standardOutput.contains("$property: ${path.path}")
+
+        where:
+        property    | expectedPath
+        'assetsDir' | "Assets"
+        'pluginsDir' | "Assets/Plugins"
+    }
 }
