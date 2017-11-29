@@ -92,7 +92,11 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("customTest")
 
         then:
-        result.standardOutput.contains(escapedPath(value))
+        if(System.getProperty("os.name").toLowerCase().contains("windows"))
+        {
+            value = value.replace('/','\\')
+        }
+        result.standardOutput.contains(value)
 
         where:
         property    | useSetter | value
