@@ -19,8 +19,10 @@ package wooga.gradle.unity.tasks
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.gradle.api.Action
+import org.gradle.api.Project
 import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
 import org.gradle.api.tasks.*
@@ -38,7 +40,7 @@ import javax.inject.Inject
 
 class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
-    static org.gradle.api.logging.Logger logger = Logging.getLogger(Test)
+    static Logger logger = Logging.getLogger(Test)
 
     private final List<Object> filter = new ArrayList()
     private final List<Object> categories = new ArrayList()
@@ -59,6 +61,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         unityVersion = null
         super.setUnityPath(path)
     }
+
+
 
     @Input
     @Optional
@@ -85,7 +89,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     }
 
     Test setCategories(Iterable<?> var1) {
-        this.filter.clear()
+        this.categories.clear()
         GUtil.addToCollection(categories, var1)
         return this
     }
@@ -270,16 +274,21 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         testArgs
     }
 
-    DefaultArtifactVersion getUnityVersion(File path) {
+    DefaultArtifactVersion getUnityVersion(File pathToUnity) {
         if (unityVersion != null) {
             return unityVersion
         }
 
-        String osName = System.getProperty("os.name").toLowerCase()
-        def versionString = project.properties.get("defaultUnityTestVersion", "5.5.0")
+        String versionString = project.properties.get("defaultUnityTestVersion", "5.5.0")
+        unityVersion = retrieveUnityVersion(project, pathToUnity, versionString)
+        unityVersion
+    }
 
+    static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
+        def versionString = defaultVersion
+        String osName = System.getProperty("os.name").toLowerCase()
         if (osName.contains("mac os x")) {
-            File infoPlist = new File(path.parentFile.parentFile, "Info.plist")
+            File infoPlist = new File(pathToUnity.parentFile.parentFile, "Info.plist")
             def standardOutput = new ByteArrayOutputStream()
             if (infoPlist.exists()) {
                 def readResult = project.exec(new Action<ExecSpec>() {
@@ -304,7 +313,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                 void execute(ExecSpec execSpec) {
                     execSpec.standardOutput = standardOutput
                     execSpec.ignoreExitValue = true
-                    String winPath = path.path.replace('\\',"\\\\")
+                    String winPath = pathToUnity.path.replace('\\',"\\\\")
                     execSpec.commandLine "wmic", "datafile", "where", "Name=\"${winPath}\"", "get", "Version"
                 }
             })
@@ -318,8 +327,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             }
         }
 
-        unityVersion = new DefaultArtifactVersion(versionString.split(/f|p/).first())
-        unityVersion
+        new DefaultArtifactVersion(versionString.split(/f|p/).first().toString())
     }
 
 

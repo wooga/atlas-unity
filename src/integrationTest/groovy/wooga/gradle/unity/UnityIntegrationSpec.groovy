@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringEscapeUtils
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     File unityTestLocation
+    File unityMainDirectory
 
     def escapedPath(String path) {
         String osName = System.getProperty("os.name").toLowerCase()
@@ -34,7 +35,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     def setup() {
         String osName = System.getProperty("os.name").toLowerCase()
-        unityTestLocation = createFile("fakeUnity.bat", projectDir)
+        unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
+        unityMainDirectory.mkdirs()
+        unityTestLocation = createFile("fakeUnity.bat", unityMainDirectory)
         unityTestLocation.executable = true
         if (osName.contains("windows")) {
             unityTestLocation << """
@@ -45,6 +48,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         else
         {
             unityTestLocation << """
+                #!/usr/bin/env bash
                 echo \$@
             """.stripIndent()
         }
@@ -53,7 +57,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
             group = 'test'
             ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
          
-            unity.unityPath("fakeUnity.bat")
+            unity.unityPath("Unity/SomeLevel/SecondLevel/fakeUnity.bat")
         """.stripIndent()
     }
 }

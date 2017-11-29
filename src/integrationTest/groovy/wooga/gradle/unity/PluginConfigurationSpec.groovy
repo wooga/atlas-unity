@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import spock.lang.Shared
 import spock.lang.Unroll
+import spock.util.environment.RestoreSystemProperties
 
 /**
  * Spec test for basic configuration of the plugin

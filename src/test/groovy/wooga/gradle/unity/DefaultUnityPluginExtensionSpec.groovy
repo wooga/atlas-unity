@@ -20,12 +20,10 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
-import org.junit.Rule
-import org.junit.contrib.java.lang.system.ProvideSystemProperty
-import org.junit.contrib.java.lang.system.RestoreSystemProperties
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.batchMode.BuildTarget
 
 class DefaultUnityPluginExtensionSpec extends Specification {
@@ -90,7 +88,7 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         f == null
     }
 
-    @spock.util.environment.RestoreSystemProperties
+    @RestoreSystemProperties
     @Unroll
     def "get default #property with #osName #osArch"() {
         given:
