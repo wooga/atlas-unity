@@ -57,7 +57,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
             group = 'test'
             ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
          
-            unity.unityPath("Unity/SomeLevel/SecondLevel/fakeUnity.bat")
+            unity.unityPath(file("Unity/SomeLevel/SecondLevel/fakeUnity.bat"))
         """.stripIndent()
     }
 }

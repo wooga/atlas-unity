@@ -92,7 +92,7 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("customTest")
 
         then:
-        result.standardOutput.contains(value)
+        result.standardOutput.contains(escapedPath(value))
 
         where:
         property    | useSetter | value
