@@ -14,7 +14,7 @@ class TestSpec extends ProjectSpec {
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
-    @IgnoreIf({ System.getProperty("os.name").contains("windows") })
+    @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
     @RestoreSystemProperties
     @Unroll
     def "retrieves unity version to determine test runner api with #osName amd #version"() {
