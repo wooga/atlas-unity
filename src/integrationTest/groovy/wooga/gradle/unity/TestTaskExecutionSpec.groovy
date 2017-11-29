@@ -96,8 +96,8 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
 
         where:
         property    | useSetter | value
-        "unityPath" | true      | "custom/unity"
-        "unityPath" | false     | "custom/unity"
+        "unityPath" | true      | "custom/unity.bat"
+        "unityPath" | false     | "custom/unity.bat"
 
         method = (useSetter) ? "set${property.capitalize()}" : property
     }
