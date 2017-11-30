@@ -35,8 +35,11 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     def setup() {
         String osName = System.getProperty("os.name").toLowerCase()
-        unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
-        unityMainDirectory.mkdirs()
+        unityMainDirectory = projectDir
+        if (!osName.contains("windows")) {
+            unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
+            unityMainDirectory.mkdirs()
+        }
         unityTestLocation = createFile("fakeUnity.bat", unityMainDirectory)
         unityTestLocation.executable = true
         if (osName.contains("windows")) {
@@ -55,9 +58,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         buildFile << """
             group = 'test'
-            ${applyPlugin(wooga.gradle.unity.UnityPlugin)}
+            ${applyPlugin(UnityPlugin)}
          
-            unity.unityPath(file("Unity/SomeLevel/SecondLevel/fakeUnity.bat"))
+            unity.unityPath(file("${escapedPath(unityTestLocation.path)}"))
         """.stripIndent()
     }
 }
