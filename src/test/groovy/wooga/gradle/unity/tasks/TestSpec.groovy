@@ -4,6 +4,7 @@ import nebula.test.ProjectSpec
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import spock.lang.IgnoreIf
+import spock.lang.Requires
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
 
@@ -14,7 +15,7 @@ class TestSpec extends ProjectSpec {
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
-    @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
+    @Requires({ System.getProperty("os.name").toLowerCase().contains("mac os x") })
     @RestoreSystemProperties
     @Unroll
     def "retrieves unity version to determine test runner api with #osName amd #version"() {
