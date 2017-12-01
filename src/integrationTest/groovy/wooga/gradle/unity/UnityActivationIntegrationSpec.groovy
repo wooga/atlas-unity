@@ -130,6 +130,32 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("${BatchModeFlags.SERIAL} zyxw")
     }
 
+    def "authentication can be set via setter"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            unity {
+                authentication {
+                    username = "test@test.test"
+                    password = "testtesttest"
+                    serial = "abcdefg"
+                }
+            }
+
+            task (mUnity, type: wooga.gradle.unity.tasks.Activate) {
+                authentication = new wooga.gradle.unity.UnityAuthentication("beta@test.test", "betatesttest", "zyxw")
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        !result.wasSkipped("mUnity")
+        result.standardOutput.contains("${BatchModeFlags.USER_NAME} beta@test.test")
+        result.standardOutput.contains("${BatchModeFlags.PASSWORD} betatesttest")
+        result.standardOutput.contains("${BatchModeFlags.SERIAL} zyxw")
+    }
+
     def "authentication can be set via properties"() {
         given: "a build script with fake test unity location"
         def propertiesFile = createFile("gradle.properties")
