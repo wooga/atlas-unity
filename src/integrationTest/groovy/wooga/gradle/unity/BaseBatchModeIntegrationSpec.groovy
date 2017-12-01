@@ -36,7 +36,7 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
 
         if (taskType == ReturnLicense) {
             buildFile << """
-            mUnity.licenseDirectory = unity.unityLicenseDirectory
+            mUnity.licenseDirectory = projectDir
             """
         }
 
