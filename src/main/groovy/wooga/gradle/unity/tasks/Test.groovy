@@ -53,7 +53,8 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
     @Override
     AbstractUnityTask unityPath(File path) {
         unityVersion = null
-        return super.unityPath(path)
+        super.unityPath(path)
+        return this
     }
 
     @Override
@@ -61,8 +62,6 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
         unityVersion = null
         super.setUnityPath(path)
     }
-
-
 
     @Input
     @Optional
