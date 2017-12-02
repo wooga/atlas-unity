@@ -2,6 +2,7 @@ package wooga.gradle.unity
 
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.batchMode.BuildTarget
 
 class UnityBatchModeIntegrationSpec extends UnityIntegrationSpec {
 
@@ -79,6 +80,40 @@ class UnityBatchModeIntegrationSpec extends UnityIntegrationSpec {
         "noGraphics" | true      | 'false' | BatchModeFlags.NO_GRAPHICS
 
         method = (useSetter) ? "set${property.capitalize()}" : property
+    }
+
+    @Unroll
+    def "can get #property from task"() {
+        given:
+        buildFile << """
+        
+        mUnity {
+            $property = $initialValue 
+        }
+        
+        task (mUnity2, type: wooga.gradle.unity.tasks.Unity) {
+            $property = $value
+        }
+
+        mUnity.$property = mUnity2.$property
+        
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        result.wasExecuted("mUnity")
+        result.standardOutput.contains("Starting process 'command '")
+        result.standardOutput.contains(" $expectedCommandlineSwitch")
+
+        where:
+        property      | initialValue       | value              | expectedCommandlineSwitch
+        "quit"        | 'false'            | 'true'             | BatchModeFlags.QUIT
+        "batchMode"   | 'false'            | 'true'             | BatchModeFlags.BATCH_MODE
+        "noGraphics"  | 'false'            | 'true'             | BatchModeFlags.NO_GRAPHICS
+        "buildTarget" | '"ios"'            | '"android"'        | "$BatchModeFlags.BUILD_TARGET $BuildTarget.android"
+        "args"        | '["-customFlag1"]' | '["-customFlag2"]' | '-customFlag2'
     }
 
 }
