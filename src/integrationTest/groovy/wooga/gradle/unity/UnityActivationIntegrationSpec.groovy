@@ -156,6 +156,28 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("${BatchModeFlags.SERIAL} zyxw")
     }
 
+    def "authentication can be set via setter in extension"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            unity {
+                authentication = new wooga.gradle.unity.UnityAuthentication("test@test.test", "testtesttest", "abcdefg")
+            }
+
+            task (mUnity, type: wooga.gradle.unity.tasks.Activate) {
+                authentication = new wooga.gradle.unity.UnityAuthentication("beta@test.test", "betatesttest", "zyxw")
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        !result.wasSkipped("mUnity")
+        result.standardOutput.contains("${BatchModeFlags.USER_NAME} beta@test.test")
+        result.standardOutput.contains("${BatchModeFlags.PASSWORD} betatesttest")
+        result.standardOutput.contains("${BatchModeFlags.SERIAL} zyxw")
+    }
+
     def "authentication can be set via properties"() {
         given: "a build script with fake test unity location"
         def propertiesFile = createFile("gradle.properties")
@@ -318,8 +340,8 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
                     password = "testtesttest"
                     serial = "abcdefg"
                 }
-                autoActivateUnity = true
-                autoReturnLicense = false
+                autoActivateUnity true
+                autoReturnLicense false
             }    
         """.stripIndent()
 
@@ -330,5 +352,53 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         result.wasExecuted("activateUnity")
         result.wasExecuted("test")
         !result.wasExecuted("returnUnityLicense")
+    }
+
+    def "run activateUnity in custom task as action"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (customTask) {
+                doLast {
+                    unity.activate {
+                            authentication {
+                            username = "custom@test.test"
+                            password = "customtesttest"
+                            serial = "customSerial"
+                        }
+                    }
+                }
+            }
+            
+        """.stripIndent()
+        when:
+        def result = runTasksSuccessfully("customTask")
+
+        then:
+        result.standardOutput.contains("${BatchModeFlags.USER_NAME} custom@test.test")
+        result.standardOutput.contains("${BatchModeFlags.PASSWORD} customtesttest")
+        result.standardOutput.contains("${BatchModeFlags.SERIAL} customSerial")
+    }
+
+    def "run returnLicense in custom task as action"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (customTask) {
+                doLast {
+                    unity.returnLicense {
+                            authentication {
+                            username = "custom@test.test"
+                            password = "customtesttest"
+                            serial = "customSerial"
+                        }
+                    }
+                }
+            }
+            
+        """.stripIndent()
+        when:
+        def result = runTasksSuccessfully("customTask")
+
+        then:
+        result.standardOutput.contains(BatchModeFlags.RETURN_LICENSE)
     }
 }
