@@ -15,9 +15,13 @@ This plugin provides tasks to run unity batchmode commands in [gradle][gradle]. 
 **build.gradle**
 ```groovy
 plugins {
-    id 'net.wooga.unity' version '0.10.0'
+    id 'net.wooga.unity' version '0.16.0'
 }
 ```
+
+# Note breaking changes with `0.16.0`
+
+With `0.16.0` the dependency setup for iOS and android will be removed from the plugin. The logic never really fitted into this plugin. It is moved to [`net.wooga.wdk-unity`](https://github.com/wooga/atlas-wdk-unity).
 
 #System Requirements
 
@@ -29,7 +33,7 @@ plugins {
 
 ```groovy
 plugins {
-    id "net.wooga.unity" version "0.14.2"
+    id "net.wooga.unity" version "0.16.0"
 }
 
 unity {
@@ -45,10 +49,10 @@ unity {
 
     //autoActivateUnity = true
     //autoReturnLicense = true
-    
+
     //assetsDir = "Assets"
     //pluginsDir = "Assets/Plugins"
-    
+
     //defaultBuildTarget = "android"
 }
 
@@ -168,9 +172,22 @@ The editor tests comes in two flavors: Unity 5.5 and Unity 5.6. These versions h
 ### PlayMode tests
 The plugin automatically detects if `playMode` test are enabled and creates corresponding tasks.
 
+```
+:check
+\--- :test
+     +--- :testEditMode
+     |    +--- :testEditModeAndroid
+     |    \--- :testEditModeIos
+     \--- :testPlayMode
+          +--- :testPlayModeAndroid
+          \--- :testPlayModeIos
+```
+
+### Setting up custom test tasks
+
 **build.gradle unity 5.5**
 ```
-test {
+task("myTests", type:wooga.gradle.unity.tasks.Test) {
     categories = ["Category1",..]
     filter = ["filter",..]
     verbose = true
@@ -180,8 +197,12 @@ test {
 
 **build.gradle unity 5.6**
 ```
-test {
-    testPlatform = "editmode" || "playmode"
+task("myEditModeTests", type:wooga.gradle.unity.tasks.Test) {
+    testPlatform = "editmode"
+}
+
+task("myPlayModeTests", type:wooga.gradle.unity.tasks.Test) {
+    testPlatform = "playmode"
 }
 ```
 
