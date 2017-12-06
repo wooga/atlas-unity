@@ -18,6 +18,7 @@
 package wooga.gradle.unity.tasks
 
 import org.gradle.api.Action
+import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Input
@@ -133,7 +134,8 @@ class Activate extends ConventionTask implements ActivationSpec {
 
     @Override
     Activate logFile(Object file) {
-        return activationAction.logFile(file)
+        activationAction.logFile(file)
+        return this
     }
 
     @Override

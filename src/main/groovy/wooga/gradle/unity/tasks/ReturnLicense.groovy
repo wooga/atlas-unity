@@ -17,9 +17,8 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.Task
+import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionTask
-import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction

@@ -205,29 +205,4 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     DefaultBatchModeAction setArgs(Iterable<?> arguments) {
         return DefaultBatchModeAction.cast(super.setArgs(arguments))
     }
-
-    @Override
-    DefaultExecHandleBuilder executable(Object executable) {
-        return super.executable(executable)
-    }
-
-    @Override
-    DefaultExecHandleBuilder commandLine(Object... arguments) {
-        return super.commandLine(arguments)
-    }
-
-    @Override
-    DefaultExecHandleBuilder commandLine(Iterable<?> args) {
-        return super.commandLine(args)
-    }
-
-    @Override
-    void setCommandLine(Object... args) {
-        super.setCommandLine(args)
-    }
-
-    @Override
-    void setCommandLine(Iterable<?> args) {
-        super.setCommandLine(args)
-    }
 }

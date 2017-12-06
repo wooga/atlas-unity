@@ -17,48 +17,14 @@
 
 package wooga.gradle.unity
 
+import spock.lang.Shared
 import spock.lang.Unroll
+import spock.util.environment.RestoreSystemProperties
 
 /**
  * Spec test for basic configuration of the plugin
  */
 class PluginConfigurationSpec extends UnityIntegrationSpec {
-
-    @Unroll("verify setup task is #status when running #taskName")
-    def "binds all unity tasks to setup task"() {
-        given: "a build script"
-        buildFile << """
-            task (createProject, type: wooga.gradle.unity.tasks.Unity) {
-                args "-createProject", "Test"
-            }
-
-            task (customTest, type: wooga.gradle.unity.tasks.Test) {
-            }
-
-            task (customExport, type: wooga.gradle.unity.tasks.UnityPackage) {
-            }
-
-            task (emptyTask)
-
-        """.stripIndent()
-
-        when:
-        def result = runTasks(taskName)
-
-        then:
-        result.wasExecuted(UnityPlugin.SETUP_TASK_NAME) == shouldRun
-        result.wasExecuted(UnityPlugin.ASSEMBLE_RESOURCES_TASK_NAME) == shouldRun
-
-        where:
-        taskName                             | shouldRun
-        UnityPlugin.EXPORT_PACKAGE_TASK_NAME | true
-        "createProject"                      | true
-        "customTest"                         | true
-        "customExport"                       | true
-        "emptyTask"                          | false
-
-        status = shouldRun ? "executed" : "not executed"
-    }
 
     @Unroll("sets buildTarget with #taskConfig #useOverride")
     def "sets defaultBuildTarget for all tasks"() {
@@ -86,5 +52,33 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         ''                    | "-buildTarget android"
 
         useOverride = taskConfig != '' ? "use override" : "fallback to default"
-      }
+    }
+
+    @Unroll
+    def "plugin sets default #property"() {
+        given: "a build script"
+
+        buildFile << """
+            task(customTest) {
+                doLast {
+                    print "$property: "
+                    println unity.$property
+                }
+            }
+        """
+
+        and: "a path to the project"
+        def path = new File(projectDir, expectedPath)
+
+        when:
+        def result = runTasks("customTest")
+
+        then:
+        result.standardOutput.contains("$property: ${path.path}")
+
+        where:
+        property    | expectedPath
+        'assetsDir' | "Assets"
+        'pluginsDir' | "Assets/Plugins"
+    }
 }
