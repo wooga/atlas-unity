@@ -3,13 +3,15 @@
 
 pipeline {
     agent {
-        label 'windows'
+        label 'unity&&windows&&unity_2017.1.0p5e'
     }
 
     environment {
         artifactoryCredentials  = credentials('artifactory_publish')
         nugetkey                = credentials('artifactory_deploy')
+        COVERALLS_REPO_TOKEN    = credentials('atlas_unity_coveralls_token')
         TRAVIS_JOB_NUMBER       = "${BUILD_NUMBER}.WIN"
+        UNITY_PATH              = "${UNITY_2017_1_0_P_5_PATH}"
     }
 
     stages {
@@ -28,7 +30,7 @@ pipeline {
 
     post {
         always {
-            gradleWrapper "jacocoTestReport"
+            gradleWrapper "jacocoTestReport coveralls"
             publishHTML([
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
