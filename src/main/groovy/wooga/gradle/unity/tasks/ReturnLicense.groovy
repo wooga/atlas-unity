@@ -17,19 +17,24 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
+import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 
 class ReturnLicense extends ConventionTask implements BaseBatchModeSpec {
 
+    private interface ExecuteExclude {
+        ExecResult execute() throws ExecException
+    }
+
+    @Delegate(excludeTypes=[ExecuteExclude.class], interfaces = false)
     ActivationAction activationAction
     private ExecResult batchModeResult
 
@@ -59,24 +64,9 @@ class ReturnLicense extends ConventionTask implements BaseBatchModeSpec {
     }
 
     @Override
-    File getUnityPath() {
-        return activationAction.getUnityPath()
-    }
-
-    @Override
     ReturnLicense unityPath(File path) {
         activationAction.unityPath(path)
         return this
-    }
-
-    @Override
-    void setUnityPath(File path) {
-        activationAction.setUnityPath(path)
-    }
-
-    @Override
-    File getProjectPath() {
-        return activationAction.getProjectPath()
     }
 
     @Override
@@ -86,23 +76,8 @@ class ReturnLicense extends ConventionTask implements BaseBatchModeSpec {
     }
 
     @Override
-    void setProjectPath(File path) {
-        activationAction.setProjectPath(path)
-    }
-
-    @Override
-    File getLogFile() {
-        return activationAction.getLogFile()
-    }
-
-    @Override
     ReturnLicense logFile(Object file) {
         activationAction.logFile(file)
         return this
-    }
-
-    @Override
-    void setLogFile(Object file) {
-        activationAction.setLogFile(file)
     }
 }

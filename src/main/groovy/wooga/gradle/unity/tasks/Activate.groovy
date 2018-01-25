@@ -26,6 +26,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
+import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
@@ -33,7 +34,13 @@ import wooga.gradle.unity.batchMode.ActivationSpec
 
 class Activate extends ConventionTask implements ActivationSpec {
 
+    private interface ExecuteExclude {
+        ExecResult execute() throws ExecException
+    }
+
+    @Delegate(excludeTypes=[ExecuteExclude.class], interfaces = false)
     ActivationAction activationAction
+
     private ExecResult batchModeResult
 
     protected Factory<ActivationAction> getActivationActionFactory() {
@@ -74,16 +81,6 @@ class Activate extends ConventionTask implements ActivationSpec {
     }
 
     @Override
-    UnityAuthentication getAuthentication() {
-        return activationAction.authentication
-    }
-
-    @Override
-    void setAuthentication(UnityAuthentication authentication) {
-        activationAction.authentication = authentication
-    }
-
-    @Override
     Activate authentication(Closure closure) {
         activationAction.authentication(closure)
         return this
@@ -96,24 +93,9 @@ class Activate extends ConventionTask implements ActivationSpec {
     }
 
     @Override
-    File getUnityPath() {
-        return activationAction.getUnityPath()
-    }
-
-    @Override
     Activate unityPath(File path) {
         activationAction.unityPath(path)
         return this
-    }
-
-    @Override
-    void setUnityPath(File path) {
-        activationAction.setUnityPath(path)
-    }
-
-    @Override
-    File getProjectPath() {
-        return activationAction.getProjectPath()
     }
 
     @Override
@@ -123,23 +105,8 @@ class Activate extends ConventionTask implements ActivationSpec {
     }
 
     @Override
-    void setProjectPath(File path) {
-        activationAction.setProjectPath(path)
-    }
-
-    @Override
-    File getLogFile() {
-        return activationAction.getLogFile()
-    }
-
-    @Override
     Activate logFile(Object file) {
         activationAction.logFile(file)
         return this
-    }
-
-    @Override
-    void setLogFile(Object file) {
-        activationAction.setLogFile(file)
     }
 }
