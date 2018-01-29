@@ -20,6 +20,8 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
+import org.junit.Rule
+import org.junit.contrib.java.lang.system.EnvironmentVariables
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -88,10 +90,14 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         f == null
     }
 
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
+
     @RestoreSystemProperties
     @Unroll
     def "get default #property with #osName #osArch"() {
         given:
+        environmentVariables.set("UNITY_PATH", null)
         System.setProperty("os.name", osName)
         System.setProperty("os.arch", osArch)
 
@@ -121,10 +127,10 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         defaultBuildTarget == result
 
         where:
-        source                        | result
-        BuildTarget.webgl             | BuildTarget.webgl
-        "ios"                         | BuildTarget.ios
-        { it -> BuildTarget.android } | BuildTarget.android
+        source            | result
+        BuildTarget.webgl | BuildTarget.webgl
+        "ios"             | BuildTarget.ios
+                { it -> BuildTarget.android } | BuildTarget.android
     }
 
     @Unroll
