@@ -72,7 +72,10 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     void setLogFile(Object file) {
-        logFile = fileResolver.resolveLater(file)
+        logFile = null
+        if(file) {
+            logFile = fileResolver.resolveLater(file)
+        }
     }
 
     private Boolean redirectStdOut
@@ -136,21 +139,30 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
         }
 
-        if (getRedirectStdOut() || getLogFile()) {
-            batchModeArgs << BatchModeFlags.LOG_FILE
-
-            if (getRedirectStdOut()) {
-                TextStream handler = new ForkTextStream()
-                def outStream = new LineBufferingOutputStream(handler)
-                this.standardOutput = outStream
-
-                if (getLogFile()) {
-                    FileUtils.ensureFile(getLogFile())
-                    handler.addWriter(getLogFile().newPrintWriter())
-                }
-                handler.addWriter(System.out.newPrintWriter())
-            } else {
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            if(getLogFile()) {
+                FileUtils.ensureFile(getLogFile())
+                batchModeArgs << BatchModeFlags.LOG_FILE
                 batchModeArgs << getLogFile().path
+            }
+        }
+        else {
+            if (getRedirectStdOut() || getLogFile()) {
+                batchModeArgs << BatchModeFlags.LOG_FILE
+
+                if (getRedirectStdOut()) {
+                    TextStream handler = new ForkTextStream()
+                    def outStream = new LineBufferingOutputStream(handler)
+                    this.standardOutput = outStream
+
+                    if (getLogFile()) {
+                        handler.addWriter(getLogFile().newPrintWriter())
+                    }
+                    handler.addWriter(System.out.newPrintWriter())
+                } else {
+                    batchModeArgs << getLogFile().path
+                }
             }
         }
 
@@ -189,7 +201,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     DefaultBatchModeAction logFile(Object file) {
-        logFile = fileResolver.resolveLater(file)
+        setLogFile(file)
         this
     }
 

@@ -2,6 +2,7 @@ package wooga.gradle.unity
 
 import nebula.test.IntegrationSpec
 import org.apache.commons.lang.StringEscapeUtils
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
@@ -207,6 +208,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
+    @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
     def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
         given: "a custom build task"
         buildFile << """
@@ -236,6 +238,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         Unity         | _
     }
 
+    @IgnoreIf({ System.getProperty("os.name").contains("windows") })
     def "redirects unity log to stdout and custom logfile if provided"() {
         given: "a custom log file location"
         def logFile = File.createTempFile("log","out")
