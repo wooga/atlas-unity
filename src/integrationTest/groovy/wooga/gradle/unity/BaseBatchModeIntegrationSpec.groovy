@@ -1,5 +1,7 @@
 package wooga.gradle.unity
 
+import nebula.test.IntegrationSpec
+import org.apache.commons.lang.StringEscapeUtils
 import spock.lang.Unroll
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
@@ -151,23 +153,96 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
         }
 
         where:
-        property      | taskType      | initialValue         | value               | expectedCommandlineSwitch | checkForFileInCommandline
-        "unityPath"   | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | true
-        "unityPath"   | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | true
-        "unityPath"   | Test          | 'file("test/file2")' | 'file("test/file")' | ""                        | true
-        "unityPath"   | Unity         | 'file("test/file2")' | 'file("test/file")' | ""                        | true
-        "unityPath"   | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | ""                        | true
+        property         | taskType      | initialValue         | value               | expectedCommandlineSwitch | checkForFileInCommandline
+        "unityPath"      | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | true
+        "unityPath"      | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | true
+        "unityPath"      | Test          | 'file("test/file2")' | 'file("test/file")' | ""                        | true
+        "unityPath"      | Unity         | 'file("test/file2")' | 'file("test/file")' | ""                        | true
+        "unityPath"      | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | ""                        | true
 
-        "projectPath" | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | false
-        "projectPath" | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | false
-        "projectPath" | Test          | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
-        "projectPath" | Unity         | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
-        "projectPath" | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
+        "projectPath"    | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | false
+        "projectPath"    | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | false
+        "projectPath"    | Test          | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
+        "projectPath"    | Unity         | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
+        "projectPath"    | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | "-projectPath"            | true
 
-        "logFile"     | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | false
-        "logFile"     | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | false
-        "logFile"     | Test          | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
-        "logFile"     | Unity         | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
-        "logFile"     | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
+        "logFile"        | Activate      | 'file("test/file2")' | 'file("test/file")' | ""                        | false
+        "logFile"        | ReturnLicense | 'file("test/file2")' | 'file("test/file")' | ""                        | false
+        "logFile"        | Test          | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
+        "logFile"        | Unity         | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
+        "logFile"        | UnityPackage  | 'file("test/file2")' | 'file("test/file")' | "-logFile"                | true
+
+        "redirectStdOut" | Activate      | 'false'              | 'true'              | "-logFile"                | true
+        "redirectStdOut" | ReturnLicense | 'false'              | 'true'              | "-logFile"                | true
+        "redirectStdOut" | Test          | 'false'              | 'true'              | "-logFile"                | true
+        "redirectStdOut" | Unity         | 'false'              | 'true'              | "-logFile"                | true
+        "redirectStdOut" | UnityPackage  | 'false'              | 'true'              | "-logFile"                | true
+    }
+}
+
+//TODO create a base test case for all tasks and run them against it. It is quite complicated to setup a generic test.
+class BatchModeIntegrationSpec extends IntegrationSpec {
+
+    def setup() {
+        buildFile << """
+            group = 'test'
+            ${applyPlugin(UnityPlugin)}
+        """.stripIndent()
+    }
+
+    def escapedPath(String path) {
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            return StringEscapeUtils.escapeJava(path)
+        }
+        path
+    }
+
+    @Unroll
+    def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
+        given: "a custom build task"
+        buildFile << """
+            task (mUnity, type: ${taskType.name}) {
+                redirectStdOut = false
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasks("mUnity")
+
+        then:
+        !result.standardOutput.contains("Next license update check is after")
+
+        when:
+        buildFile << """
+            mUnity.redirectStdOut = true
+        """.stripIndent()
+        result = runTasks("mUnity")
+
+        then:
+        result.standardOutput.contains("Next license update check is after")
+
+        where:
+        taskType      | _
+        Unity         | _
+    }
+
+    def "redirects unity log to stdout and custom logfile if provided"() {
+        given: "a custom log file location"
+        def logFile = File.createTempFile("log","out")
+        and: "a custom build task"
+        buildFile << """
+            task (mUnity, type: ${Unity.name}) {
+                redirectStdOut = true
+                logFile = file('${escapedPath(logFile.path)}')
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasks("mUnity")
+
+        then:
+        result.standardOutput.contains("Next license update check is after")
+        logFile.text.contains("Next license update check is after")
     }
 }
