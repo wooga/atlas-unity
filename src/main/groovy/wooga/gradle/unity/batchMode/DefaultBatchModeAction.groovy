@@ -73,7 +73,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     void setLogFile(Object file) {
         logFile = null
-        if(file) {
+        if (file) {
             logFile = fileResolver.resolveLater(file)
         }
     }
@@ -139,15 +139,18 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
         }
 
+        if (getLogFile()) {
+            FileUtils.ensureFile(getLogFile())
+        }
+
         String osName = System.getProperty("os.name").toLowerCase()
         if (osName.contains("windows")) {
-            if(getLogFile()) {
+            if (getLogFile()) {
                 FileUtils.ensureFile(getLogFile())
                 batchModeArgs << BatchModeFlags.LOG_FILE
                 batchModeArgs << getLogFile().path
             }
-        }
-        else {
+        } else {
             if (getRedirectStdOut() || getLogFile()) {
                 batchModeArgs << BatchModeFlags.LOG_FILE
 
