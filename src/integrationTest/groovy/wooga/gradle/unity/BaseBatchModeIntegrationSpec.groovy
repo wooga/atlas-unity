@@ -187,6 +187,14 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         buildFile << """
             group = 'test'
             ${applyPlugin(UnityPlugin)}
+            
+            unity.projectPath = null
+
+            task (unitySetup, type: ${Unity.name}) {
+                args "-createProject ${escapedPath(projectDir.path)}"
+                redirectStdOut = false
+            }
+
         """.stripIndent()
     }
 
@@ -203,6 +211,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         given: "a custom build task"
         buildFile << """
             task (mUnity, type: ${taskType.name}) {
+                dependsOn unitySetup
                 redirectStdOut = false
             }
         """.stripIndent()
@@ -217,7 +226,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         buildFile << """
             mUnity.redirectStdOut = true
         """.stripIndent()
-        result = runTasks("mUnity")
+        result = runTasksSuccessfully("mUnity")
 
         then:
         result.standardOutput.contains("Next license update check is after")
@@ -233,13 +242,14 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         and: "a custom build task"
         buildFile << """
             task (mUnity, type: ${Unity.name}) {
+                dependsOn unitySetup
                 redirectStdOut = true
                 logFile = file('${escapedPath(logFile.path)}')
             }
         """.stripIndent()
 
         when:
-        def result = runTasks("mUnity")
+        def result = runTasksSuccessfully("mUnity")
 
         then:
         result.standardOutput.contains("Next license update check is after")
