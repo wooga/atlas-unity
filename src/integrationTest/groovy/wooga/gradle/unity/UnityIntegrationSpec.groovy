@@ -19,11 +19,13 @@ package wooga.gradle.unity
 
 import nebula.test.IntegrationSpec
 import org.apache.commons.lang.StringEscapeUtils
+import wooga.gradle.unity.utils.ProjectSettingsSpec
 
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     File unityTestLocation
     File unityMainDirectory
+    File settings
 
     def escapedPath(String path) {
         String osName = System.getProperty("os.name").toLowerCase()
@@ -55,6 +57,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
                 echo \$@
             """.stripIndent()
         }
+
+        settings = createFile("ProjectSettings/ProjectSettings.asset")
+        settings << ProjectSettingsSpec.TEMPLATE_CONTENT
 
         buildFile << """
             group = 'test'
