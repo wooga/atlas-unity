@@ -255,7 +255,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
             return unityVersion
         }
 
-        String versionString = project.properties.get("defaultUnityTestVersion", "5.5.0")
+        String versionString = project.properties.get("defaultUnityTestVersion", "5.6.0")
         unityVersion = retrieveUnityVersion(project, pathToUnity, versionString)
         unityVersion
     }
