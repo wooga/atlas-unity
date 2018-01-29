@@ -212,30 +212,7 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
 
     protected List<String> buildTestArguments(DefaultArtifactVersion unityVersion) {
         def testArgs = []
-        if (unityVersion.majorVersion == 5 && unityVersion.minorVersion == 5) {
-            logger.info("activate unittests with ${BatchModeFlags.RUN_EDITOR_TESTS} switch")
-
-            testArgs << BatchModeFlags.RUN_EDITOR_TESTS
-
-            if (reports.getXml().enabled) {
-                testArgs << BatchModeFlags.EDITOR_TEST_RESULTS_FILE << reports.getXml().destination
-            }
-
-            if (verbose) {
-                testArgs << BatchModeFlags.EDITOR_TEST_VERBOSE_LOG
-                if (teamcity) {
-                    testArgs << 'teamcity'
-                }
-            }
-
-            if (filter.size() > 0) {
-                testArgs << BatchModeFlags.EDITOR_TEST_FILTER << filter.join(",")
-            }
-
-            if (categories.size() > 0) {
-                testArgs << BatchModeFlags.EDITOR_TEST_CATEGORIES << categories.join(",")
-            }
-        } else if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
+        if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
                 || (unityVersion.majorVersion == 2017 && unityVersion.minorVersion == 1)) {
             logger.info("activate unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
