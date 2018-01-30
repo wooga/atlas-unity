@@ -63,7 +63,7 @@ pipeline {
                         artifactoryCredentials  = credentials('artifactory_publish')
                         nugetkey                = credentials('artifactory_deploy')
                         COVERALLS_REPO_TOKEN    = credentials('atlas_unity_coveralls_token')
-                        TRAVIS_JOB_NUMBER       = "${BUILD_NUMBER}.WIN"
+                        TRAVIS_JOB_NUMBER       = "${BUILD_NUMBER}.MACOS"
                         UNITY_PATH              = "${UNITY_2017_1_0_P_5_PATH}"
                     }
 
