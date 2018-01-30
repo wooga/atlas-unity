@@ -228,7 +228,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         buildFile << """
             mUnity.redirectStdOut = true
         """.stripIndent()
-        result = runTasksSuccessfully("mUnity")
+        result = runTasks("mUnity")
 
         then:
         result.standardOutput.contains("Next license update check is after")
@@ -252,7 +252,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully("mUnity")
+        def result = runTasks("mUnity")
 
         then:
         result.standardOutput.contains("Next license update check is after")
