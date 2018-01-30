@@ -1,11 +1,9 @@
 package wooga.gradle.unity
 
-import spock.util.environment.RestoreSystemProperties
+import spock.lang.Unroll
 import wooga.gradle.unity.utils.ProjectSettingsSpec
 
 import java.nio.file.Files
-import spock.lang.Unroll
-
 import java.nio.file.StandardCopyOption
 
 class TestTaskExecutionSpec extends UnityIntegrationSpec {
@@ -92,9 +90,8 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("customTest")
 
         then:
-        if(System.getProperty("os.name").toLowerCase().contains("windows"))
-        {
-            value = value.replace('/','\\')
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            value = value.replace('/', '\\')
         }
         result.standardOutput.contains(value)
 
@@ -102,35 +99,6 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         property    | useSetter | value
         "unityPath" | true      | "custom/unity.bat"
         "unityPath" | false     | "custom/unity.bat"
-
-        method = (useSetter) ? "set${property.capitalize()}" : property
-    }
-
-    @Unroll
-    def "can set #property with #method and #value"() {
-        given: "a build file with custom test task"
-        buildFile << """
-
-        task('customTest', type:wooga.gradle.unity.tasks.Test) {
-            $property("android")
-            $method($value)
-        }
-        """.stripIndent()
-
-        when:
-        def result = runTasksSuccessfully("customTest")
-
-        then:
-        result.standardOutput.contains("$expectedCommandlineSwitch")
-
-        where:
-        property     | useSetter | value                        | expectedCommandlineSwitch
-        "categories" | false     | '"wooga", "test"'            | '-editorTestsCategories android,wooga,test'
-        "categories" | false     | '["wooga", "test", "unity"]' | '-editorTestsCategories android,wooga,test,unity'
-        "categories" | true      | '["wooga"]'                  | '-editorTestsCategories wooga'
-        "filter"     | false     | '"wooga", "test"'            | '-editorTestsFilter android,wooga,test'
-        "filter"     | false     | '["wooga", "test", "unity"]' | '-editorTestsFilter android,wooga,test,unity'
-        "filter"     | true      | '["wooga"]'                  | '-editorTestsFilter wooga'
 
         method = (useSetter) ? "set${property.capitalize()}" : property
     }
@@ -150,11 +118,9 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         defaultUnityTestVersion=5.6.0
         """.stripIndent()
 
-        and: "a mocked unity project"
-        def projectSettingsDir = new File(projectDir, "ProjectSettings")
-        projectSettingsDir.mkdirs()
-        def projectSettings = createFile("ProjectSettings.asset", projectSettingsDir)
-        projectSettings << ProjectSettingsSpec.TEMPLATE_CONTENT_ENABLED
+        and: "a mocked unity project with enabled playmode tests"
+        settings.text = ""
+        settings << ProjectSettingsSpec.TEMPLATE_CONTENT_ENABLED
 
         when:
         def result = runTasksSuccessfully("customTest")

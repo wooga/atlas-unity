@@ -27,13 +27,6 @@ class BatchModeFlags {
 
     static String CREATE_PROJECT = "-createProject"
 
-    // Editor Test Flags
-    static String RUN_EDITOR_TESTS = "-runEditorTests"
-    static String EDITOR_TEST_VERBOSE_LOG = "-editorTestsVerboseLog"
-    static String EDITOR_TEST_CATEGORIES = "-editorTestsCategories"
-    static String EDITOR_TEST_FILTER = "-editorTestsFilter"
-    static String EDITOR_TEST_RESULTS_FILE = "-editorTestsResultFile"
-
     // Authentication
     static String SERIAL = "-serial"
     static String USER_NAME = "-username"
