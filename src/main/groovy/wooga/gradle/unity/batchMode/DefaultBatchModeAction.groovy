@@ -82,7 +82,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     Boolean getRedirectStdOut() {
-        return redirectStdOut
+        if(redirectStdOut) {
+            return redirectStdOut
+        }
+
+        return extension.redirectStdOut
     }
 
     @Override

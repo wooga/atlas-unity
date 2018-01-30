@@ -55,7 +55,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     AbstractUnityTask(Class<T> taskType) {
         this.batchModeAction = getBatchModeActionFactory().create()
         this.batchModeAction.logFile("${project.buildDir}/logs/${name}.log")
-        this.batchModeAction.redirectStdOut(true)
         this.taskType = taskType
     }
 

@@ -108,4 +108,9 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
 
     UnityPluginExtension defaultBuildTarget(BuildTarget value)
 
+    Boolean getRedirectStdOut()
+
+    void setRedirectStdOut(Boolean redirect)
+
+    UnityPluginExtension redirectStdOut(Boolean redirect)
 }

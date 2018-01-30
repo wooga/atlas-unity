@@ -115,6 +115,72 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         "getUnityLicenseDirectory" | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_LICENSE_DIRECTORY_MAC_OS
     }
 
+    @Rule
+    public final EnvironmentVariables env = new EnvironmentVariables()
+
+    @Unroll
+    def "default value for #property with env: #envValue and propertie #propertyValue returns #expectedValue"() {
+        given:
+        projectProperties[DefaultUnityPluginExtension.REDIRECT_STDOUT_OPTION] = propertyValue
+        environmentVariables.set(DefaultUnityPluginExtension.REDIRECT_STDOUT_ENV_VAR, envValue)
+
+        expect:
+        subject.invokeMethod(property, null) as Boolean == expectedValue
+
+        where:
+        property            | envValue | propertyValue | expectedValue
+        "getRedirectStdOut" | "0"      | "1"           | true
+        "getRedirectStdOut" | "1"      | "0"           | false
+        "getRedirectStdOut" | "0"      | "true"        | true
+        "getRedirectStdOut" | "1"      | "false"       | false
+        "getRedirectStdOut" | "0"      | "TRUE"        | true
+        "getRedirectStdOut" | "1"      | "FALSE"       | false
+        "getRedirectStdOut" | "0"      | "yes"         | true
+        "getRedirectStdOut" | "1"      | "no"          | false
+        "getRedirectStdOut" | "0"      | "YES"         | true
+        "getRedirectStdOut" | "1"      | "NO"          | false
+        "getRedirectStdOut" | "1"      | null          | true
+        "getRedirectStdOut" | "0"      | null          | false
+        "getRedirectStdOut" | "false"  | "true"        | true
+        "getRedirectStdOut" | "true"   | "false"       | false
+        "getRedirectStdOut" | "false"  | "TRUE"        | true
+        "getRedirectStdOut" | "true"   | "FALSE"       | false
+        "getRedirectStdOut" | "false"  | "1"           | true
+        "getRedirectStdOut" | "true"   | "0"           | false
+        "getRedirectStdOut" | "false"  | "yes"         | true
+        "getRedirectStdOut" | "true"   | "no"          | false
+        "getRedirectStdOut" | "false"  | "YES"         | true
+        "getRedirectStdOut" | "true"   | "NO"          | false
+        "getRedirectStdOut" | "true"   | null          | true
+        "getRedirectStdOut" | "false"  | null          | false
+        "getRedirectStdOut" | "FALSE"  | "TRUE"        | true
+        "getRedirectStdOut" | "TRUE"   | "FALSE"       | false
+        "getRedirectStdOut" | "FALSE"  | "true"        | true
+        "getRedirectStdOut" | "TRUE"   | "false"       | false
+        "getRedirectStdOut" | "FALSE"  | "1"           | true
+        "getRedirectStdOut" | "TRUE"   | "0"           | false
+        "getRedirectStdOut" | "FALSE"  | "yes"         | true
+        "getRedirectStdOut" | "TRUE"   | "no"          | false
+        "getRedirectStdOut" | "FALSE"  | "YES"         | true
+        "getRedirectStdOut" | "TRUE"   | "NO"          | false
+        "getRedirectStdOut" | "TRUE"   | null          | true
+        "getRedirectStdOut" | "FALSE"  | null          | false
+        "getRedirectStdOut" | "NO"     | "YES"         | true
+        "getRedirectStdOut" | "YES"    | "NO"          | false
+        "getRedirectStdOut" | "NO"     | "yes"         | true
+        "getRedirectStdOut" | "YES"    | "no"          | false
+        "getRedirectStdOut" | "NO"     | "true"        | true
+        "getRedirectStdOut" | "YES"    | "false"       | false
+        "getRedirectStdOut" | "NO"     | "TRUE"        | true
+        "getRedirectStdOut" | "YES"    | "FALSE"       | false
+        "getRedirectStdOut" | "NO"     | "1"           | true
+        "getRedirectStdOut" | "YES"    | "0"           | false
+        "getRedirectStdOut" | "YES"    | null          | true
+        "getRedirectStdOut" | "NO"     | null          | false
+        "getRedirectStdOut" | null     | null          | false
+        "getRedirectStdOut" | null     | null          | false
+    }
+
     @Unroll("use defaultBuildTarget with #source|#result")
     def "set defaultBuildTarget "() {
         given: "calling set defaultBuildTarget"
