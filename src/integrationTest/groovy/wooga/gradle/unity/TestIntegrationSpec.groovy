@@ -128,4 +128,26 @@ class TestIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.standardOutput.contains("PlayMode tests not activated")
     }
+
+    def "Auto-detect for playmode tests with binary settings file"() {
+
+        given: "a build script with fake test unity location"
+        buildFile << """
+            task (mUnity, type: wooga.gradle.unity.tasks.Test) {
+                testPlatform = "playmode"
+            }
+        """.stripIndent()
+
+        and: "a mocked project setting with binary content"
+        def settings = createFile("ProjectSettings/ProjectSettings.asset")
+        settings.bytes = [ 0, 1, 0, 1, 1, 0, 1, 0 ] as byte[]
+        and: "unity version > 5.5"
+
+        when:
+        def result = runTasksSuccessfully("mUnity", "-PdefaultUnityTestVersion=2017.1.1f3")
+
+        then:
+        result.standardOutput.contains("PlayMode tests not activated")
+
+    }
 }
