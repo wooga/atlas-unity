@@ -3,6 +3,7 @@ package wooga.gradle.unity.tasks
 import nebula.test.ProjectSpec
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
+import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Requires
 import spock.lang.Unroll
@@ -99,7 +100,7 @@ class TestSpec extends ProjectSpec {
         """.stripIndent()
 
         and: "a fake wmic command"
-        def bin = new File('/usr/local/bin')
+        def bin = new File(projectDir, 'bin')
         bin.mkdirs()
         File wmic = new File(bin, "wmic")
         wmic.deleteOnExit()
@@ -118,7 +119,7 @@ class TestSpec extends ProjectSpec {
                                                         PosixFilePermission.GROUP_WRITE,
                                                         PosixFilePermission.GROUP_EXECUTE,
         ].toSet())
-        environmentVariables.set("PATH", "${projectDir}:${System.getenv()["PATH"]}")
+        environmentVariables.set("WMIC_PATH", wmic.path)
 
         expect:
         Test.retrieveUnityVersion(project, unityPath, "5.5.0").toString() == version

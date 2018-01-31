@@ -20,15 +20,17 @@ package wooga.gradle.unity.batchMode
 import org.gradle.api.GradleException
 import org.gradle.internal.Factory
 import org.gradle.internal.file.PathToFileResolver
+import org.gradle.internal.io.LineBufferingOutputStream
+import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
 import wooga.gradle.FileUtils
 import wooga.gradle.unity.UnityPluginExtension
+import wooga.gradle.unity.utils.ForkTextStream
 
 class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction {
-
     private final UnityPluginExtension extension
     private final PathToFileResolver fileResolver
 
@@ -37,7 +39,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     private BuildTarget customBuildTarget
 
     File getUnityPath() {
-        if(customUnityPath) {
+        if (customUnityPath) {
             return customUnityPath
         }
 
@@ -49,7 +51,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     File getProjectPath() {
-        if(customProjectPath) {
+        if (customProjectPath) {
             return customProjectPath
         }
 
@@ -63,19 +65,37 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     private Factory<File> logFile
 
     File getLogFile() {
-        if(logFile)
-        {
+        if (logFile) {
             return logFile.create()
         }
         return null
     }
 
     void setLogFile(Object file) {
-        logFile = fileResolver.resolveLater(file)
+        logFile = null
+        if (file) {
+            logFile = fileResolver.resolveLater(file)
+        }
+    }
+
+    private Boolean redirectStdOut
+
+    @Override
+    Boolean getRedirectStdOut() {
+        if(redirectStdOut) {
+            return redirectStdOut
+        }
+
+        return extension.redirectStdOut
+    }
+
+    @Override
+    void setRedirectStdOut(Boolean redirect) {
+        this.redirectStdOut = redirect
     }
 
     BuildTarget getBuildTarget() {
-        if(customBuildTarget && customBuildTarget != BuildTarget.undefined) {
+        if (customBuildTarget && customBuildTarget != BuildTarget.undefined) {
             return customBuildTarget
         }
 
@@ -97,14 +117,13 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         def additionalArguments = getAllArguments()
         def batchModeArgs = []
 
-        if(getUnityPath() == null || !getUnityPath().exists()) {
+        if (getUnityPath() == null || !getUnityPath().exists()) {
             throw new GradleException("Unity does not exist")
         }
 
-        batchModeArgs <<  getUnityPath().path
+        batchModeArgs << getUnityPath().path
 
-        if(batchMode)
-        {
+        if (batchMode) {
             batchModeArgs << BatchModeFlags.BATCH_MODE
         }
 
@@ -124,9 +143,34 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
         }
 
-        if (logFile) {
+        if (getLogFile()) {
             FileUtils.ensureFile(getLogFile())
-            batchModeArgs << BatchModeFlags.LOG_FILE << getLogFile().path
+        }
+
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            if (getLogFile()) {
+                FileUtils.ensureFile(getLogFile())
+                batchModeArgs << BatchModeFlags.LOG_FILE
+                batchModeArgs << getLogFile().path
+            }
+        } else {
+            if (getRedirectStdOut() || getLogFile()) {
+                batchModeArgs << BatchModeFlags.LOG_FILE
+
+                if (getRedirectStdOut()) {
+                    TextStream handler = new ForkTextStream()
+                    def outStream = new LineBufferingOutputStream(handler)
+                    this.standardOutput = outStream
+
+                    if (getLogFile()) {
+                        handler.addWriter(getLogFile().newPrintWriter())
+                    }
+                    handler.addWriter(System.out.newPrintWriter())
+                } else {
+                    batchModeArgs << getLogFile().path
+                }
+            }
         }
 
         ignoreExitValue = true
@@ -136,12 +180,18 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         ExecHandle execHandle = this.build()
         ExecResult execResult = execHandle.start().waitForFinish()
 
-        if(execResult.exitValue != 0) {
+        if (execResult.exitValue != 0) {
             String errorMessage = UnityLogErrorReader.readErrorMessageFromLog(getLogFile())
             throw new ExecException(String.format("Unity batchmode finished with non-zero exit value %d and error '%s'", Integer.valueOf(execResult.exitValue), errorMessage))
         }
 
         return execResult
+    }
+
+    @Override
+    BaseBatchModeSpec redirectStdOut(Boolean redirect) {
+        setRedirectStdOut(redirect)
+        return this
     }
 
     @Override
@@ -158,7 +208,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     DefaultBatchModeAction logFile(Object file) {
-        logFile = fileResolver.resolveLater(file)
+        setLogFile(file)
         this
     }
 

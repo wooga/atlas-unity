@@ -43,6 +43,10 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     static final String UNITY_PATH_OPTION = "unity.path"
     static final String UNITY_PATH_ENV_VAR = "UNITY_PATH"
 
+    static final String REDIRECT_STDOUT_OPTION = "unity.redirectStdout"
+    static final String REDIRECT_STDOUT_ENV_VAR = "UNITY_REDIRECT_STDOUT"
+
+
     static File defaultUnityLocation() {
         File unityPath = null
         String osName = System.getProperty("os.name").toLowerCase()
@@ -79,8 +83,9 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Factory<File> customUnityPath
     private Object defaultBuildTarget
     private final List<Object> testBuildTargets = new ArrayList<Object>()
+    private Boolean redirectStdOut = false
 
-    File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
+    static File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
         String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
         if (unityPath) {
             return new File(unityPath)
@@ -106,6 +111,32 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     void setUnityPath(Object path) {
         customUnityPath = fileResolver.resolveLater(path)
+    }
+
+    static Boolean getRedirectStdOutFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String rawValue = (properties[REDIRECT_STDOUT_OPTION] ?: env[REDIRECT_STDOUT_ENV_VAR]).toString().toLowerCase()
+        rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
+        return Boolean.valueOf(rawValue)
+    }
+
+    @Override
+    Boolean getRedirectStdOut() {
+        if (redirectStdOut) {
+            return redirectStdOut
+        }
+
+        return getRedirectStdOutFromEnv(project.properties, System.getenv())
+    }
+
+    @Override
+    void setRedirectStdOut(Boolean redirect) {
+        redirectStdOut = redirect
+    }
+
+    @Override
+    UnityPluginExtension redirectStdOut(Boolean redirect) {
+        setRedirectStdOut(redirect)
+        return this
     }
 
     @Override

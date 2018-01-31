@@ -290,7 +290,10 @@ class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
                     execSpec.standardOutput = standardOutput
                     execSpec.ignoreExitValue = true
                     String winPath = pathToUnity.path.replace('\\',"\\\\")
-                    execSpec.commandLine "wmic", "datafile", "where", "Name=\"${winPath}\"", "get", "Version"
+
+                    //Todo find a better solution to test this
+                    String wmicPath = System.getenv("WMIC_PATH") ? System.getenv("WMIC_PATH") : "wmic"
+                    execSpec.commandLine wmicPath, "datafile", "where", "Name=\"${winPath}\"", "get", "Version"
                 }
             })
             if (readResult.exitValue == 0) {

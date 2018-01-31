@@ -32,4 +32,9 @@ interface BaseBatchModeSpec {
 
     BaseBatchModeSpec logFile(Object file)
     void setLogFile(Object file)
+
+    Boolean getRedirectStdOut()
+
+    BaseBatchModeSpec redirectStdOut(Boolean redirect)
+    void setRedirectStdOut(Boolean redirect)
 }
