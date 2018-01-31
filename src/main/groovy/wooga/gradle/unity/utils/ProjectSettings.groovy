@@ -16,13 +16,15 @@
  */
 
 
-
 package wooga.gradle.unity.utils
 
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.yaml.snakeyaml.Yaml
 
 class ProjectSettings {
 
+    static Logger logger = Logging.getLogger(ProjectSettings)
     private def content
 
     ProjectSettings(File projectSettingsFile) {
@@ -30,24 +32,33 @@ class ProjectSettings {
     }
 
     ProjectSettings(String templateContent) {
-
-        Yaml parser = new Yaml()
-        content = parser.load(stripUnityInstructions(templateContent))
+        try {
+            Yaml parser = new Yaml()
+            content = parser.load(stripUnityInstructions(templateContent))
+        }
+        catch (Exception e) {
+            logger.warn("Project Settings file not parsable. Please make sure it's not set to binary.")
+            content = null
+        }
     }
 
     boolean getPlayModeTestRunnerEnabled() {
-        content['PlayerSettings'] && content['PlayerSettings']['playModeTestRunnerEnabled'] && content['PlayerSettings']['playModeTestRunnerEnabled'] == 1
+        isValidSettingsObject() && content['PlayerSettings']['playModeTestRunnerEnabled'] && content['PlayerSettings']['playModeTestRunnerEnabled'] == 1
+    }
+
+    boolean isValidSettingsObject() {
+        return content && content.getClass() == LinkedHashMap && content['PlayerSettings']
     }
 
     static String stripUnityInstructions(String content) {
         def lines = content.readLines()
         lines.collect {
-            if(it.matches(/%TAG !u! tag:unity3d.com,.*:/)) {
+            if (it.matches(/%TAG !u! tag:unity3d.com,.*:/)) {
                 return ""
             }
 
             def m = it =~ /(--- )!u!\d+( &\d+)/
-            if(m) {
+            if (m) {
                 return "${m[0][1]}${m[0][2]}"
             }
 

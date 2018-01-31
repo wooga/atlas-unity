@@ -18,17 +18,9 @@
 package wooga.gradle.unity
 
 import org.gradle.api.Action
-import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
-import wooga.gradle.unity.batchMode.ActivationAction
-import wooga.gradle.unity.batchMode.ActivationSpec
-import wooga.gradle.unity.batchMode.BaseBatchModeSpec
-import wooga.gradle.unity.batchMode.BatchModeAction
-import wooga.gradle.unity.batchMode.BatchModeSpec
-import wooga.gradle.unity.batchMode.BuildTarget
-
-import static org.gradle.util.ConfigureUtil.configureUsing
+import wooga.gradle.unity.batchMode.*
 
 interface UnityPluginExtension extends UnityPluginTestExtension {
 
