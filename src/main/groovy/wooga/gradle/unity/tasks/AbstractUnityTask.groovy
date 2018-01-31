@@ -46,7 +46,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     abstract BaseBatchModeSpec retrieveAction()
 
-    
+
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
         return retrieveDefaultUnityExtension().batchModeActionFactory
     }
@@ -57,6 +57,14 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     AbstractUnityTask(Class<T> taskType) {
         this.taskType = taskType
+    }
+
+    private def getLogCategory() {
+        if (retrieveDefaultUnityExtension().logCategory != null || retrieveDefaultUnityExtension().logCategory != "") {
+            return "/${retrieveDefaultUnityExtension().logCategory}"
+        } else {
+            return ""
+        }
     }
 
     ConventionMapping getConventionMapping() {

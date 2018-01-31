@@ -105,4 +105,11 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
     void setRedirectStdOut(Boolean redirect)
 
     UnityPluginExtension redirectStdOut(Boolean redirect)
+
+    void setLogCategory(String value)
+
+    String getLogCategory()
+
+    UnityPluginExtension logCategory(String value)
+
 }
