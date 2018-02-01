@@ -18,7 +18,9 @@
 package wooga.gradle.unity.tasks
 
 import org.gradle.api.Action
+import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.internal.IConventionAware
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional

@@ -359,6 +359,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     @Override
     ExecResult activate(Action<? super ActivationSpec> action) {
         ActivationAction activationAction = activationActionFactory.create()
+        //TODO: configure action
         action.execute(activationAction)
         return activationAction.activate()
     }

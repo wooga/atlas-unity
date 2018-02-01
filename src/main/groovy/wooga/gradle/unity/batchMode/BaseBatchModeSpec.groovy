@@ -17,9 +17,7 @@
 
 package wooga.gradle.unity.batchMode
 
-import org.gradle.api.internal.IConventionAware
-
-interface BaseBatchModeSpec extends IConventionAware {
+interface BaseBatchModeSpec {
     File getUnityPath()
 
     BaseBatchModeSpec unityPath(File path)
@@ -39,4 +37,9 @@ interface BaseBatchModeSpec extends IConventionAware {
 
     BaseBatchModeSpec redirectStdOut(Boolean redirect)
     void setRedirectStdOut(Boolean redirect)
+
+    String getLogCategory()
+
+    BaseBatchModeSpec logCategory(String category)
+    void setLogCategory(String category)
 }

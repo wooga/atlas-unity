@@ -17,14 +17,17 @@
 
 package wooga.gradle.unity.tasks
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
@@ -106,6 +109,14 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.retrieveAction().conventionMapping
     }
 
+    @Optional
+    @Input
+    String getLogCategory() {
+        return batchModeAction.logCategory
+    }
+
+    @Optional
+    @Input
     @Override
     ConventionMapping.MappedProperty map(String propertyName, Closure<?> value) {
 
