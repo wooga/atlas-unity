@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '0.1.1'
+    id 'net.wooga.plugins' version '0.3.0'
 }
 
 group 'net.wooga.gradle'
@@ -34,6 +34,10 @@ pluginBundle {
             description = 'This plugin provides tasks for working with Unity3D projects'
         }
     }
+}
+
+github {
+    repositoryName = "wooga/atlas-unity"
 }
 
 dependencies {
