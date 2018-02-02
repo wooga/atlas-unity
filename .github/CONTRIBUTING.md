@@ -18,13 +18,15 @@ Everything referred to hereafter as "bug" also applies for feature requests.
 
 If you are reporting a new issue, you will make our life much simpler (and the fix come much sooner) by following those guidelines:
 
-#### Specify the platform 
+#### Specify the platform
 
 If you believe your issue is device/platform dependent, please specify:
 
 * Operating system
 * Platform (including architecture, e.g. x86, x86_64, arm, etc.)
-* Unity version
+* Java version
+* gradle version
+* Unity3d version
 
 #### Specify steps to reproduce
 
