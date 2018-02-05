@@ -25,7 +25,6 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
@@ -45,11 +44,9 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         ExecResult execute() throws ExecException
     }
 
-    @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
-    protected BatchModeAction batchModeAction
+    abstract BaseBatchModeSpec retrieveAction()
 
-    private ExecResult batchModeResult
-
+    
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
         return retrieveDefaultUnityExtension().batchModeActionFactory
     }
@@ -59,7 +56,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     }
 
     AbstractUnityTask(Class<T> taskType) {
-        this.batchModeAction = retrieveBatchModeActionFactory().create()
         this.taskType = taskType
     }
 
@@ -67,38 +63,25 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this
     }
 
-    @TaskAction
-    protected void exec() {
-        batchModeResult = batchModeAction.execute()
-    }
-
     @Optional
     @Input
     @Override
     File getUnityPath() {
-        batchModeAction.unityPath
+        retrieveAction().unityPath
     }
 
     @Optional
     @Input
     @Override
     File getProjectPath() {
-        batchModeAction.projectPath
+        retrieveAction().projectPath
     }
 
     @Optional
     @Internal
     @Override
     File getLogFile() {
-        batchModeAction.logFile
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Input
-    boolean isIgnoreExitValue() {
-        return batchModeAction.isIgnoreExitValue()
+        retrieveAction().logFile
     }
 
     /**
@@ -112,7 +95,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     }
 
     ConventionMapping retrieveActionMapping() {
-        this.batchModeAction.conventionMapping
+        this.retrieveAction().conventionMapping
     }
 
     @Override
@@ -145,6 +128,4 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         retrieveActionMapping().getConventionValue(actualValue, propertyName, isExplicitValue) ?:
                 super.conventionMapping.getConventionValue(actualValue, propertyName, isExplicitValue)
     }
-
-
 }

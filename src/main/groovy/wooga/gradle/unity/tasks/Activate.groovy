@@ -30,8 +30,14 @@ import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.ActivationSpec
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 
 class Activate extends AbstractUnityTask implements ActivationSpec {
+
+    @Override
+    BaseBatchModeSpec retrieveAction() {
+        return activationAction
+    }
 
     @Override
     ConventionMapping getConventionMapping() {
@@ -97,26 +103,11 @@ class Activate extends AbstractUnityTask implements ActivationSpec {
         return this
     }
 
-    @Override
-    Activate unityPath(File path) {
-        activationAction.unityPath(path)
-        return this
-    }
-
-    @Override
-    Activate projectPath(File path) {
-        activationAction.projectPath(path)
-        return this
-    }
-
-    @Override
-    Activate logFile(Object file) {
-        activationAction.logFile(file)
-        return this
-    }
-
-    @Override
-    ConventionMapping retrieveActionMapping() {
-        return this.activationAction.conventionMapping
+    /**
+     * {@inheritDoc}
+     */
+    @Input
+    boolean isIgnoreExitValue() {
+        return activationAction.isIgnoreExitValue()
     }
 }

@@ -18,6 +18,7 @@
 package wooga.gradle.unity.tasks
 
 import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
@@ -26,6 +27,7 @@ import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 
 class ReturnLicense extends AbstractUnityTask {
 
@@ -82,7 +84,15 @@ class ReturnLicense extends AbstractUnityTask {
     }
 
     @Override
-    ConventionMapping retrieveActionMapping() {
-        return this.activationAction.conventionMapping
+    BaseBatchModeSpec retrieveAction() {
+        return activationAction
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Input
+    boolean isIgnoreExitValue() {
+        return activationAction.isIgnoreExitValue()
     }
 }
