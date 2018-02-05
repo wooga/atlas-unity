@@ -96,6 +96,8 @@ class UnityPlugin implements Plugin<Project> {
 
         BasePluginConvention convention = new BasePluginConvention(project)
 
+
+        configureUnityTasks(extension)
         addTestTasks(extension)
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
@@ -109,6 +111,25 @@ class UnityPlugin implements Plugin<Project> {
                 configureAutoActivationDeactivation(p, extension)
             }
         })
+    }
+
+    def configureUnityTasks(UnityPluginExtension extension) {
+        project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+            @Override
+            void execute(AbstractUnityTask task) {
+                ConventionMapping taskConventionMapping = task.conventionMapping
+                applyConvention(taskConventionMapping, extension)
+                taskConventionMapping.logFile = {
+                    project.file("${project.buildDir}/logs${task.getLogCategory()}/${task.name}.log")
+                }
+            }
+        })
+    }
+
+    static void applyConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
+        taskConventionMapping.map "unityPath", { extension.unityPath }
+        //taskConventionMapping.unityPath = { extension.unityPath }
+        taskConventionMapping.logCategory = { extension.logCategory }
     }
 
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {

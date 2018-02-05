@@ -19,7 +19,8 @@ package wooga.gradle.unity.tasks
 
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.internal.ConventionTask
+import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.internal.IConventionAware
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
@@ -32,23 +33,28 @@ import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.ActivationSpec
 
-class Activate extends ConventionTask implements ActivationSpec {
+class Activate extends DefaultTask implements ActivationSpec, IConventionAware {
+
+    @Override
+    ConventionMapping getConventionMapping() {
+        return activationAction.conventionMapping
+    }
 
     private interface ExecuteExclude {
         ExecResult execute() throws ExecException
     }
 
-    @Delegate(excludeTypes=[ExecuteExclude.class], interfaces = false)
+    @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
     ActivationAction activationAction
 
     private ExecResult batchModeResult
 
-    protected Factory<ActivationAction> getActivationActionFactory() {
+    protected Factory<ActivationAction> retrieveActivationActionFactory() {
         return project.extensions.getByType(UnityPluginExtension).activationActionFactory
     }
 
     Activate() {
-        this.activationAction = getActivationActionFactory().create()
+        this.activationAction = retrieveActivationActionFactory().create()
         onlyIf(new Spec<Activate>() {
             @Override
             boolean isSatisfiedBy(Activate task) {

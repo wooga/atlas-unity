@@ -17,26 +17,25 @@
 
 package wooga.gradle.unity.batchMode
 
+import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
-import wooga.gradle.unity.UnityPluginExtension
-
 
 class DefaultBatchModeActionFactory implements Factory<BatchModeAction> {
 
     private final Instantiator instantiator
     private final FileResolver fileResolver
-    private final UnityPluginExtension extension
+    private final Project project
 
-    DefaultBatchModeActionFactory(UnityPluginExtension extension, Instantiator instantiator, FileResolver fileResolver) {
+    DefaultBatchModeActionFactory(Project project, Instantiator instantiator, FileResolver fileResolver) {
         this.instantiator = instantiator
         this.fileResolver = fileResolver
-        this.extension = extension
+        this.project = project
     }
 
     @Override
     BatchModeAction create() {
-        return instantiator.newInstance(DefaultBatchModeAction.class, extension, fileResolver)
+        return instantiator.newInstance(DefaultBatchModeAction.class, project, fileResolver)
     }
 }

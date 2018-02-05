@@ -19,7 +19,7 @@ package wooga.gradle.unity.batchMode
 
 import org.gradle.process.BaseExecSpec
 
-interface BatchModeSpec extends BaseBatchModeSpec, BaseExecSpec{
+interface BatchModeSpec extends BaseBatchModeSpec, BaseExecSpec {
     BatchModeSpec args(Object... var1)
 
     BatchModeSpec args(Iterable<?> var1)
@@ -31,20 +31,24 @@ interface BatchModeSpec extends BaseBatchModeSpec, BaseExecSpec{
     BuildTarget getBuildTarget()
 
     BatchModeSpec buildTarget(BuildTarget target)
+
     void setBuildTarget(BuildTarget target)
 
     Boolean getQuit()
 
     BatchModeSpec quit(Boolean value)
+
     void setQuit(Boolean value)
 
     Boolean getBatchMode()
 
     BatchModeSpec batchMode(Boolean value)
+
     void setBatchMode(Boolean value)
 
     Boolean getNoGraphics()
 
     BatchModeSpec noGraphics(Boolean value)
+
     void setNoGraphics(Boolean value)
 }

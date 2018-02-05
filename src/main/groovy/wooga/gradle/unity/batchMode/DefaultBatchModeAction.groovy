@@ -18,6 +18,10 @@
 package wooga.gradle.unity.batchMode
 
 import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.api.internal.ConventionAwareHelper
+import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.internal.IConventionAware
 import org.gradle.internal.Factory
 import org.gradle.internal.file.PathToFileResolver
 import org.gradle.internal.io.LineBufferingOutputStream
@@ -27,12 +31,14 @@ import org.gradle.process.internal.DefaultExecHandleBuilder
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
 import wooga.gradle.FileUtils
+import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.utils.ForkTextStream
 
-class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction {
+class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction, IConventionAware {
     private final UnityPluginExtension extension
     private final PathToFileResolver fileResolver
+    private final ConventionMapping conventionMapping
 
     private File customUnityPath
     private File customProjectPath
@@ -106,10 +112,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     Boolean batchMode = true
     Boolean noGraphics = false
 
-    DefaultBatchModeAction(UnityPluginExtension extension, PathToFileResolver fileResolver) {
+    DefaultBatchModeAction(Project project, PathToFileResolver fileResolver) {
         super(fileResolver)
         this.fileResolver = fileResolver
-        this.extension = extension
+        this.extension = project.getExtensions().findByName(UnityPlugin.EXTENSION_NAME) as UnityPluginExtension
+        this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
 
     }
 
@@ -254,5 +261,10 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     @Override
     DefaultBatchModeAction setArgs(Iterable<?> arguments) {
         return DefaultBatchModeAction.cast(super.setArgs(arguments))
+    }
+
+    @Override
+    ConventionMapping getConventionMapping() {
+        return conventionMapping
     }
 }

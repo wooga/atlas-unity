@@ -17,7 +17,11 @@
 
 package wooga.gradle.unity.tasks
 
+import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
+import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
@@ -26,14 +30,15 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
-import org.gradle.process.ProcessForkOptions
 import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeSpec
 import wooga.gradle.unity.batchMode.BuildTarget
 
-abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BatchModeSpec {
+import java.util.concurrent.Callable
+
+abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BatchModeSpec, IConventionAware, ConventionMapping {
 
     static Logger logger = Logging.getLogger(AbstractUnityTask)
 
@@ -43,19 +48,26 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         ExecResult execute() throws ExecException
     }
 
-    @Delegate(excludeTypes=[ExecuteExclude.class], interfaces = false)
+    @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
     private BatchModeAction batchModeAction
 
     private ExecResult batchModeResult
 
-    protected Factory<BatchModeAction> getBatchModeActionFactory() {
-        return project.extensions.getByType(UnityPluginExtension).batchModeActionFactory
+    protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
+        return retrieveDefaultUnityExtension().batchModeActionFactory
+    }
+
+    protected UnityPluginExtension retrieveDefaultUnityExtension() {
+        return project.extensions.getByType(UnityPluginExtension) as UnityPluginExtension
     }
 
     AbstractUnityTask(Class<T> taskType) {
-        this.batchModeAction = getBatchModeActionFactory().create()
-        this.batchModeAction.logFile("${project.buildDir}/logs/${name}.log")
+        this.batchModeAction = retrieveBatchModeActionFactory().create()
         this.taskType = taskType
+    }
+
+    ConventionMapping getConventionMapping() {
+        this
     }
 
     @TaskAction
@@ -138,4 +150,37 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     ExecResult getBatchModeResult() {
         return batchModeResult
     }
+
+    @Override
+    ConventionMapping.MappedProperty map(String propertyName, Closure<?> value) {
+
+        def result
+        try{
+            result = this.batchModeAction.conventionMapping.map(propertyName, value)
+        }
+        catch(InvalidUserDataException ignored){
+            result = super.conventionMapping.map(propertyName, value)
+        }
+        result
+    }
+
+    @Override
+    ConventionMapping.MappedProperty map(String propertyName, Callable<?> value) {
+        def result
+        try{
+            result = this.batchModeAction.conventionMapping.map(propertyName, value)
+        }
+        catch(InvalidUserDataException ignored){
+            result = super.conventionMapping.map(propertyName, value)
+        }
+        result
+    }
+
+    @Override
+    <T> T getConventionValue(T actualValue, String propertyName, boolean isExplicitValue) {
+        this.batchModeAction.conventionMapping.getConventionValue(actualValue, propertyName, isExplicitValue) ?:
+                super.conventionMapping.getConventionValue(actualValue, propertyName, isExplicitValue)
+    }
+
+
 }
