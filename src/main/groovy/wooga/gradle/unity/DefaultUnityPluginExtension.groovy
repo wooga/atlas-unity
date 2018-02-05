@@ -101,7 +101,6 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         properties[UNITY_LOG_CATEGORY_OPTION] ?: env[UNITY_LOG_CATEGORY_ENV_VAR]
     }
 
-
     File getUnityPath() {
         File unityPath
         if (customUnityPath) {
@@ -217,7 +216,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     @Override
     DefaultUnityPluginExtension unityPath(Object path) {
-        customUnityPath = fileResolver.resolveLater(path)
+        this.setUnityPath(path)
         this
     }
 

@@ -118,7 +118,7 @@ class UnityPlugin implements Plugin<Project> {
                 ConventionMapping taskConventionMapping = task.conventionMapping
                 applyBaseConvention(taskConventionMapping, extension)
                 taskConventionMapping.logFile = {
-                    project.file("${project.buildDir}/logs/${task.name}.log")
+                    project.file("${project.buildDir}/logs${task.getLogCategory()}/${task.name}.log")
                 }
             }
         })
@@ -126,6 +126,7 @@ class UnityPlugin implements Plugin<Project> {
 
     static void applyBaseConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
         taskConventionMapping.map "unityPath", { extension.unityPath }
+        taskConventionMapping.logCategory = { extension.logCategory }
     }
 
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {

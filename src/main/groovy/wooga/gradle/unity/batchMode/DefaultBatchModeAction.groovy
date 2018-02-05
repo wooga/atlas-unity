@@ -40,11 +40,15 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     private final PathToFileResolver fileResolver
     private final ConventionMapping conventionMapping
 
-    private File customUnityPath
+    private File unityPath
     private File customProjectPath
     private BuildTarget customBuildTarget
     private String logCategory
 
+
+    //todo: use convention mapping, not extension -> logCategory
+
+    /*
     File getUnityPath() {
         if (customUnityPath) {
             return customUnityPath
@@ -56,6 +60,24 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     void setUnityPath(File path) {
         customUnityPath = path
     }
+    */
+
+    @Override
+    File getUnityPath() {
+        this.unityPath
+    }
+
+    @Override
+    BaseBatchModeSpec unityPath(File value) {
+        this.setUnityPath(value)
+        return this
+    }
+
+    @Override
+    void setUnityPath(File value) {
+        this.unityPath = value
+    }
+
 
     File getProjectPath() {
         if (customProjectPath) {
@@ -218,11 +240,13 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         return this
     }
 
+    /*
     @Override
     DefaultBatchModeAction unityPath(File path) {
         unityPath = path
         this
     }
+    */
 
     @Override
     DefaultBatchModeAction projectPath(File path) {

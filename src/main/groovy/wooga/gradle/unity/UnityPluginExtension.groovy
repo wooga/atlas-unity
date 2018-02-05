@@ -24,13 +24,13 @@ import wooga.gradle.unity.batchMode.*
 
 interface UnityPluginExtension extends UnityPluginTestExtension {
 
-    File getUnityPath()
-
     void setUnityPath(Object path)
 
-    File getUnityLicenseDirectory()
+    File getUnityPath()
 
     UnityPluginExtension unityPath(Object path)
+
+    File getUnityLicenseDirectory()
 
     File getProjectPath()
 
