@@ -321,7 +321,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         BatchModeAction batchModeAction = batchModeActionFactory.create()
 
         def conventionMapper = batchModeAction.conventionMapping
-        UnityPlugin.applyConvention(conventionMapper, project.extensions.getByType(UnityPluginExtension))
+        UnityPlugin.applyBaseConvention(conventionMapper, project.extensions.getByType(UnityPluginExtension))
 
         action.execute(batchModeAction)
         return batchModeAction.execute()

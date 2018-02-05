@@ -18,9 +18,7 @@
 package wooga.gradle.unity.tasks
 
 import org.gradle.api.Action
-import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionMapping
-import org.gradle.api.internal.IConventionAware
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
@@ -33,7 +31,7 @@ import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.ActivationSpec
 
-class Activate extends DefaultTask implements ActivationSpec, IConventionAware {
+class Activate extends AbstractUnityTask implements ActivationSpec {
 
     @Override
     ConventionMapping getConventionMapping() {
@@ -54,6 +52,7 @@ class Activate extends DefaultTask implements ActivationSpec, IConventionAware {
     }
 
     Activate() {
+        super(Activate.class)
         this.activationAction = retrieveActivationActionFactory().create()
         onlyIf(new Spec<Activate>() {
             @Override
@@ -114,5 +113,10 @@ class Activate extends DefaultTask implements ActivationSpec, IConventionAware {
     Activate logFile(Object file) {
         activationAction.logFile(file)
         return this
+    }
+
+    @Override
+    ConventionMapping retrieveActionMapping() {
+        return this.activationAction.conventionMapping
     }
 }

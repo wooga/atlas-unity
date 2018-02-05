@@ -17,11 +17,9 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.ConventionTask
-import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
@@ -32,13 +30,12 @@ import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeAction
-import wooga.gradle.unity.batchMode.BatchModeSpec
-import wooga.gradle.unity.batchMode.BuildTarget
 
 import java.util.concurrent.Callable
 
-abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BatchModeSpec, IConventionAware, ConventionMapping {
+abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BaseBatchModeSpec, ConventionMapping {
 
     static Logger logger = Logging.getLogger(AbstractUnityTask)
 
@@ -49,7 +46,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     }
 
     @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
-    private BatchModeAction batchModeAction
+    protected BatchModeAction batchModeAction
 
     private ExecResult batchModeResult
 
@@ -96,43 +93,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         batchModeAction.logFile
     }
 
-    @Optional
-    @Input
-    @Override
-    BuildTarget getBuildTarget() {
-        batchModeAction.buildTarget
-    }
-
-    @Optional
-    @Input
-    @Override
-    Boolean getBatchMode() {
-        return batchModeAction.batchMode
-    }
-
-    @Optional
-    @Input
-    @Override
-    Boolean getQuit() {
-        return batchModeAction.quit
-    }
-
-    @Optional
-    @Input
-    @Override
-    Boolean getNoGraphics() {
-        batchModeAction.noGraphics
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Optional
-    @Input
-    List<String> getArgs() {
-        return batchModeAction.getArgs()
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -151,14 +111,18 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         return batchModeResult
     }
 
+    ConventionMapping retrieveActionMapping() {
+        this.batchModeAction.conventionMapping
+    }
+
     @Override
     ConventionMapping.MappedProperty map(String propertyName, Closure<?> value) {
 
         def result
-        try{
-            result = this.batchModeAction.conventionMapping.map(propertyName, value)
+        try {
+            result = retrieveActionMapping().map(propertyName, value)
         }
-        catch(InvalidUserDataException ignored){
+        catch (InvalidUserDataException ignored) {
             result = super.conventionMapping.map(propertyName, value)
         }
         result
@@ -167,10 +131,10 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     @Override
     ConventionMapping.MappedProperty map(String propertyName, Callable<?> value) {
         def result
-        try{
-            result = this.batchModeAction.conventionMapping.map(propertyName, value)
+        try {
+            result = retrieveActionMapping().map(propertyName, value)
         }
-        catch(InvalidUserDataException ignored){
+        catch (InvalidUserDataException ignored) {
             result = super.conventionMapping.map(propertyName, value)
         }
         result
@@ -178,7 +142,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     @Override
     <T> T getConventionValue(T actualValue, String propertyName, boolean isExplicitValue) {
-        this.batchModeAction.conventionMapping.getConventionValue(actualValue, propertyName, isExplicitValue) ?:
+        retrieveActionMapping().getConventionValue(actualValue, propertyName, isExplicitValue) ?:
                 super.conventionMapping.getConventionValue(actualValue, propertyName, isExplicitValue)
     }
 

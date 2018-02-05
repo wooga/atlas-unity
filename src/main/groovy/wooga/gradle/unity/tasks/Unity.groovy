@@ -17,7 +17,7 @@
 
 package wooga.gradle.unity.tasks
 
-class Unity extends AbstractUnityTask {
+class Unity extends AbstractBatchModeTask {
 
     Unity() {
         super(Unity.class)

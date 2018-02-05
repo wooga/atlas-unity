@@ -38,7 +38,7 @@ import wooga.gradle.unity.utils.ProjectSettings
 
 import javax.inject.Inject
 
-class Test extends AbstractUnityTask implements Reporting<UnityTestTaskReport> {
+class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskReport> {
 
     static Logger logger = Logging.getLogger(Test)
 

@@ -17,7 +17,7 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.internal.ConventionTask
+import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
@@ -26,24 +26,24 @@ import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
-import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 
-class ReturnLicense extends ConventionTask implements BaseBatchModeSpec {
+class ReturnLicense extends AbstractUnityTask {
 
     private interface ExecuteExclude {
         ExecResult execute() throws ExecException
     }
 
-    @Delegate(excludeTypes=[ExecuteExclude.class], interfaces = false)
+    @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
     ActivationAction activationAction
     private ExecResult batchModeResult
 
-    protected Factory<ActivationAction> getActivationActionFactory() {
+    protected Factory<ActivationAction> retrieveActivationActionFactory() {
         return project.extensions.getByType(UnityPluginExtension).activationActionFactory
     }
 
     ReturnLicense() {
-        this.activationAction = getActivationActionFactory().create()
+        super(ReturnLicense.class)
+        activationAction = retrieveActivationActionFactory().create()
     }
 
     private File dir
@@ -79,5 +79,10 @@ class ReturnLicense extends ConventionTask implements BaseBatchModeSpec {
     ReturnLicense logFile(Object file) {
         activationAction.logFile(file)
         return this
+    }
+
+    @Override
+    ConventionMapping retrieveActionMapping() {
+        return this.activationAction.conventionMapping
     }
 }
