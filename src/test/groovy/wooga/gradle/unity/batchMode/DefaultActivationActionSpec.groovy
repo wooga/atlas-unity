@@ -19,11 +19,14 @@ package wooga.gradle.unity.batchMode
 
 import org.gradle.api.Action
 import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.internal.file.PathToFileResolver
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 import wooga.gradle.unity.UnityAuthentication
+import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
 
 @Subject([DefaultActivationAction])
@@ -33,13 +36,20 @@ class DefaultActivationActionSpec extends Specification {
     static String DEFAULT_PASSWORD = "test-password"
     static String DEFAULT_SERIAL = "test-serial"
 
-    def extension = Mock(UnityPluginExtension)
+    def projectProperties = [:]
     def fileResolver = Mock(PathToFileResolver)
     def authentication = new UnityAuthentication(DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SERIAL)
-
-    def activationAction = new DefaultActivationAction(extension, fileResolver, authentication)
+    def extension = Mock(UnityPluginExtension)
+    def extensions = Mock(ExtensionContainer)
+    def activationAction
 
     def setup() {
+        def projectMock = Mock(Project)
+        projectMock.getProperties() >> projectProperties
+        projectMock.getRootProject() >> projectMock
+        projectMock.getExtensions() >> extensions
+        extensions.findByName(UnityPlugin.EXTENSION_NAME) >> extension
+        activationAction = new DefaultActivationAction(projectMock, fileResolver, authentication)
         activationAction.unityPath = File.createTempDir()
     }
 
@@ -105,7 +115,7 @@ class DefaultActivationActionSpec extends Specification {
         }
 
         expect:
-        assertAuthentication(name,pass,key)
+        assertAuthentication(name, pass, key)
 
         where:
         name            | pass                | key
@@ -140,7 +150,7 @@ class DefaultActivationActionSpec extends Specification {
         })
 
         expect:
-        assertAuthentication(name,pass,key)
+        assertAuthentication(name, pass, key)
 
         where:
         name            | pass                | key
@@ -154,17 +164,16 @@ class DefaultActivationActionSpec extends Specification {
     }
 
     @Unroll("verify configuration of authentication with auth and #name, #pass, #key")
-    def "authentication can be configure with authentication object"()
-    {
+    def "authentication can be configure with authentication object"() {
         given: "action configured with default authentication"
         assertDefaultAuthentication()
         def authentication = activationAction.authentication
 
         and: "a reconfigured auth object"
-        activationAction.authentication = new UnityAuthentication(name,pass,key)
+        activationAction.authentication = new UnityAuthentication(name, pass, key)
 
         expect:
-        assertAuthentication(name,pass,key)
+        assertAuthentication(name, pass, key)
         activationAction.authentication == authentication
 
         where:
@@ -190,7 +199,7 @@ class DefaultActivationActionSpec extends Specification {
         assertDefaultAuthentication()
     }
 
-    void assertAuthentication(u,p,s) {
+    void assertAuthentication(u, p, s) {
         assert activationAction.authentication.username == u
         assert activationAction.authentication.password == p
         assert activationAction.authentication.serial == s

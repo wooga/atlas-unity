@@ -31,7 +31,7 @@ import wooga.gradle.unity.batchMode.BatchModeFlags
 
 import javax.inject.Inject
 
-class UnityPackage extends AbstractUnityTask {
+class UnityPackage extends AbstractBatchModeTask {
 
     private final FileResolver fileResolver
     private FileCollection inputFiles

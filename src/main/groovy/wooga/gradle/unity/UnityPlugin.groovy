@@ -22,7 +22,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.CopySpec
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
@@ -32,7 +31,6 @@ import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.specs.Spec
-import org.gradle.api.tasks.Delete
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.batchMode.BuildTarget
@@ -96,6 +94,8 @@ class UnityPlugin implements Plugin<Project> {
 
         BasePluginConvention convention = new BasePluginConvention(project)
 
+
+        configureUnityTasks(extension)
         addTestTasks(extension)
         addPackageTask()
         addActivateAndReturnLicenseTasks(extension)
@@ -111,13 +111,31 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
+    def configureUnityTasks(UnityPluginExtension extension) {
+        project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+            @Override
+            void execute(AbstractUnityTask task) {
+                ConventionMapping taskConventionMapping = task.conventionMapping
+                applyBaseConvention(taskConventionMapping, extension)
+                taskConventionMapping.logFile = {
+                    project.file("${project.buildDir}/logs/${task.name}.log")
+                }
+            }
+        })
+    }
+
+    static void applyBaseConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
+        taskConventionMapping.map "unityPath", { extension.unityPath }
+    }
+
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
         Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
         Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
 
-        project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+        project.getTasks().withType(AbstractBatchModeTask, new Action<AbstractBatchModeTask>() {
             @Override
-            void execute(AbstractUnityTask task) {
+            void execute(AbstractBatchModeTask task) {
+
                 if (extension.autoActivateUnity) {
                     task.dependsOn activationTask
                 }

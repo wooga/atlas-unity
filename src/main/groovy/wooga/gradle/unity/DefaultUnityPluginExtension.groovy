@@ -305,8 +305,8 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         this.fileResolver = fileResolver
         this.instantiator = instantiator
         this.authentication = new UnityAuthentication(project.rootProject.properties, System.getenv())
-        this.batchModeActionFactory = instantiator.newInstance(DefaultBatchModeActionFactory, this, instantiator, fileResolver)
-        this.activationActionFactory = instantiator.newInstance(DefaultActivationActionFactory, this, instantiator, fileResolver, authentication)
+        this.batchModeActionFactory = instantiator.newInstance(DefaultBatchModeActionFactory, project, instantiator, fileResolver)
+        this.activationActionFactory = instantiator.newInstance(DefaultActivationActionFactory, project, instantiator, fileResolver, authentication)
         projectPath = project.projectDir
 
         autoActivateUnity = true
@@ -319,6 +319,10 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     ExecResult batchMode(Action<? super BatchModeSpec> action) {
         BatchModeAction batchModeAction = batchModeActionFactory.create()
+
+        def conventionMapper = batchModeAction.conventionMapping
+        UnityPlugin.applyBaseConvention(conventionMapper, project.extensions.getByType(UnityPluginExtension))
+
         action.execute(batchModeAction)
         return batchModeAction.execute()
     }

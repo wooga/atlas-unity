@@ -17,9 +17,10 @@
 
 package wooga.gradle.unity.batchMode
 
+import org.gradle.api.internal.IConventionAware
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 
-interface BatchModeAction extends BatchModeSpec{
+interface BatchModeAction extends BatchModeSpec, IConventionAware{
     ExecResult execute() throws ExecException
 }

@@ -17,7 +17,9 @@
 
 package wooga.gradle.unity.batchMode
 
-interface BaseBatchModeSpec {
+import org.gradle.api.internal.IConventionAware
+
+interface BaseBatchModeSpec extends IConventionAware {
     File getUnityPath()
 
     BaseBatchModeSpec unityPath(File path)
