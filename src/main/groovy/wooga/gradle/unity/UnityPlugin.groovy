@@ -133,9 +133,10 @@ class UnityPlugin implements Plugin<Project> {
         Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
         Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
 
-        project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
+        project.getTasks().withType(AbstractBatchModeTask, new Action<AbstractBatchModeTask>() {
             @Override
-            void execute(AbstractUnityTask task) {
+            void execute(AbstractBatchModeTask task) {
+
                 if (extension.autoActivateUnity) {
                     task.dependsOn activationTask
                 }

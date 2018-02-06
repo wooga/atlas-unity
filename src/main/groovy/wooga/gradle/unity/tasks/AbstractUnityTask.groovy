@@ -17,17 +17,14 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.ConventionTask
-import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
@@ -62,13 +59,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.taskType = taskType
     }
 
-    private def getLogCategory() {
-        if (retrieveDefaultUnityExtension().logCategory != null || retrieveDefaultUnityExtension().logCategory != "") {
-            return "/${retrieveDefaultUnityExtension().logCategory}"
-        } else {
-            return ""
-        }
-    }
 
     ConventionMapping getConventionMapping() {
         this
@@ -95,6 +85,12 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         retrieveAction().logFile
     }
 
+    @Optional
+    @Input
+    String getLogCategory() {
+        return retrieveAction().logCategory
+    }
+
     /**
      * Returns the result for the command run by this task. Returns {@code null} if this task has not been executed yet.
      *
@@ -109,11 +105,17 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.retrieveAction().conventionMapping
     }
 
-    @Optional
-    @Input
-    String getLogCategory() {
-        return batchModeAction.logCategory
+
+
+    /*
+    private def getLogCategory() {
+        if (retrieveDefaultUnityExtension().logCategory != null || retrieveDefaultUnityExtension().logCategory != "") {
+            return "/${retrieveDefaultUnityExtension().logCategory}"
+        } else {
+            return ""
+        }
     }
+    */
 
     @Optional
     @Input
