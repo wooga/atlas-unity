@@ -177,7 +177,7 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @Unroll
-    def "set logCategory by task to #value with getter #useGetter to #path"() {
+    def "set logCategory by task to #value with getter #useGetter"() {
         given: ""
         buildFile << """
             task (mUnity, type: ${Unity.name}) {
