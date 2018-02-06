@@ -118,7 +118,7 @@ class UnityPlugin implements Plugin<Project> {
                 ConventionMapping taskConventionMapping = task.conventionMapping
                 applyBaseConvention(taskConventionMapping, extension)
                 taskConventionMapping.logFile = {
-                    project.file("${project.buildDir}/logs${task.getLogCategory()}/${task.name}.log")
+                    project.file("${project.buildDir}/logs/${task.getLogCategory()}/${task.name}.log")
                 }
             }
         })

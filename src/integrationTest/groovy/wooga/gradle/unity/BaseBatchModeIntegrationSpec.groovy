@@ -4,11 +4,7 @@ import nebula.test.IntegrationSpec
 import org.apache.commons.lang.StringEscapeUtils
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
-import wooga.gradle.unity.tasks.Activate
-import wooga.gradle.unity.tasks.ReturnLicense
-import wooga.gradle.unity.tasks.Test
-import wooga.gradle.unity.tasks.Unity
-import wooga.gradle.unity.tasks.UnityPackage
+import wooga.gradle.unity.tasks.*
 
 class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
 
@@ -179,6 +175,43 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
         "redirectStdOut" | Unity         | 'false'              | 'true'              | "-logFile"                | true
         "redirectStdOut" | UnityPackage  | 'false'              | 'true'              | "-logFile"                | true
     }
+
+    @Unroll
+    def "set logCategory by task to #value with getter #useGetter to #path"() {
+        given: ""
+        buildFile << """
+            task (mUnity, type: ${Unity.name}) {
+
+            }
+        """.stripIndent()
+
+        and:
+        if (useGetter) {
+            buildFile << """
+            mUnity.setLogCategory("${value}")
+        """.stripIndent()
+        } else {
+            buildFile << """
+            mUnity.logCategory = "${value}"
+        """.stripIndent()
+        }
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        result.wasExecuted("mUnity")
+        def resultPath = escapedPath("${projectDir}/build/logs/${path}")
+        result.standardOutput.contains("-logFile ${resultPath}")
+
+        where:
+        value    | useGetter | path
+        "hello1" | true      | "hello1/mUnity.log"
+        "hello1" | false     | "hello1/mUnity.log"
+        ""       | true      | "mUnity.log"
+        ""       | false     | "mUnity.log"
+    }
+
 }
 
 //TODO create a base test case for all tasks and run them against it. It is quite complicated to setup a generic test.
@@ -234,14 +267,14 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
         result.standardOutput.contains("Next license update check is after")
 
         where:
-        taskType      | _
-        Unity         | _
+        taskType | _
+        Unity    | _
     }
 
     @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
     def "redirects unity log to stdout and custom logfile if provided"() {
         given: "a custom log file location"
-        def logFile = File.createTempFile("log","out")
+        def logFile = File.createTempFile("log", "out")
         and: "a custom build task"
         buildFile << """
             task (mUnity, type: ${Unity.name}) {
