@@ -315,6 +315,33 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         expectedSize = source.size()
     }
 
+    def "set logCategory with properties"(){
+        given: "mock property in project"
+        def testCategory = "helloworld"
+
+        and:
+        projectProperties[DefaultUnityPluginExtension.UNITY_LOG_CATEGORY_OPTION] = testCategory
+
+        expect:
+        subject.logCategory == testCategory
+    }
+
+    def "get logCategory from env returns property value over env"() {
+        given: "logCategory set in properties"
+        def category = "highPriority"
+        def props = ['unity.logCategory': category]
+
+        and: "unity path in environment"
+        def newCategory = "lowPriority"
+        def env = ['UNITY_LOG_CATEGORY': newCategory]
+
+        when: "calling getUnityLogCategory"
+        def result = subject.getUnityLogCategory(props, env)
+
+        then: "file path points to props path"
+        result == category
+    }
+
     class BuildTargetTestObject {
 
         private def testValue
