@@ -201,7 +201,7 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.wasExecuted("mUnity")
-        def resultPath = escapedPath(new File(projectDir, "/build/logs/${path}").getPath())
+        def resultPath = new File(projectDir, "/build/logs/${path}").getPath()
         result.standardOutput.contains("-logFile ${resultPath}")
 
         where:
