@@ -178,24 +178,14 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @Unroll
-    def "set logCategory by task to #value with getter #useGetter"() {
-        given: ""
+    def "set log category with #method to #value"() {
+        given:
         buildFile << """
-            task (mUnity, type: ${Unity.name}) {
-
-            }
-        """.stripIndent()
-
-        and:
-        if (useGetter) {
-            buildFile << """
-            mUnity.setLogCategory("${value}")
-        """.stripIndent()
-        } else {
-            buildFile << """
-            mUnity.logCategory = "${value}"
-        """.stripIndent()
+        
+        task (mUnity, type: ${Unity.name}) {
+            $method("${value}") 
         }
+        """.stripIndent()
 
         when:
         def result = runTasksSuccessfully("mUnity")
@@ -206,11 +196,14 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("-logFile ${resultPath}")
 
         where:
-        value    | useGetter | path
-        "hello1" | true      | "hello1/mUnity.log"
-        "hello1" | false     | "hello1/mUnity.log"
-        ""       | true      | "mUnity.log"
-        ""       | false     | "mUnity.log"
+        value        | useSetter | path
+        "helloworld" | true      | "helloworld/mUnity.log"
+        "helloworld" | false     | "helloworld/mUnity.log"
+        ""           | true      | "mUnity.log"
+        ""           | false     | "mUnity.log"
+
+        method = (useSetter) ? "setLogCategory" : "logCategory"
+
     }
 
 }
@@ -242,7 +235,8 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
-    @Ignore //test occasionally fails on jenkins
+    @Ignore
+    //test occasionally fails on jenkins
     //@IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
     def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
         given: "a custom build task"
