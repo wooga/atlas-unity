@@ -136,7 +136,6 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         this.fileResolver = fileResolver
         this.extension = project.getExtensions().findByName(UnityPlugin.EXTENSION_NAME) as UnityPluginExtension
         this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
-
     }
 
     ExecResult execute() {

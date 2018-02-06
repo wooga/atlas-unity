@@ -67,46 +67,29 @@ class UnityPlugin implements Plugin<Project> {
         this.project = project
         project.pluginManager.apply(BasePlugin.class)
         project.pluginManager.apply(ReportingBasePlugin.class)
-        UnityPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
 
+        UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
         final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
-        ConventionMapping unityExtensionMapping = ((IConventionAware) extension).getConventionMapping()
-        unityExtensionMapping.map("reportsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return reportingExtension.file("unity")
-            }
-        })
+        ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
 
-        unityExtensionMapping.map("assetsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return new File(extension.getProjectPath().path, "Assets")
-            }
-        })
+        unityExtensionConvention.map("reportsDir", { return reportingExtension.file("unity") })
+        unityExtensionConvention.map("assetsDir", { return new File(unityExtension.getProjectPath().path, "Assets") })
+        unityExtensionConvention.map("pluginsDir", { return new File(unityExtension.getAssetsDir(), "Plugins") })
 
-        unityExtensionMapping.map("pluginsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return new File(extension.getAssetsDir(), "Plugins")
-            }
-        })
+        BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
-        BasePluginConvention convention = new BasePluginConvention(project)
-
-
-        configureUnityTasks(extension)
-        addTestTasks(extension)
+        configureUnityTasks(unityExtension)
+        addTestTasks(unityExtension)
         addPackageTask()
-        addActivateAndReturnLicenseTasks(extension)
+        addActivateAndReturnLicenseTasks(unityExtension)
         createUnityPackageConfiguration()
-        addDefaultReportTasks(extension)
-        configureArchiveDefaults(convention)
+        addDefaultReportTasks(unityExtension)
+        configureArchiveDefaults(basePluginConvention)
 
         project.afterEvaluate(new Action<Project>() {
             @Override
             void execute(Project p) {
-                configureAutoActivationDeactivation(p, extension)
+                configureAutoActivationDeactivation(p, unityExtension)
             }
         })
     }
