@@ -18,8 +18,6 @@
 package wooga.gradle.unity.tasks
 
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.ConventionAwareHelper
-import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.tasks.*
 import org.gradle.util.GUtil
@@ -30,14 +28,12 @@ import javax.inject.Inject
 
 class UnityPackage extends AbstractBatchModeTask {
 
-    private final ConventionMapping conventionMapping
     private final FileResolver fileResolver
     private FileCollection inputFiles
     private String baseName
     private String appendix
     private String version
     private String extension
-
 
     public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
 
@@ -141,19 +137,12 @@ class UnityPackage extends AbstractBatchModeTask {
         inputFiles(project.files([source]))
     }
 
-    @Override
-    ConventionMapping getConventionMapping() {
-        return this
-    }
-
     @Inject
     UnityPackage(FileResolver fileResolver) {
         super(UnityPackage.class)
-        this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
         this.fileResolver = fileResolver
         this.extension = UNITY_PACKAGE_EXTENSION
         outputs.upToDateWhen { false }
-
     }
 
     @TaskAction

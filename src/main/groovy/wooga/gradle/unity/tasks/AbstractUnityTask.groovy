@@ -59,7 +59,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.taskType = taskType
     }
 
-
     ConventionMapping getConventionMapping() {
         this
     }
@@ -104,18 +103,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     ConventionMapping retrieveActionMapping() {
         this.retrieveAction().conventionMapping
     }
-
-
-
-    /*
-    private def getLogCategory() {
-        if (retrieveDefaultUnityExtension().logCategory != null || retrieveDefaultUnityExtension().logCategory != "") {
-            return "/${retrieveDefaultUnityExtension().logCategory}"
-        } else {
-            return ""
-        }
-    }
-    */
 
     @Optional
     @Input
