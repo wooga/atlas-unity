@@ -235,7 +235,7 @@ class BatchModeIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
-    @Ignore
+    @Ignore("test occasionally fails on jenkins")
     //test occasionally fails on jenkins
     //@IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
     def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {

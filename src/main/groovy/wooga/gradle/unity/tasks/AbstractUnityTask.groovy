@@ -104,8 +104,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         this.retrieveAction().conventionMapping
     }
 
-    @Optional
-    @Input
     @Override
     ConventionMapping.MappedProperty map(String propertyName, Closure<?> value) {
 
