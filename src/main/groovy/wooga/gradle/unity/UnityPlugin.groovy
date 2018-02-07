@@ -43,7 +43,7 @@ import java.util.concurrent.Callable
 class UnityPlugin implements Plugin<Project> {
 
     static String TEST_TASK_NAME = "test"
-    static String TEST_EDITOMODE_TASK_NAME = "testEditMode"
+    static String TEST_EDITMODE_TASK_NAME = "testEditMode"
     static String TEST_PLAYMODE_TASK_NAME = "testPlayMode"
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
@@ -68,15 +68,14 @@ class UnityPlugin implements Plugin<Project> {
         project.pluginManager.apply(BasePlugin.class)
         project.pluginManager.apply(ReportingBasePlugin.class)
 
-        UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
+        final UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
         final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
-        ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
+        final ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
+        final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
         unityExtensionConvention.map("reportsDir", { return reportingExtension.file("unity") })
         unityExtensionConvention.map("assetsDir", { return new File(unityExtension.getProjectPath().path, "Assets") })
         unityExtensionConvention.map("pluginsDir", { return new File(unityExtension.getAssetsDir(), "Plugins") })
-
-        BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
         configureUnityTasks(unityExtension)
         addTestTasks(unityExtension)
@@ -110,6 +109,7 @@ class UnityPlugin implements Plugin<Project> {
     static void applyBaseConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
         taskConventionMapping.map "unityPath", { extension.unityPath }
         taskConventionMapping.logCategory = { extension.logCategory }
+        taskConventionMapping.map "projectPath", { extension.projectPath }
     }
 
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
@@ -155,14 +155,14 @@ class UnityPlugin implements Plugin<Project> {
 
     private void addTestTasks(final UnityPluginExtension extension) {
         def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
-        def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
+        def testEditModeTask = project.tasks.create(name: TEST_EDITMODE_TASK_NAME, group: GROUP)
         def testPlayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
         testTask.dependsOn testEditModeTask, testPlayModeTask
 
         project.afterEvaluate {
             extension.testBuildTargets.each { target ->
                 def suffix = target.toString().capitalize()
-                testEditModeTask.dependsOn createTestTask(TEST_EDITOMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
+                testEditModeTask.dependsOn createTestTask(TEST_EDITMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
                 testPlayModeTask.dependsOn createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
             }
         }
