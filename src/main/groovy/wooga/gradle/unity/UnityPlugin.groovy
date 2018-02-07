@@ -110,6 +110,7 @@ class UnityPlugin implements Plugin<Project> {
         taskConventionMapping.map "unityPath", { extension.unityPath }
         taskConventionMapping.logCategory = { extension.logCategory }
         taskConventionMapping.map "projectPath", { extension.projectPath }
+        taskConventionMapping.map "redirectStdOut", { extension.redirectStdOut }
     }
 
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
