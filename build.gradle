@@ -20,7 +20,7 @@ plugins {
 }
 
 group 'net.wooga.gradle'
-description = 'Unity3D plugin for Gradle.'
+description = 'a Unity 3D gradle plugin.'
 
 pluginBundle {
     website = 'https://github.com/wooga/atlas-unity'
