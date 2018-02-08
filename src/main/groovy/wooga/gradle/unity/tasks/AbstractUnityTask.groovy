@@ -46,7 +46,6 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     abstract BaseBatchModeSpec retrieveAction()
 
-
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
         return retrieveDefaultUnityExtension().batchModeActionFactory
     }

@@ -24,48 +24,35 @@ import wooga.gradle.unity.batchMode.*
 
 interface UnityPluginExtension extends UnityPluginTestExtension {
 
-    void setUnityPath(Object path)
-
     File getUnityPath()
-
+    void setUnityPath(Object path)
     UnityPluginExtension unityPath(Object path)
 
     File getUnityLicenseDirectory()
 
     File getProjectPath()
-
     void setProjectPath(File path)
+    UnityPluginExtension projectPath(File path)
 
     File getReportsDir()
-
     void setReportsDir(File reportsDir)
-
     void setReportsDir(Object reportsDir)
 
     File getPluginsDir()
-
     void setPluginsDir(File reportsDir)
-
     void setPluginsDir(Object reportsDir)
 
     File getAssetsDir()
-
     void setAssetsDir(File reportsDir)
-
     void setAssetsDir(Object reportsDir)
 
-    UnityPluginExtension projectPath(File path)
-
     ExecResult batchMode(Closure closure)
-
     ExecResult batchMode(Action<? super BatchModeSpec> action)
 
     ExecResult activate(Closure closure)
-
     ExecResult activate(Action<? super ActivationSpec> action)
 
     ExecResult returnLicense(Closure closure)
-
     ExecResult returnLicense(Action<? super BaseBatchModeSpec> action)
 
     Factory<BatchModeAction> getBatchModeActionFactory()
@@ -73,37 +60,26 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
     Factory<ActivationAction> getActivationActionFactory()
 
     Boolean getAutoReturnLicense()
-
     void setAutoReturnLicense(Boolean value)
-
     UnityPluginExtension autoReturnLicense(Boolean value)
 
     Boolean getAutoActivateUnity()
-
     void setAutoActivateUnity(Boolean value)
-
     UnityPluginExtension autoActivateUnity(Boolean value)
 
     UnityAuthentication getAuthentication()
-
     void setAuthentication(UnityAuthentication authentication)
 
     UnityPluginExtension authentication(Closure closure)
-
     UnityPluginExtension authentication(Action<? super UnityAuthentication> action)
 
     BuildTarget getDefaultBuildTarget()
-
     void setDefaultBuildTarget(BuildTarget value)
-
     void setDefaultBuildTarget(Object value)
-
     UnityPluginExtension defaultBuildTarget(BuildTarget value)
 
     Boolean getRedirectStdOut()
-
     void setRedirectStdOut(Boolean redirect)
-
     UnityPluginExtension redirectStdOut(Boolean redirect)
 
     void setLogCategory(String value)

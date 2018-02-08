@@ -61,11 +61,11 @@ class UnityPluginSpec extends ProjectSpec {
         taskType.isInstance(task)
 
         where:
-        taskName                                 | taskType
-        UnityPlugin.TEST_TASK_NAME               | DefaultTask
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME     | DefaultTask
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME      | DefaultTask
-        UnityPlugin.EXPORT_PACKAGE_TASK_NAME     | UnityPackage
+        taskName                             | taskType
+        UnityPlugin.TEST_TASK_NAME           | DefaultTask
+        UnityPlugin.TEST_EDITMODE_TASK_NAME  | DefaultTask
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | DefaultTask
+        UnityPlugin.EXPORT_PACKAGE_TASK_NAME | UnityPackage
     }
 
     @Unroll
@@ -137,13 +137,13 @@ class UnityPluginSpec extends ProjectSpec {
         }
 
         where:
-        baseTestTaskName                     | testPlatform          | testBuildTarget                                                | name
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android]                                          | "single"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android]                                          | "single"
-        UnityPlugin.TEST_EDITOMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.editmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
-        UnityPlugin.TEST_PLAYMODE_TASK_NAME  | TestPlatform.playmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
+        baseTestTaskName                    | testPlatform          | testBuildTarget                                                | name
+        UnityPlugin.TEST_EDITMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME | TestPlatform.playmode | [BuildTarget.android]                                          | "single"
+        UnityPlugin.TEST_EDITMODE_TASK_NAME | TestPlatform.editmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME | TestPlatform.playmode | [BuildTarget.android, BuildTarget.ios]                         | "two"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME | TestPlatform.editmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
+        UnityPlugin.TEST_PLAYMODE_TASK_NAME | TestPlatform.playmode | EnumSet.range(BuildTarget.ios, BuildTarget.samsungtv).toList() | "all"
 
         taskNames = testBuildTarget.collect { baseTestTaskName + it.toString().capitalize() }
     }

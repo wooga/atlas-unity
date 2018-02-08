@@ -43,7 +43,7 @@ import java.util.concurrent.Callable
 class UnityPlugin implements Plugin<Project> {
 
     static String TEST_TASK_NAME = "test"
-    static String TEST_EDITOMODE_TASK_NAME = "testEditMode"
+    static String TEST_EDITMODE_TASK_NAME = "testEditMode"
     static String TEST_PLAYMODE_TASK_NAME = "testPlayMode"
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
@@ -67,48 +67,33 @@ class UnityPlugin implements Plugin<Project> {
         this.project = project
         project.pluginManager.apply(BasePlugin.class)
         project.pluginManager.apply(ReportingBasePlugin.class)
-        UnityPluginExtension extension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
 
-        final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
-        ConventionMapping unityExtensionMapping = ((IConventionAware) extension).getConventionMapping()
-        unityExtensionMapping.map("reportsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return reportingExtension.file("unity")
-            }
-        })
+        final UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
+        final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
-        unityExtensionMapping.map("assetsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return new File(extension.getProjectPath().path, "Assets")
-            }
-        })
-
-        unityExtensionMapping.map("pluginsDir", new Callable<Object>() {
-            @Override
-            Object call() {
-                return new File(extension.getAssetsDir(), "Plugins")
-            }
-        })
-
-        BasePluginConvention convention = new BasePluginConvention(project)
-
-
-        configureUnityTasks(extension)
-        addTestTasks(extension)
+        configureUnityExtensionConvention(unityExtension)
+        configureUnityTasks(unityExtension)
+        addTestTasks(unityExtension)
         addPackageTask()
-        addActivateAndReturnLicenseTasks(extension)
+        addActivateAndReturnLicenseTasks(unityExtension)
         createUnityPackageConfiguration()
-        addDefaultReportTasks(extension)
-        configureArchiveDefaults(convention)
+        addDefaultReportTasks(unityExtension)
+        configureArchiveDefaults(basePluginConvention)
 
         project.afterEvaluate(new Action<Project>() {
             @Override
             void execute(Project p) {
-                configureAutoActivationDeactivation(p, extension)
+                configureAutoActivationDeactivation(p, unityExtension)
             }
         })
+    }
+
+    private void configureUnityExtensionConvention(UnityPluginExtension unityExtension) {
+        final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
+        final ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
+        unityExtensionConvention.map("reportsDir", { reportingExtension.file("unity") })
+        unityExtensionConvention.map("assetsDir", { new File(unityExtension.getProjectPath().path, "Assets") })
+        unityExtensionConvention.map("pluginsDir", { new File(unityExtension.getAssetsDir(), "Plugins") })
     }
 
     def configureUnityTasks(UnityPluginExtension extension) {
@@ -127,6 +112,8 @@ class UnityPlugin implements Plugin<Project> {
     static void applyBaseConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
         taskConventionMapping.map "unityPath", { extension.unityPath }
         taskConventionMapping.logCategory = { extension.logCategory }
+        taskConventionMapping.map "projectPath", { extension.projectPath }
+        taskConventionMapping.map "redirectStdOut", { extension.redirectStdOut }
     }
 
     private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
@@ -172,14 +159,14 @@ class UnityPlugin implements Plugin<Project> {
 
     private void addTestTasks(final UnityPluginExtension extension) {
         def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
-        def testEditModeTask = project.tasks.create(name: TEST_EDITOMODE_TASK_NAME, group: GROUP)
+        def testEditModeTask = project.tasks.create(name: TEST_EDITMODE_TASK_NAME, group: GROUP)
         def testPlayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
         testTask.dependsOn testEditModeTask, testPlayModeTask
 
         project.afterEvaluate {
             extension.testBuildTargets.each { target ->
                 def suffix = target.toString().capitalize()
-                testEditModeTask.dependsOn createTestTask(TEST_EDITOMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
+                testEditModeTask.dependsOn createTestTask(TEST_EDITMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
                 testPlayModeTask.dependsOn createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
             }
         }
