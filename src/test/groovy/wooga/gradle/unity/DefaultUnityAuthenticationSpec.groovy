@@ -20,14 +20,15 @@ package wooga.gradle.unity
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
+import wooga.gradle.unity.internal.DefaultUnityAuthentication
 
-@Subject(UnityAuthentication)
-class UnityAuthenticationSpec extends Specification {
+@Subject(DefaultUnityAuthentication)
+class DefaultUnityAuthenticationSpec extends Specification {
 
     @Unroll("validate getUsername with values from #source")
     def "returns username"() {
         given:
-        def authentication = new UnityAuthentication(props, env)
+        def authentication = new DefaultUnityAuthentication(props, env)
         if (set) {
             authentication.username = set
         }
@@ -47,7 +48,7 @@ class UnityAuthenticationSpec extends Specification {
     @Unroll("validate getPassword with values from #source")
     def "returns password"() {
         given:
-        def authentication = new UnityAuthentication(props, env)
+        def authentication = new DefaultUnityAuthentication(props, env)
         if (set) {
             authentication.password = set
         }
@@ -67,7 +68,7 @@ class UnityAuthenticationSpec extends Specification {
     @Unroll("validate getSerial with values from #source")
     def "returns serial"() {
         given:
-        def authentication = new UnityAuthentication(props, env)
+        def authentication = new DefaultUnityAuthentication(props, env)
         if (set) {
             authentication.serial = set
         }

@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.unity
+package wooga.gradle.unity.internal
 
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -24,10 +24,13 @@ import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
+import wooga.gradle.unity.UnityAuthentication
+import wooga.gradle.unity.UnityPlugin
+import wooga.gradle.unity.UnityPluginExtension
+import wooga.gradle.unity.UnityPluginTestExtension
 import wooga.gradle.unity.batchMode.*
 import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
 import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
-import wooga.gradle.unity.internal.UnityPluginActionExtension
 
 import java.util.concurrent.Callable
 
@@ -330,7 +333,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         this.project = project
         this.fileResolver = fileResolver
         this.instantiator = instantiator
-        this.authentication = new UnityAuthentication(project.rootProject.properties, System.getenv())
+        this.authentication = new DefaultUnityAuthentication(project.rootProject.properties, System.getenv())
         this.batchModeActionFactory = instantiator.newInstance(DefaultBatchModeActionFactory, project, instantiator, fileResolver)
         this.activationActionFactory = instantiator.newInstance(DefaultActivationActionFactory, project, instantiator, fileResolver, authentication)
         projectPath = project.projectDir

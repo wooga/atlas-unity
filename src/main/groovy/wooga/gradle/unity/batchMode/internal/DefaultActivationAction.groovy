@@ -40,7 +40,7 @@ class DefaultActivationAction extends DefaultBatchModeAction implements Activati
     }
 
     void setAuthentication(UnityAuthentication authentication) {
-        if(authentication == null) {
+        if (authentication == null) {
             return
         }
         this.authentication.username = authentication.username

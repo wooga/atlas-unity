@@ -23,6 +23,7 @@ import org.gradle.api.DefaultTask
 import spock.lang.Unroll
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
+import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
 

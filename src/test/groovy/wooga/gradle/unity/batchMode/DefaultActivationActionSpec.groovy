@@ -25,7 +25,7 @@ import org.gradle.internal.file.PathToFileResolver
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
-import wooga.gradle.unity.UnityAuthentication
+import wooga.gradle.unity.internal.DefaultUnityAuthentication
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.internal.DefaultActivationAction
@@ -39,7 +39,7 @@ class DefaultActivationActionSpec extends Specification {
 
     def projectProperties = [:]
     def fileResolver = Mock(PathToFileResolver)
-    def authentication = new UnityAuthentication(DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SERIAL)
+    def authentication = new DefaultUnityAuthentication(DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SERIAL)
     def extension = Mock(UnityPluginExtension)
     def extensions = Mock(ExtensionContainer)
     def activationAction
@@ -141,9 +141,9 @@ class DefaultActivationActionSpec extends Specification {
         def p = pass
         def s = key
 
-        activationAction.authentication(new Action<UnityAuthentication>() {
+        activationAction.authentication(new Action<DefaultUnityAuthentication>() {
             @Override
-            void execute(UnityAuthentication authentication) {
+            void execute(DefaultUnityAuthentication authentication) {
                 authentication.username = n
                 authentication.password = p
                 authentication.serial = s
@@ -171,7 +171,7 @@ class DefaultActivationActionSpec extends Specification {
         def authentication = activationAction.authentication
 
         and: "a reconfigured auth object"
-        activationAction.authentication = new UnityAuthentication(name, pass, key)
+        activationAction.authentication = new DefaultUnityAuthentication(name, pass, key)
 
         expect:
         assertAuthentication(name, pass, key)

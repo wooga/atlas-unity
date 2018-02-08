@@ -27,6 +27,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.batchMode.BuildTarget
+import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 
 class DefaultUnityPluginExtensionSpec extends Specification {
 

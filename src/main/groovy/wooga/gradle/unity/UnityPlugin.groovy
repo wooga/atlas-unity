@@ -35,6 +35,7 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
+import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.Test

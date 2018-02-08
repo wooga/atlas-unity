@@ -23,8 +23,10 @@ import wooga.gradle.unity.UnityAuthentication
 interface ActivationSpec extends BaseBatchModeSpec {
 
     UnityAuthentication getAuthentication()
+
     void setAuthentication(UnityAuthentication authentication)
 
     ActivationSpec authentication(Closure closure)
+
     ActivationSpec authentication(Action<? super UnityAuthentication> action)
 }
