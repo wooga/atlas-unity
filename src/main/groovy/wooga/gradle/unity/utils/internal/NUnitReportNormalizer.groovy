@@ -1,4 +1,4 @@
-package wooga.gradle.unity.utils
+package wooga.gradle.unity.utils.internal
 
 import groovy.xml.StreamingMarkupBuilder
 import org.gradle.api.logging.Logger

@@ -37,8 +37,8 @@ import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.internal.UnityTestTaskReportsImpl
-import wooga.gradle.unity.utils.NUnitReportNormalizer
-import wooga.gradle.unity.utils.ProjectSettings
+import wooga.gradle.unity.utils.internal.NUnitReportNormalizer
+import wooga.gradle.unity.utils.internal.ProjectSettings
 
 import javax.inject.Inject
 

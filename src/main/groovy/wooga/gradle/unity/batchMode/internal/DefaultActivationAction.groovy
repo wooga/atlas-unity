@@ -24,7 +24,7 @@ import org.gradle.internal.file.PathToFileResolver
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
-import wooga.gradle.FileUtils
+import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.BatchModeFlags

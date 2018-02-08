@@ -16,7 +16,7 @@
  */
 
 
-package wooga.gradle.unity.utils
+package wooga.gradle.unity.utils.internal
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
