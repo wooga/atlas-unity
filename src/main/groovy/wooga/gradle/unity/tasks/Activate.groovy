@@ -31,6 +31,7 @@ import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.ActivationSpec
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
 class Activate extends AbstractUnityTask implements ActivationSpec {
 

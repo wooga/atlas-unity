@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.tasks.internal
 
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionMapping

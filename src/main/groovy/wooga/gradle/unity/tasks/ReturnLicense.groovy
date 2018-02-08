@@ -17,7 +17,6 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -28,6 +27,7 @@ import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
 class ReturnLicense extends AbstractUnityTask {
 

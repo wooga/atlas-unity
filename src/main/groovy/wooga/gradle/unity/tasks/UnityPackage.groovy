@@ -23,6 +23,7 @@ import org.gradle.api.tasks.*
 import org.gradle.util.GUtil
 import wooga.gradle.FileUtils
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.tasks.internal.AbstractBatchModeTask
 
 import javax.inject.Inject
 

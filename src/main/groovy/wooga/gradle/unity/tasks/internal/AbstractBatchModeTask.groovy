@@ -1,4 +1,4 @@
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.tasks.internal
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional

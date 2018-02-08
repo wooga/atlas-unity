@@ -33,6 +33,8 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
+import wooga.gradle.unity.tasks.internal.AbstractBatchModeTask
+import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.UnityTestTaskReportsImpl
 import wooga.gradle.unity.utils.NUnitReportNormalizer

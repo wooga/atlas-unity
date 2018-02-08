@@ -17,6 +17,8 @@
 
 package wooga.gradle.unity.tasks
 
+import wooga.gradle.unity.tasks.internal.AbstractBatchModeTask
+
 class Unity extends AbstractBatchModeTask {
 
     Unity() {

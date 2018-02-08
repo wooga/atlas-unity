@@ -36,6 +36,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.*
+import wooga.gradle.unity.tasks.internal.AbstractBatchModeTask
+import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
