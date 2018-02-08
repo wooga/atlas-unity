@@ -69,14 +69,9 @@ class UnityPlugin implements Plugin<Project> {
         project.pluginManager.apply(ReportingBasePlugin.class)
 
         final UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
-        final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
-        final ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
         final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
-        unityExtensionConvention.map("reportsDir", { return reportingExtension.file("unity") })
-        unityExtensionConvention.map("assetsDir", { return new File(unityExtension.getProjectPath().path, "Assets") })
-        unityExtensionConvention.map("pluginsDir", { return new File(unityExtension.getAssetsDir(), "Plugins") })
-
+        configureUnityExtensionConvention(unityExtension)
         configureUnityTasks(unityExtension)
         addTestTasks(unityExtension)
         addPackageTask()
@@ -91,6 +86,14 @@ class UnityPlugin implements Plugin<Project> {
                 configureAutoActivationDeactivation(p, unityExtension)
             }
         })
+    }
+
+    private void configureUnityExtensionConvention(UnityPluginExtension unityExtension) {
+        final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
+        final ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
+        unityExtensionConvention.map("reportsDir", { reportingExtension.file("unity") })
+        unityExtensionConvention.map("assetsDir", { new File(unityExtension.getProjectPath().path, "Assets") })
+        unityExtensionConvention.map("pluginsDir", { new File(unityExtension.getAssetsDir(), "Plugins") })
     }
 
     def configureUnityTasks(UnityPluginExtension extension) {
