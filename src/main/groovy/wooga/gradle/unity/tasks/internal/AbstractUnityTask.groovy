@@ -31,6 +31,7 @@ import org.gradle.process.internal.ExecException
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeAction
+import wooga.gradle.unity.internal.UnityPluginActionExtension
 
 import java.util.concurrent.Callable
 
@@ -40,18 +41,14 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     private final Class<T> taskType
 
-    private interface ExecuteExclude {
-        ExecResult execute() throws ExecException
-    }
-
     abstract BaseBatchModeSpec retrieveAction()
 
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
         return retrieveDefaultUnityExtension().batchModeActionFactory
     }
 
-    protected UnityPluginExtension retrieveDefaultUnityExtension() {
-        return project.extensions.getByType(UnityPluginExtension) as UnityPluginExtension
+    protected UnityPluginActionExtension retrieveDefaultUnityExtension() {
+        return project.extensions.getByType(UnityPluginActionExtension) as UnityPluginExtension
     }
 
     AbstractUnityTask(Class<T> taskType) {

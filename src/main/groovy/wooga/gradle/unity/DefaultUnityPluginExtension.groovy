@@ -25,12 +25,15 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
 import wooga.gradle.unity.batchMode.*
+import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
+import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
+import wooga.gradle.unity.internal.UnityPluginActionExtension
 
 import java.util.concurrent.Callable
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
-class DefaultUnityPluginExtension implements UnityPluginExtension {
+class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginActionExtension {
 
     static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
     static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")

@@ -28,6 +28,7 @@ import spock.lang.Unroll
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
+import wooga.gradle.unity.batchMode.internal.DefaultActivationAction
 
 @Subject([DefaultActivationAction])
 class DefaultActivationActionSpec extends Specification {

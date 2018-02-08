@@ -36,7 +36,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.*
-import wooga.gradle.unity.tasks.internal.AbstractBatchModeTask
+import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
 import javax.inject.Inject
@@ -122,9 +122,9 @@ class UnityPlugin implements Plugin<Project> {
         Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
         Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
 
-        project.getTasks().withType(AbstractBatchModeTask, new Action<AbstractBatchModeTask>() {
+        project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
-            void execute(AbstractBatchModeTask task) {
+            void execute(AbstractUnityProjectTask task) {
 
                 if (extension.autoActivateUnity) {
                     task.dependsOn activationTask
