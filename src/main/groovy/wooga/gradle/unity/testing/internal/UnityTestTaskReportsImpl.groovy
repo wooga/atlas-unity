@@ -15,13 +15,14 @@
  *
  */
 
-package wooga.gradle.unity.testing
+package wooga.gradle.unity.testing.internal
 
 import org.gradle.api.Task
 import org.gradle.api.reporting.ConfigurableReport
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport
 import org.gradle.api.reporting.internal.TaskReportContainer
+import wooga.gradle.unity.testing.UnityTestTaskReport
 
 class UnityTestTaskReportsImpl extends TaskReportContainer<Report> implements UnityTestTaskReport {
 
