@@ -19,12 +19,7 @@ package wooga.gradle.unity.tasks
 
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.Factory
+import org.gradle.api.tasks.*
 import org.gradle.util.GUtil
 import wooga.gradle.FileUtils
 import wooga.gradle.unity.batchMode.BatchModeFlags
@@ -147,7 +142,7 @@ class UnityPackage extends AbstractBatchModeTask {
         super(UnityPackage.class)
         this.fileResolver = fileResolver
         this.extension = UNITY_PACKAGE_EXTENSION
-        outputs.upToDateWhen {false}
+        outputs.upToDateWhen { false }
     }
 
     @TaskAction
@@ -157,7 +152,7 @@ class UnityPackage extends AbstractBatchModeTask {
         exportArgs << BatchModeFlags.EXPORT_PACKAGE
         Set exportFiles = []
         getInputFiles().each { File f ->
-            if(f.file) {
+            if (f.file) {
                 f = f.parentFile
             }
 

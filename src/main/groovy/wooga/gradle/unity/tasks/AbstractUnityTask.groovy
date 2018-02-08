@@ -46,7 +46,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     abstract BaseBatchModeSpec retrieveAction()
 
-    
+
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
         return retrieveDefaultUnityExtension().batchModeActionFactory
     }
@@ -82,6 +82,12 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
     @Override
     File getLogFile() {
         retrieveAction().logFile
+    }
+
+    @Optional
+    @Input
+    String getLogCategory() {
+        return retrieveAction().logCategory
     }
 
     /**

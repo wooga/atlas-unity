@@ -42,6 +42,8 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     static final String UNITY_PATH_OPTION = "unity.path"
     static final String UNITY_PATH_ENV_VAR = "UNITY_PATH"
+    static final String UNITY_LOG_CATEGORY_OPTION = "unity.logCategory"
+    static final String UNITY_LOG_CATEGORY_ENV_VAR = "UNITY_LOG_CATEGORY"
 
     static final String REDIRECT_STDOUT_OPTION = "unity.redirectStdout"
     static final String REDIRECT_STDOUT_ENV_VAR = "UNITY_REDIRECT_STDOUT"
@@ -84,6 +86,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     private Object defaultBuildTarget
     private final List<Object> testBuildTargets = new ArrayList<Object>()
     private Boolean redirectStdOut = false
+    private String logCategory
 
     static File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
         String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
@@ -92,6 +95,10 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         } else {
             return null
         }
+    }
+
+    static String getUnityLogCategory(Map<String, ?> properties, Map<String, String> env) {
+        properties[UNITY_LOG_CATEGORY_OPTION] ?: env[UNITY_LOG_CATEGORY_ENV_VAR]
     }
 
     File getUnityPath() {
@@ -209,7 +216,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
     @Override
     DefaultUnityPluginExtension unityPath(Object path) {
-        customUnityPath = fileResolver.resolveLater(path)
+        this.setUnityPath(path)
         this
     }
 
@@ -283,6 +290,22 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
     @Override
     UnityPluginExtension defaultBuildTarget(BuildTarget value) {
         this.setDefaultBuildTarget(value)
+        return this
+    }
+
+    @Override
+    void setLogCategory(String value) {
+        logCategory = value
+    }
+
+    @Override
+    String getLogCategory() {
+        return (logCategory ?: getUnityLogCategory(project.properties, System.getenv())) ?: ""
+    }
+
+    @Override
+    UnityPluginExtension logCategory(String value) {
+        this.setLogCategory(value)
         return this
     }
 
@@ -398,5 +421,4 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
 
         return EnumSet.copyOf(targets)
     }
-
 }

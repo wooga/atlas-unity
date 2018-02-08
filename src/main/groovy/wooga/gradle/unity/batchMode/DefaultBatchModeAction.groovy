@@ -43,13 +43,14 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     private File customUnityPath
     private File customProjectPath
     private BuildTarget customBuildTarget
+    private String logCategory
 
     File getUnityPath() {
         if (customUnityPath) {
             return customUnityPath
         }
 
-        return extension.unityPath
+        extension.unityPath
     }
 
     void setUnityPath(File path) {
@@ -61,7 +62,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
             return customProjectPath
         }
 
-        return extension.projectPath
+        extension.projectPath
     }
 
     void setProjectPath(File path) {
@@ -88,16 +89,34 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     Boolean getRedirectStdOut() {
-        if(redirectStdOut) {
+        if (redirectStdOut) {
             return redirectStdOut
         }
-
-        return extension.redirectStdOut
+        extension.redirectStdOut
     }
 
     @Override
     void setRedirectStdOut(Boolean redirect) {
         this.redirectStdOut = redirect
+    }
+
+    @Override
+    String getLogCategory() {
+        if (this.logCategory) {
+            return logCategory
+        }
+        extension.logCategory
+    }
+
+    @Override
+    BaseBatchModeSpec logCategory(String value) {
+        this.setLogCategory(value)
+        return this
+    }
+
+    @Override
+    void setLogCategory(String value) {
+        this.logCategory = value
     }
 
     BuildTarget getBuildTarget() {

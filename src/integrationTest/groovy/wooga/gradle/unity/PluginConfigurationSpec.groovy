@@ -17,9 +17,7 @@
 
 package wooga.gradle.unity
 
-import spock.lang.Shared
 import spock.lang.Unroll
-import spock.util.environment.RestoreSystemProperties
 
 /**
  * Spec test for basic configuration of the plugin
@@ -77,8 +75,8 @@ class PluginConfigurationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("$property: ${path.path}")
 
         where:
-        property    | expectedPath
-        'assetsDir' | "Assets"
+        property     | expectedPath
+        'assetsDir'  | "Assets"
         'pluginsDir' | "Assets/Plugins"
     }
 }
