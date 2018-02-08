@@ -140,24 +140,4 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         "testPlatform" | true      | 'wooga.gradle.unity.batchMode.TestPlatform.editmode' | '-testPlatform editmode'
         method = (useSetter) ? "set${property.capitalize()}" : property
     }
-
-    @Unroll
-    def "fails when setting null to #property"() {
-        given: "a build file with custom test task"
-        buildFile << """
-
-        task('customTest', type:wooga.gradle.unity.tasks.Test) {
-            String values
-            $property(values as String)
-        }
-        """.stripIndent()
-
-        expect:
-        runTasksWithFailure("customTest")
-
-        where:
-        property     | errorMessage
-        "categories" | "categories == null!"
-        "filter"     | "filter == null!"
-    }
 }

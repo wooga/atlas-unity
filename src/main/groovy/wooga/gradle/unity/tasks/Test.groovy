@@ -25,10 +25,12 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.StopExecutionException
+import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
-import org.gradle.util.GUtil
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.testing.UnityTestTaskReport
@@ -42,8 +44,6 @@ class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskRepor
 
     static Logger logger = Logging.getLogger(Test)
 
-    private final List<Object> filter = new ArrayList()
-    private final List<Object> categories = new ArrayList()
     private final FileResolver fileResolver
     private TestPlatform testPlatform = TestPlatform.editmode
     private DefaultArtifactVersion unityVersion
@@ -61,66 +61,6 @@ class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskRepor
     void setUnityPath(File path) {
         unityVersion = null
         super.setUnityPath(path)
-    }
-
-    @Input
-    @Optional
-    List<String> getCategories() {
-        List<String> args = new ArrayList<String>()
-        for (Object argument : categories) {
-            args.add(argument.toString())
-        }
-        return args
-    }
-
-    Test categories(Object... var1) {
-        if (var1 == null) {
-            throw new IllegalArgumentException("categories == null!")
-        } else {
-            this.categories.addAll(Arrays.asList(var1))
-            return this
-        }
-    }
-
-    Test categories(Iterable<?> var1) {
-        GUtil.addToCollection(categories, var1)
-        return this
-    }
-
-    Test setCategories(Iterable<?> var1) {
-        this.categories.clear()
-        GUtil.addToCollection(categories, var1)
-        return this
-    }
-
-    @Input
-    @Optional
-    List<String> getFilter() {
-        List<String> args = new ArrayList<String>()
-        for (Object argument : filter) {
-            args.add(argument.toString())
-        }
-        return args
-    }
-
-    Test filter(Object... var1) {
-        if (var1 == null) {
-            throw new IllegalArgumentException("filter == null!")
-        } else {
-            this.filter.addAll(Arrays.asList(var1))
-            return this
-        }
-    }
-
-    Test filter(Iterable<?> var1) {
-        GUtil.addToCollection(filter, var1)
-        return this
-    }
-
-    Test setFilter(Iterable<?> var1) {
-        this.filter.clear()
-        GUtil.addToCollection(filter, var1)
-        return this
     }
 
     @Input
@@ -146,12 +86,6 @@ class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskRepor
         setTestPlatform(value)
         return this
     }
-
-    @Console
-    boolean verbose = true
-
-    @Console
-    boolean teamcity = false
 
     @Inject
     protected Instantiator getInstantiator() {
@@ -220,18 +154,6 @@ class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskRepor
             batchMode = false
             quit = false
 
-            if (verbose) {
-                logger.info("Option [verbose] not supported with unity version: ${unityVersion.toString()}")
-            }
-
-            if (filter.size() > 0) {
-                logger.info("Option [filter] not supported with unity version: ${unityVersion.toString()}")
-            }
-
-            if (categories.size() > 0) {
-                logger.info("Option [categories] not supported with unity version: ${unityVersion.toString()}")
-            }
-
             testArgs << BatchModeFlags.RUN_TESTS
 
             if (reports.getXml().enabled) {
@@ -289,7 +211,7 @@ class Test extends AbstractBatchModeTask implements Reporting<UnityTestTaskRepor
                 void execute(ExecSpec execSpec) {
                     execSpec.standardOutput = standardOutput
                     execSpec.ignoreExitValue = true
-                    String winPath = pathToUnity.path.replace('\\',"\\\\")
+                    String winPath = pathToUnity.path.replace('\\', "\\\\")
 
                     //Todo find a better solution to test this
                     String wmicPath = System.getenv("WMIC_PATH") ? System.getenv("WMIC_PATH") : "wmic"
