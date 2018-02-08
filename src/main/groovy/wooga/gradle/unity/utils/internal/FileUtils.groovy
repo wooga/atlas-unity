@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle
+package wooga.gradle.unity.utils.internal
 
 class FileUtils {
     static void ensureFile(File file) {

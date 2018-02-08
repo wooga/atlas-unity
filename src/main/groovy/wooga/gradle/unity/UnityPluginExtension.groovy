@@ -18,9 +18,11 @@
 package wooga.gradle.unity
 
 import org.gradle.api.Action
-import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
-import wooga.gradle.unity.batchMode.*
+import wooga.gradle.unity.batchMode.ActivationSpec
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.batchMode.BatchModeSpec
+import wooga.gradle.unity.batchMode.BuildTarget
 
 interface UnityPluginExtension extends UnityPluginTestExtension {
 
@@ -55,10 +57,6 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
     ExecResult returnLicense(Closure closure)
     ExecResult returnLicense(Action<? super BaseBatchModeSpec> action)
 
-    Factory<BatchModeAction> getBatchModeActionFactory()
-
-    Factory<ActivationAction> getActivationActionFactory()
-
     Boolean getAutoReturnLicense()
     void setAutoReturnLicense(Boolean value)
     UnityPluginExtension autoReturnLicense(Boolean value)
@@ -83,9 +81,7 @@ interface UnityPluginExtension extends UnityPluginTestExtension {
     UnityPluginExtension redirectStdOut(Boolean redirect)
 
     void setLogCategory(String value)
-
     String getLogCategory()
-
     UnityPluginExtension logCategory(String value)
-
 }
+

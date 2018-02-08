@@ -1,4 +1,4 @@
-package wooga.gradle.unity.utils
+package wooga.gradle.unity.utils.internal
 
 import org.gradle.api.Nullable
 import org.gradle.internal.io.TextStream

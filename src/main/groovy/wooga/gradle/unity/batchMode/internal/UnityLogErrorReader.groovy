@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.unity.batchMode
+package wooga.gradle.unity.batchMode.internal
 
 class UnityLogErrorReader {
 

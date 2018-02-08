@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.unity
+package wooga.gradle.unity.internal
 
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -24,13 +24,19 @@ import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
+import wooga.gradle.unity.UnityAuthentication
+import wooga.gradle.unity.UnityPlugin
+import wooga.gradle.unity.UnityPluginExtension
+import wooga.gradle.unity.UnityPluginTestExtension
 import wooga.gradle.unity.batchMode.*
+import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
+import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
 
 import java.util.concurrent.Callable
 
 import static org.gradle.util.ConfigureUtil.configureUsing
 
-class DefaultUnityPluginExtension implements UnityPluginExtension {
+class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginActionExtension {
 
     static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
     static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
@@ -327,7 +333,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension {
         this.project = project
         this.fileResolver = fileResolver
         this.instantiator = instantiator
-        this.authentication = new UnityAuthentication(project.rootProject.properties, System.getenv())
+        this.authentication = new DefaultUnityAuthentication(project.rootProject.properties, System.getenv())
         this.batchModeActionFactory = instantiator.newInstance(DefaultBatchModeActionFactory, project, instantiator, fileResolver)
         this.activationActionFactory = instantiator.newInstance(DefaultActivationActionFactory, project, instantiator, fileResolver, authentication)
         projectPath = project.projectDir

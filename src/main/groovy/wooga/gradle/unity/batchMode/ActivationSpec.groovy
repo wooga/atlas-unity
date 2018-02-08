@@ -18,14 +18,15 @@
 package wooga.gradle.unity.batchMode
 
 import org.gradle.api.Action
-import org.gradle.api.internal.IConventionAware
 import wooga.gradle.unity.UnityAuthentication
 
-interface ActivationSpec extends BaseBatchModeSpec, IConventionAware {
+interface ActivationSpec extends BaseBatchModeSpec {
 
     UnityAuthentication getAuthentication()
+
     void setAuthentication(UnityAuthentication authentication)
 
     ActivationSpec authentication(Closure closure)
+
     ActivationSpec authentication(Action<? super UnityAuthentication> action)
 }

@@ -35,7 +35,13 @@ import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.batchMode.TestPlatform
-import wooga.gradle.unity.tasks.*
+import wooga.gradle.unity.internal.DefaultUnityPluginExtension
+import wooga.gradle.unity.tasks.Activate
+import wooga.gradle.unity.tasks.ReturnLicense
+import wooga.gradle.unity.tasks.Test
+import wooga.gradle.unity.tasks.UnityPackage
+import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
+import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -71,14 +77,14 @@ class UnityPlugin implements Plugin<Project> {
         final UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
         final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
-        configureUnityExtensionConvention(unityExtension)
-        configureUnityTasks(unityExtension)
-        addTestTasks(unityExtension)
-        addPackageTask()
-        addActivateAndReturnLicenseTasks(unityExtension)
-        createUnityPackageConfiguration()
-        addDefaultReportTasks(unityExtension)
-        configureArchiveDefaults(basePluginConvention)
+        configureUnityExtensionConvention(project, unityExtension)
+        configureUnityTasks(project, unityExtension)
+        addTestTasks(project, unityExtension)
+        addPackageTask(project)
+        addActivateAndReturnLicenseTasks(project, unityExtension)
+        createUnityPackageConfiguration(project)
+        addDefaultReportTasks(project, unityExtension)
+        configureArchiveDefaults(project, basePluginConvention)
 
         project.afterEvaluate(new Action<Project>() {
             @Override
@@ -88,7 +94,7 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void configureUnityExtensionConvention(UnityPluginExtension unityExtension) {
+    private static void configureUnityExtensionConvention(final Project project, UnityPluginExtension unityExtension) {
         final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
         final ConventionMapping unityExtensionConvention = ((IConventionAware) unityExtension).getConventionMapping()
         unityExtensionConvention.map("reportsDir", { reportingExtension.file("unity") })
@@ -96,7 +102,7 @@ class UnityPlugin implements Plugin<Project> {
         unityExtensionConvention.map("pluginsDir", { new File(unityExtension.getAssetsDir(), "Plugins") })
     }
 
-    def configureUnityTasks(UnityPluginExtension extension) {
+    private static void configureUnityTasks(final Project project, UnityPluginExtension extension) {
         project.getTasks().withType(AbstractUnityTask, new Action<AbstractUnityTask>() {
             @Override
             void execute(AbstractUnityTask task) {
@@ -116,13 +122,13 @@ class UnityPlugin implements Plugin<Project> {
         taskConventionMapping.map "redirectStdOut", { extension.redirectStdOut }
     }
 
-    private void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
+    private static void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
         Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
         Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
 
-        project.getTasks().withType(AbstractBatchModeTask, new Action<AbstractBatchModeTask>() {
+        project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
-            void execute(AbstractBatchModeTask task) {
+            void execute(AbstractUnityProjectTask task) {
 
                 if (extension.autoActivateUnity) {
                     task.dependsOn activationTask
@@ -136,7 +142,7 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void addActivateAndReturnLicenseTasks(final UnityPluginExtension extension) {
+    private static void addActivateAndReturnLicenseTasks(final Project project, final UnityPluginExtension extension) {
         Task activateTask = project.tasks.create(name: ACTIVATE_TASK_NAME, type: Activate, group: GROUP)
         ReturnLicense returnLicense = (ReturnLicense) project.tasks.create(name: RETURN_LICENSE_TASK_NAME, type: ReturnLicense, group: GROUP)
         returnLicense.licenseDirectory = extension.unityLicenseDirectory
@@ -152,12 +158,12 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void addPackageTask() {
+    private static void addPackageTask(final Project project) {
         def task = project.tasks.create(name: EXPORT_PACKAGE_TASK_NAME, type: UnityPackage, group: GROUP)
         project.tasks[BasePlugin.ASSEMBLE_TASK_NAME].dependsOn task
     }
 
-    private void addTestTasks(final UnityPluginExtension extension) {
+    private static void addTestTasks(final Project project, final UnityPluginExtension extension) {
         def testTask = project.tasks.create(name: TEST_TASK_NAME, group: GROUP)
         def testEditModeTask = project.tasks.create(name: TEST_EDITMODE_TASK_NAME, group: GROUP)
         def testPlayModeTask = project.tasks.create(name: TEST_PLAYMODE_TASK_NAME, group: GROUP)
@@ -166,22 +172,22 @@ class UnityPlugin implements Plugin<Project> {
         project.afterEvaluate {
             extension.testBuildTargets.each { target ->
                 def suffix = target.toString().capitalize()
-                testEditModeTask.dependsOn createTestTask(TEST_EDITMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
-                testPlayModeTask.dependsOn createTestTask(TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
+                testEditModeTask.dependsOn createTestTask(project, TEST_EDITMODE_TASK_NAME + suffix, TestPlatform.editmode, target)
+                testPlayModeTask.dependsOn createTestTask(project, TEST_PLAYMODE_TASK_NAME + suffix, TestPlatform.playmode, target)
             }
         }
 
         project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
     }
 
-    private Test createTestTask(String name, TestPlatform testPlatform, BuildTarget testBuildTarget) {
+    private static Test createTestTask(final Project project, String name, TestPlatform testPlatform, BuildTarget testBuildTarget) {
         def task = project.tasks.create(name: name, type: Test, group: GROUP) as Test
         task.testPlatform = testPlatform
         task.buildTarget = testBuildTarget
         task
     }
 
-    private void addDefaultReportTasks(final UnityPluginExtension extension) {
+    private static void addDefaultReportTasks(final Project project, final UnityPluginExtension extension) {
         project.getTasks().withType(Test.class, new Action<Test>() {
             @Override
             void execute(Test task) {
@@ -190,7 +196,7 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void configureArchiveDefaults(final BasePluginConvention pluginConvention) {
+    private static void configureArchiveDefaults(final Project project, final BasePluginConvention pluginConvention) {
         project.getTasks().withType(UnityPackage.class, new Action<UnityPackage>() {
             void execute(UnityPackage task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()
@@ -219,13 +225,13 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private void createUnityPackageConfiguration() {
+    private static void createUnityPackageConfiguration(final Project project) {
         Configuration unityPackage = project.configurations.maybeCreate(UNITY_PACKAGE_CONFIGURATION_NAME)
         unityPackage.description = "unity package resource"
         unityPackage.transitive = false
     }
 
-    private void configureUnityReportDefaults(final UnityPluginExtension extension, final Test task) {
+    private static void configureUnityReportDefaults(final UnityPluginExtension extension, final Test task) {
         task.getReports().all(new Action<Report>() {
             void execute(final Report report) {
                 ConventionMapping mapping = ((IConventionAware) report).conventionMapping

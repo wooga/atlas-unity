@@ -15,7 +15,7 @@
  *
  */
 
-package wooga.gradle.unity.batchMode
+package wooga.gradle.unity.batchMode.internal
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -30,10 +30,15 @@ import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
-import wooga.gradle.FileUtils
+import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
-import wooga.gradle.unity.utils.ForkTextStream
+import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.batchMode.BatchModeAction
+import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.batchMode.BatchModeSpec
+import wooga.gradle.unity.batchMode.BuildTarget
+import wooga.gradle.unity.utils.internal.ForkTextStream
 
 class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction, IConventionAware {
     private final UnityPluginExtension extension

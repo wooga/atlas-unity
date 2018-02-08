@@ -18,6 +18,7 @@
 package wooga.gradle
 
 import spock.lang.Specification
+import wooga.gradle.unity.utils.internal.FileUtils
 
 class FileUtilsSpec extends Specification{
 

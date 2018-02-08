@@ -142,7 +142,7 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
             }
 
             task (mUnity, type: wooga.gradle.unity.tasks.Activate) {
-                authentication = new wooga.gradle.unity.UnityAuthentication("beta@test.test", "betatesttest", "zyxw")
+                authentication = new wooga.gradle.unity.internal.DefaultUnityAuthentication("beta@test.test", "betatesttest", "zyxw")
             }
         """.stripIndent()
 
@@ -160,11 +160,11 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         given: "a build script with fake test unity location"
         buildFile << """
             unity {
-                authentication = new wooga.gradle.unity.UnityAuthentication("test@test.test", "testtesttest", "abcdefg")
+                authentication = new wooga.gradle.unity.internal.DefaultUnityAuthentication("test@test.test", "testtesttest", "abcdefg")
             }
 
             task (mUnity, type: wooga.gradle.unity.tasks.Activate) {
-                authentication = new wooga.gradle.unity.UnityAuthentication("beta@test.test", "betatesttest", "zyxw")
+                authentication = new wooga.gradle.unity.internal.DefaultUnityAuthentication("beta@test.test", "betatesttest", "zyxw")
             }
         """.stripIndent()
 

@@ -2,6 +2,7 @@ package wooga.gradle.unity.utils
 
 import spock.lang.Specification
 import spock.lang.Unroll
+import wooga.gradle.unity.utils.internal.ProjectSettings
 
 class ProjectSettingsSpec extends Specification {
 

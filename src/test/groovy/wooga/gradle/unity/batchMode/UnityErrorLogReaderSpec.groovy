@@ -18,6 +18,7 @@
 package wooga.gradle.unity.batchMode
 
 import spock.lang.Specification
+import wooga.gradle.unity.batchMode.internal.UnityLogErrorReader
 
 class UnityErrorLogReaderSpec extends Specification {
 

@@ -17,35 +17,17 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.Factory
-import org.gradle.process.ExecResult
-import org.gradle.process.internal.ExecException
-import wooga.gradle.unity.UnityPluginExtension
-import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
+import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 
-class ReturnLicense extends AbstractUnityTask {
-
-    private interface ExecuteExclude {
-        ExecResult execute() throws ExecException
-    }
-
-    @Delegate(excludeTypes = [ExecuteExclude.class], interfaces = false)
-    ActivationAction activationAction
-    private ExecResult batchModeResult
-
-    protected Factory<ActivationAction> retrieveActivationActionFactory() {
-        return project.extensions.getByType(UnityPluginExtension).activationActionFactory
-    }
+class ReturnLicense extends AbstractUnityActivationTask {
 
     ReturnLicense() {
         super(ReturnLicense.class)
-        activationAction = retrieveActivationActionFactory().create()
     }
 
     private File dir

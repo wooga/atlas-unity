@@ -21,12 +21,13 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.tasks.*
 import org.gradle.util.GUtil
-import wooga.gradle.FileUtils
+import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 
 import javax.inject.Inject
 
-class UnityPackage extends AbstractBatchModeTask {
+class UnityPackage extends AbstractUnityProjectTask {
 
     private final FileResolver fileResolver
     private FileCollection inputFiles
