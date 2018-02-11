@@ -50,14 +50,20 @@ class UnityPackage extends AbstractUnityProjectTask {
     private String appendix
     private String version
     private String extension
+    private File destinationDir
 
+    /**
+     * File extension value for Unity packages (unitypackage).
+     */
     public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
-
-    @Internal("Represented as part of archivePath")
-    File destinationDir
 
     private String customName
 
+    /**
+     * Returns the directory where the archive is generated into.
+     *
+     * @return the directory
+     */
     File getDestinationDir() {
         return destinationDir
     }
@@ -66,6 +72,11 @@ class UnityPackage extends AbstractUnityProjectTask {
         this.destinationDir = destinationDir
     }
 
+    /**
+     * Returns the base name of the archive.
+     *
+     * @return the base name.
+     */
     @Internal("Represented as part of archiveName")
     String getBaseName() {
         return baseName
@@ -75,6 +86,11 @@ class UnityPackage extends AbstractUnityProjectTask {
         this.baseName = baseName
     }
 
+    /**
+     * Returns the appendix part of the archive name, if any.
+     *
+     * @return the appendix. May be null
+     */
     @Internal("Represented as part of archiveName")
     String getAppendix() {
         return appendix
@@ -84,6 +100,11 @@ class UnityPackage extends AbstractUnityProjectTask {
         this.appendix = appendix
     }
 
+    /**
+     * Returns the version part of the archive name, if any.
+     *
+     * @return the version. May be null.
+     */
     @Internal("Represented as part of archiveName")
     String getVersion() {
         return version
@@ -93,6 +114,9 @@ class UnityPackage extends AbstractUnityProjectTask {
         this.version = version
     }
 
+    /**
+     * Returns the extension part of the archive name.
+     */
     @Internal("Represented as part of archiveName")
     String getExtension() {
         return extension
@@ -102,6 +126,12 @@ class UnityPackage extends AbstractUnityProjectTask {
         this.extension = extension
     }
 
+    /**
+     * Returns the archive name. If the name has not been explicitly set, the pattern for the name is:
+     * <code>[baseName]-[appendix]-[version].[extension]</code>
+     *
+     * @return the archive name.
+     */
     @Internal("Represented as part of archivePath")
     String getArchiveName() {
         if (this.customName != null) {
@@ -114,6 +144,11 @@ class UnityPackage extends AbstractUnityProjectTask {
         }
     }
 
+    /**
+     * Sets the archive name.
+     *
+     * @param name the archive name.
+     */
     void setArchiveName(String name) {
         customName = name
     }
@@ -122,17 +157,34 @@ class UnityPackage extends AbstractUnityProjectTask {
         return GUtil.isTrue(value) ? (GUtil.isTrue(prefix) ? "-".concat(value) : value) : ""
     }
 
+    /**
+     * The path where the archive is constructed. The path is simply the {@code destinationDir} plus the {@code archiveName}.
+     *
+     * @return a File object with the path to the archive
+     */
     @OutputFile
     File getArchivePath() {
         return new File(this.getDestinationDir(), getArchiveName())
     }
 
+    /**
+     * The files to pack into the unity package.
+     * Currently, this option only exports whole folders at a time.
+     * This means that {@code File} objects pointing to files not directories
+     * will be converted to the parent.
+     * @return
+     */
     @SkipWhenEmpty
     @InputFiles
     FileCollection getInputFiles() {
         inputFiles
     }
 
+    //TODO rething this API
+    /*
+    Make a final filecollection and add when passing a new file with method accessor
+    and delete and add when using the setter.
+     */
     void setInputFiles(FileCollection files) {
         inputFiles = files
     }
