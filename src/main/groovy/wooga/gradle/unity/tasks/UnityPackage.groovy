@@ -44,33 +44,7 @@ import javax.inject.Inject
 
 class UnityPackage extends AbstractUnityProjectTask {
 
-    private final FileResolver fileResolver
-    private FileCollection inputFiles
-    private String baseName
-    private String appendix
-    private String version
-    private String extension
-    private File destinationDir
-
-    /**
-     * File extension value for Unity packages (unitypackage).
-     */
-    public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
-
-    private String customName
-
-    /**
-     * Returns the directory where the archive is generated into.
-     *
-     * @return the directory
-     */
-    File getDestinationDir() {
-        return destinationDir
-    }
-
-    void setDestinationDir(File destinationDir) {
-        this.destinationDir = destinationDir
-    }
+    FileCollection inputFiles
 
     /**
      * Returns the base name of the archive.
@@ -78,13 +52,7 @@ class UnityPackage extends AbstractUnityProjectTask {
      * @return the base name.
      */
     @Internal("Represented as part of archiveName")
-    String getBaseName() {
-        return baseName
-    }
-
-    void setBaseName(String baseName) {
-        this.baseName = baseName
-    }
+    String baseName
 
     /**
      * Returns the appendix part of the archive name, if any.
@@ -92,13 +60,7 @@ class UnityPackage extends AbstractUnityProjectTask {
      * @return the appendix. May be null
      */
     @Internal("Represented as part of archiveName")
-    String getAppendix() {
-        return appendix
-    }
-
-    void setAppendix(String appendix) {
-        this.appendix = appendix
-    }
+    String appendix
 
     /**
      * Returns the version part of the archive name, if any.
@@ -106,25 +68,35 @@ class UnityPackage extends AbstractUnityProjectTask {
      * @return the version. May be null.
      */
     @Internal("Represented as part of archiveName")
-    String getVersion() {
-        return version
-    }
-
-    void setVersion(String version) {
-        this.version = version
-    }
+    String version
 
     /**
      * Returns the extension part of the archive name.
      */
     @Internal("Represented as part of archiveName")
-    String getExtension() {
-        return extension
-    }
+    String extension
 
-    void setExtension(String extension) {
-        this.extension = extension
-    }
+    /**
+     * Returns the directory where the archive is generated into.
+     *
+     * @return the directory
+     */
+    @OutputDirectory
+    File destinationDir
+
+    /**
+     * File extension value for Unity packages (unitypackage).
+     */
+    public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
+
+    /**
+     * Returns the archive name. If the name has not been explicitly set, the pattern for the name is:
+     * <code>[baseName]-[appendix]-[version].[extension]</code>
+     *
+     * @return the archive name.
+     */
+    @Internal("Represented as part of archivePath")
+    String archiveName
 
     /**
      * Returns the archive name. If the name has not been explicitly set, the pattern for the name is:
@@ -134,23 +106,14 @@ class UnityPackage extends AbstractUnityProjectTask {
      */
     @Internal("Represented as part of archivePath")
     String getArchiveName() {
-        if (this.customName != null) {
-            return this.customName
+        if (this.archiveName) {
+            return this.archiveName
         } else {
             String name = (String) GUtil.elvis(getBaseName(), "") + maybe(getBaseName(), getAppendix())
             name = name + this.maybe(name, getVersion())
             name = name + (GUtil.isTrue(getExtension()) ? "." + getExtension() : "")
             return name
         }
-    }
-
-    /**
-     * Sets the archive name.
-     *
-     * @param name the archive name.
-     */
-    void setArchiveName(String name) {
-        customName = name
     }
 
     private String maybe(String prefix, String value) {
@@ -162,6 +125,8 @@ class UnityPackage extends AbstractUnityProjectTask {
      *
      * @return a File object with the path to the archive
      */
+    final archivePath
+
     @OutputFile
     File getArchivePath() {
         return new File(this.getDestinationDir(), getArchiveName())
