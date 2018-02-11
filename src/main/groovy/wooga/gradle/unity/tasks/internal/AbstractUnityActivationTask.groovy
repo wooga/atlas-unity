@@ -1,6 +1,7 @@
 package wooga.gradle.unity.tasks.internal
 
 import org.gradle.api.internal.ConventionMapping
+import org.gradle.api.tasks.Input
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
@@ -11,7 +12,7 @@ import wooga.gradle.unity.internal.UnityPluginActionExtension
 abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask> extends AbstractUnityTask {
 
     @Override
-    BaseBatchModeSpec retrieveAction() {
+    protected BaseBatchModeSpec retrieveAction() {
         return activationAction
     }
 
@@ -22,6 +23,7 @@ abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask
 
     interface ExecuteExclude {
         ExecResult activate() throws ExecException
+
         ExecResult returnLicense() throws ExecException
     }
 
@@ -37,4 +39,13 @@ abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask
         return project.extensions.getByType(UnityPluginActionExtension).activationActionFactory
     }
 
+    /**
+     * Tells whether a non-zero exit value is ignored, or an exception thrown. Defaults to <code>false</code>.
+     *
+     * @return whether a non-zero exit value is ignored, or an exception thrown
+     */
+    @Input
+    boolean isIgnoreExitValue() {
+        return activationAction.isIgnoreExitValue()
+    }
 }

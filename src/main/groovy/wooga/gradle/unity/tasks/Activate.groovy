@@ -27,6 +27,23 @@ import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.batchMode.ActivationSpec
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 
+/**
+ * Activates a Unity installation with unity account and a serial number.
+ * Example:
+ * <pre>
+ * {@code
+ *     task activateUnity(type:wooga.gradle.unity.tasks.Activate) {
+ *         authentication {
+ *             username = "user@something.com"
+ *             password = "thePassword"
+ *             serial = "unitySerialNumber"
+ *         }
+ *     }
+ * }
+ * </pre>
+ *
+ * Make sure that license file folder exists, and has appropriate permissions before running this task.
+ */
 class Activate extends AbstractUnityActivationTask implements ActivationSpec {
 
     private ExecResult batchModeResult
@@ -64,23 +81,46 @@ class Activate extends AbstractUnityActivationTask implements ActivationSpec {
         return authentication.serial
     }
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     authentication {
+     *         username = "user@something.com"
+     *         password = "thePassword"
+     *         serial = "unitySerialNumber"
+     *     }
+     * }
+     * </pre>
+     * @param closure the configuration closure
+     * @return the activation task
+     */
     @Override
     Activate authentication(Closure closure) {
         activationAction.authentication(closure)
         return this
     }
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     this.authentication(new Action<UnityAuthentication>() {
+     *         @Override
+     *         void execute(UnityAuthentication authentication) {
+     *             authentication.username = "user@something.com"
+     *             authentication.password = "thePassword"
+     *             authentication.serial = "unitySerialNumber"
+     *         }
+     *     }
+     * }
+     * </pre>
+     * @param action the configuration action
+     * @return the activation task
+     */
     @Override
     Activate authentication(Action<? super UnityAuthentication> action) {
         activationAction.authentication(action)
         return this
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Input
-    boolean isIgnoreExitValue() {
-        return activationAction.isIgnoreExitValue()
     }
 }

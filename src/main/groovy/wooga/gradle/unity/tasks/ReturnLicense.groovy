@@ -17,13 +17,22 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
-import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 
+/**
+ * Returns the currently active license to the license server.
+ * Example:
+ * <pre>
+ * {@code
+ *    task activateUnity(type:wooga.gradle.unity.tasks.ReturnLicense) {
+ *        licenseDirectory = new File("path/to/license/directory")
+ *    }
+ * }
+ * </pre>
+ */
 class ReturnLicense extends AbstractUnityActivationTask {
 
     ReturnLicense() {
@@ -32,49 +41,38 @@ class ReturnLicense extends AbstractUnityActivationTask {
 
     private File dir
 
+    /**
+     * A file pointing to the unity license directory.
+     * Defaults to "/Library/Application Support/Unity/" on macOS and "C:\ProgramData\Unity" on windows.
+     * @return file to unity license directory
+     */
     @SkipWhenEmpty
     @InputDirectory
     File getLicenseDirectory() {
         return dir
     }
 
+    //TODO check if we actually need to set the path.
+    /**
+     * Sets the path to the unity license directory
+     * @param value File object pointing to a valid unity license directory.
+     */
     void setLicenseDirectory(File value) {
         dir = value
+    }
+
+    //TODO check if we actually need to set the path.
+    /**
+     * Sets the path to the unity license directory
+     * @param value File object pointing to a valid unity license directory.
+     */
+    ReturnLicense licenseDirectory(File value) {
+        setLicenseDirectory(value)
+        this
     }
 
     @TaskAction
     void returnLicense() {
         activationAction.returnLicense()
-    }
-
-    @Override
-    ReturnLicense unityPath(File path) {
-        activationAction.unityPath(path)
-        return this
-    }
-
-    @Override
-    ReturnLicense projectPath(File path) {
-        activationAction.projectPath(path)
-        return this
-    }
-
-    @Override
-    ReturnLicense logFile(Object file) {
-        activationAction.logFile(file)
-        return this
-    }
-
-    @Override
-    BaseBatchModeSpec retrieveAction() {
-        return activationAction
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Input
-    boolean isIgnoreExitValue() {
-        return activationAction.isIgnoreExitValue()
     }
 }

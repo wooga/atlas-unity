@@ -19,11 +19,21 @@ package wooga.gradle.unity.tasks
 
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 
+/**
+ * Run Unity and execute arbitrary tasks.
+ * This task type wraps the <code>ExecSpec</code> and sets defaults to invoke Unity.
+ * Example:
+ * <pre>
+ * {@code
+ *      task activateUnity(type:wooga.gradle.unity.tasks.Unity) {
+ *         args "-executeMethod", "Custom.UnityScript"
+ *     }
+ * }
+ * </pre>
+ */
 class Unity extends AbstractUnityProjectTask {
 
     Unity() {
         super(Unity.class)
     }
-
-
 }

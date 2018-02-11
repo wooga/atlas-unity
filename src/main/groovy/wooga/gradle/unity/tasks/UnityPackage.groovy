@@ -27,6 +27,21 @@ import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 
 import javax.inject.Inject
 
+/**
+ * Exports a <code>*.unitypackage</code> file from configured directories.
+ *
+ * Example:
+ * <pre>
+ * {@code
+ *     task exportPackage(type:wooga.gradle.unity.tasks.UnityPackage) {
+ *         inputFiles [file('Assets/Dir1'), file('Assets/Dir2')]
+ *         destinationDir = file('out')
+ *         archiveName = "myExport"
+ *     }
+ * }
+ * </pre>
+ */
+
 class UnityPackage extends AbstractUnityProjectTask {
 
     private final FileResolver fileResolver

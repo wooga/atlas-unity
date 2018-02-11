@@ -41,14 +41,14 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
 
     private final Class<T> taskType
 
-    abstract BaseBatchModeSpec retrieveAction()
+    abstract protected BaseBatchModeSpec retrieveAction()
 
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
-        return retrieveDefaultUnityExtension().batchModeActionFactory
+        retrieveDefaultUnityExtension().batchModeActionFactory
     }
 
     protected UnityPluginActionExtension retrieveDefaultUnityExtension() {
-        return project.extensions.getByType(UnityPluginActionExtension) as UnityPluginExtension
+        project.extensions.getByType(UnityPluginActionExtension) as UnityPluginActionExtension
     }
 
     AbstractUnityTask(Class<T> taskType) {
@@ -96,7 +96,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         return batchModeResult
     }
 
-    ConventionMapping retrieveActionMapping() {
+    protected ConventionMapping retrieveActionMapping() {
         this.retrieveAction().conventionMapping
     }
 

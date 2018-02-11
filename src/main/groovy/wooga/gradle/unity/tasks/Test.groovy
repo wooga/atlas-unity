@@ -174,7 +174,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         testArgs
     }
 
-    DefaultArtifactVersion getUnityVersion(File pathToUnity) {
+    protected DefaultArtifactVersion getUnityVersion(File pathToUnity) {
         if (unityVersion != null) {
             return unityVersion
         }
@@ -184,7 +184,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         unityVersion
     }
 
-    static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
+    private static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
         def versionString = defaultVersion
         String osName = System.getProperty("os.name").toLowerCase()
         if (osName.contains("mac os x")) {
@@ -234,7 +234,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     }
 
 
-    boolean getPlayModeTestsEnabled() {
+    protected boolean getPlayModeTestsEnabled() {
         def file = new File(projectPath, "ProjectSettings/ProjectSettings.asset")
         def settings = new ProjectSettings(file)
         return settings.playModeTestRunnerEnabled
