@@ -44,8 +44,6 @@ import javax.inject.Inject
 
 class UnityPackage extends AbstractUnityProjectTask {
 
-    FileCollection inputFiles
-
     /**
      * Returns the base name of the archive.
      *
@@ -110,13 +108,13 @@ class UnityPackage extends AbstractUnityProjectTask {
             return this.archiveName
         } else {
             String name = (String) GUtil.elvis(getBaseName(), "") + maybe(getBaseName(), getAppendix())
-            name = name + this.maybe(name, getVersion())
+            name = name + maybe(name, getVersion())
             name = name + (GUtil.isTrue(getExtension()) ? "." + getExtension() : "")
             return name
         }
     }
 
-    private String maybe(String prefix, String value) {
+    private static String maybe(String prefix, String value) {
         return GUtil.isTrue(value) ? (GUtil.isTrue(prefix) ? "-".concat(value) : value) : ""
     }
 
@@ -125,15 +123,13 @@ class UnityPackage extends AbstractUnityProjectTask {
      *
      * @return a File object with the path to the archive
      */
-    final archivePath
-
     @OutputFile
     File getArchivePath() {
         return new File(this.getDestinationDir(), getArchiveName())
     }
 
     /**
-     * The files to pack into the unity package.
+     * Returns the files to pack into the unity package.
      * Currently, this option only exports whole folders at a time.
      * This means that {@code File} objects pointing to files not directories
      * will be converted to the parent.
@@ -141,19 +137,39 @@ class UnityPackage extends AbstractUnityProjectTask {
      */
     @SkipWhenEmpty
     @InputFiles
-    FileCollection getInputFiles() {
-        inputFiles
-    }
+    FileCollection inputFiles
 
-    //TODO rething this API
-    /*
-    Make a final filecollection and add when passing a new file with method accessor
-    and delete and add when using the setter.
+    /**
+     * Sets the input file collection
+     * @param files input files
      */
     void setInputFiles(FileCollection files) {
         inputFiles = files
     }
 
+    /**
+     * Sets the input file collection with a single {@code File} object
+     * The file object will be packed into a {@code FileCollection} object.
+     * @param files input files
+     */
+    void setInputFiles(File source) {
+        inputFiles = project.files([source])
+    }
+
+    /**
+     * Sets the input file collection with a single {@code String} file path.
+     * The patht will be converted into a {@code File} obbject and
+     * packed into a {@code FileCollection} object.
+     * @param files input files
+     */
+    void setInputFiles(String source) {
+        inputFiles = project.files([source])
+    }
+
+    /**
+     * Adds a {@code FileCollection} to the current collection of input files.
+     * @param source a collection of files to add
+     */
     void inputFiles(FileCollection source) {
         if (!inputFiles) {
             inputFiles = source
@@ -162,18 +178,26 @@ class UnityPackage extends AbstractUnityProjectTask {
         }
     }
 
+    /**
+     * Adds a {@code File} to the current collection of input files.
+     * @param source a file to add
+     */
     void inputFiles(File source) {
         inputFiles(project.files([source]))
     }
 
+    /**
+     * Adds a {@code String} filepath to the current collection of input files.
+     * The value will be converted to a {@code File} object.
+     * @param source a file to add
+     */
     void inputFiles(String source) {
         inputFiles(project.files([source]))
     }
 
     @Inject
-    UnityPackage(FileResolver fileResolver) {
+    UnityPackage() {
         super(UnityPackage.class)
-        this.fileResolver = fileResolver
         this.extension = UNITY_PACKAGE_EXTENSION
         outputs.upToDateWhen { false }
     }
