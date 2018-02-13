@@ -21,7 +21,14 @@ import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportContainer
 import org.gradle.api.reporting.SingleFileReport
 
-
+/**
+ * Container type for Unity test task result reports.
+ */
 interface UnityTestTaskReport extends ReportContainer<Report>{
+
+    /**
+     * Returns a {@link org.gradle.api.reporting.SingleFileReport} object.
+     * @return the xml report object.
+     */
     SingleFileReport getXml()
 }

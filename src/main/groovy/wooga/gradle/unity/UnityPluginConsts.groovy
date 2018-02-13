@@ -83,4 +83,47 @@ class UnityPluginConsts {
      * @see UnityPluginConvention#redirectStdOut
      */
     static final String REDIRECT_STDOUT_ENV_VAR = "UNITY_REDIRECT_STDOUT"
+
+    /**
+     * Gradle property name to set the default value for {@code authentication.username}.
+     * @value "unity.authentication.username"
+     * @see UnityAuthentication#username
+     */
+    static final String UNITY_USER_PROPERTY = "unity.authentication.username"
+
+    /**
+     * Environment variable name to set the default value for {@code authentication.username}.
+     * @value "UNITY_USR"
+     * @see UnityAuthentication#username
+     */
+    static final String UNITY_USER_ENV = "UNITY_USR"
+
+    /**
+     * Gradle property name to set the default value for {@code authentication.password}.
+     * @value "unity.authentication.password"
+     * @see UnityAuthentication#password
+     */
+    static final String UNITY_PASSWORD_PROPERTY = "unity.authentication.password"
+
+    /**
+     * Environment variable name to set the default value for {@code authentication.password}.
+     * @value "UNITY_PWD"
+     * @see UnityAuthentication#password
+     */
+    static final String UNITY_PASSWORD_ENV = "UNITY_PWD"
+
+    /**
+     * Gradle property name to set the default value for {@code authentication.serial}.
+     * @value "unity.authentication.serial"
+     * @see UnityAuthentication#serial
+     */
+    static final String UNITY_SERIAL_PROPERTY = "unity.serial"
+
+    /**
+     * Environment variable name to set the default value for {@code authentication.serial}.
+     * @value "UNITY_SERIAL"
+     * @see UnityAuthentication#serial
+     */
+    static final String UNITY_SERIAL_ENV = "UNITY_SERIAL"
+
 }

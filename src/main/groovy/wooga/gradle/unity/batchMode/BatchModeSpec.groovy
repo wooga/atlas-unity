@@ -19,36 +19,91 @@ package wooga.gradle.unity.batchMode
 
 import org.gradle.process.BaseExecSpec
 
-interface BatchModeSpec extends BaseBatchModeSpec, BaseExecSpec {
-    BatchModeSpec args(Object... var1)
+trait BatchModeSpec<T extends BatchModeSpec> extends BaseBatchModeSpec implements BaseExecSpec {
 
-    BatchModeSpec args(Iterable<?> var1)
+    /**
+     * Returns the arguments for the command to be executed. Defaults to an empty list.
+     */
+    List<String> args
 
-    BatchModeSpec setArgs(Iterable<?> var1)
+    /**
+     * Adds arguments for the command to be executed.
+     *
+     * @param args args for the command
+     * @return this
+     */
+    abstract T args(Object... args)
 
-    List<String> getArgs()
+    /**
+     * Adds arguments for the command to be executed.
+     *
+     * @param args args for the command
+     * @return this
+     */
+    abstract T args(Iterable<?> args)
 
-    BuildTarget getBuildTarget()
+    /**
+     * Sets the arguments for the command to be executed.
+     *
+     * @param args args for the command
+     * @return this
+     */
+    abstract void setArgs(Iterable<?> args)
 
-    BatchModeSpec buildTarget(BuildTarget target)
+    /**
+     * Returns the build target for the current task.
+     * @return the build target
+     * @see wooga.gradle.unity.batchMode.BuildTarget
+     */
+    BuildTarget buildTarget
 
-    void setBuildTarget(BuildTarget target)
+    /**
+     * Sets the build target for the current task.
+     * @param target the build target
+     * @return this
+     * @see wooga.gradle.unity.batchMode.BuildTarget
+     */
+    abstract T buildTarget(BuildTarget target)
 
-    Boolean getQuit()
+    /**
+     * Returns a {@code Boolean} value indicating if Unity should shutdown after task execution.
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#QUIT
+     */
+    Boolean quit
 
-    BatchModeSpec quit(Boolean value)
+    /**
+     * Sets or Unsets the {@code quit} flag for the current task
+     * @param value when {@code true} Unity will quit after task execution.
+     * @return this
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#QUIT
+     */
+    abstract T quit(Boolean value)
 
-    void setQuit(Boolean value)
+    /**
+     * Returns a {@code Boolean} indicating if Unity should operate in {@code batchmode}.
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#BATCH_MODE
+     */
+    Boolean batchMode
 
-    Boolean getBatchMode()
+    /**
+     * Sets or Unsets the {@code -batchmode} flag for the current task
+     * @param value when {@code true} Unity will execute task in batchmode.
+     * @return this
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#BATCH_MODE
+     */
+    abstract T batchMode(Boolean value)
 
-    BatchModeSpec batchMode(Boolean value)
+    /**
+     * Returns a {@code Boolean} indicating if Unity should operate in {@code nographics} mode.
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#NO_GRAPHICS
+     */
+    Boolean noGraphics
 
-    void setBatchMode(Boolean value)
-
-    Boolean getNoGraphics()
-
-    BatchModeSpec noGraphics(Boolean value)
-
-    void setNoGraphics(Boolean value)
+    /**
+     * Sets or Unsets the {@code -nographics} flag for the current task
+     * @param value when {@code true} Unity will run with limited GPU features.
+     * @return this
+     * @see wooga.gradle.unity.batchMode.BatchModeFlags#NO_GRAPHICS
+     */
+    abstract T noGraphics(Boolean value)
 }

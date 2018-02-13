@@ -27,6 +27,7 @@ import org.gradle.util.GUtil
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginConsts
+import wooga.gradle.unity.UnityPluginConvention
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.*
 import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
@@ -207,6 +208,14 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     DefaultUnityPluginExtension unityPath(Object path) {
         this.setUnityPath(path)
         this
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    UnityPluginConvention unityPath(File path) {
+        this.setUnityPath(path)
+        return this
     }
 
     DefaultUnityPluginExtension projectPath(File path) {

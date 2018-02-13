@@ -2,10 +2,7 @@ package wooga.gradle.unity
 
 import wooga.gradle.unity.batchMode.BuildTarget
 
-/**
- * A Unity Plugin convention object.
- */
-trait UnityPluginConvention<T extends UnityPluginConvention> {
+trait UnityActionConvention<T extends UnityPluginConvention> {
 
     /**
      * Returns a {@code File} path to a Unity installation.
@@ -33,21 +30,18 @@ trait UnityPluginConvention<T extends UnityPluginConvention> {
     File unityPath
 
     /**
-     * Sets custom path to Unity executable
+     * Sets custom path to Unity executable.
      * @param path to Unity executable
      * @return this
      */
     abstract T unityPath(Object path)
 
     /**
-     * Returns a {@code File} path to the Unity license directory.
-     * Default value is system depending.
-     *
-     * @return the path to the Unity license directory
-     * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_MAC_OS
-     * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_WIN
+     * Sets custom path to Unity executable.
+     * @param path to Unity executable
+     * @return this
      */
-    abstract File getUnityLicenseDirectory()
+    abstract T unityPath(File path)
 
     /**
      * Returns the {@code File} path to the Unity project.
@@ -61,6 +55,71 @@ trait UnityPluginConvention<T extends UnityPluginConvention> {
      * @return this
      */
     abstract T projectPath(File path)
+
+    /**
+     * Returns if the external unity command should redirect stdOut.
+     * <p>
+     * By default Unity logs all output into a logfile. This property determines if the Unity log output
+     * will be redirected to stdout.
+     * <p>
+     * If a custom logFile is provided, the output will be logged to the stdout and the logfile.
+     * This property works only on macOS.
+     * @return true if log should be redirected to stdout
+     * @default false
+     */
+    Boolean redirectStdOut
+
+    /**
+     * Sets {@code Boolean} flag if Unity log should be redirected to stdout.
+     * @param redirect {@code true} if Unity log should be redirected to stdout
+     * @return this
+     */
+    abstract T redirectStdOut(Boolean redirect)
+
+    /**
+     * Returns the log category.
+     * <p>
+     * The log category property is used to instruct unity to log its output to specific sub directories in the logs folder.
+     * This helper is intended for tools such as Jenkins which doesn't allow to override the file path when archiving artifacts.
+     * <p>
+     * The value can be set in multiple ways (gradle properties, environment variable, parameter in code)
+     * The precedence order is:
+     * <ul>
+     *    <li><b>direct parameter in code</b>
+     *    <li><b>gradle properties</b>
+     *    <li><b>environment variables</b>
+     *    <li><b>hardcoded value</b>
+     * </ul>
+     * @return a category value
+     * @default ""
+     * @see UnityPluginConsts#UNITY_LOG_CATEGORY_OPTION
+     * @see UnityPluginConsts#UNITY_LOG_CATEGORY_ENV_VAR
+     */
+    String logCategory
+
+    /**
+     * Sets the log category value
+     * @param value the new logCategory. Can be {@code NULL}
+     * @return this
+     */
+    abstract T logCategory(String value)
+}
+
+
+/**
+ * A Unity Plugin convention object.
+ */
+trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityActionConvention {
+
+    /**
+     * Returns a {@code File} path to the Unity license directory.
+     * Default value is system depending.
+     *
+     * @return the path to the Unity license directory
+     * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_MAC_OS
+     * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_WIN
+     */
+    abstract File getUnityLicenseDirectory()
 
     /**
      * Returns the {@code File} path to the reports output directory.
@@ -134,53 +193,4 @@ trait UnityPluginConvention<T extends UnityPluginConvention> {
      * @return this
      */
     abstract T defaultBuildTarget(BuildTarget value)
-
-    /**
-     * Returns if the external unity command should redirect stdOut.
-     * <p>
-     * By default Unity logs all output into a logfile. This property determines if the Unity log output
-     * will be redirected to stdout.
-     * <p>
-     * If a custom logFile is provided, the output will be logged to the stdout and the logfile.
-     * This property works only on macOS.
-     * @return true if log should be redirected to stdout
-     * @default false
-     */
-    Boolean redirectStdOut
-
-    /**
-     * Sets {@code Boolean} flag if Unity log should be redirected to stdout.
-     * @param redirect {@code true} if Unity log should be redirected to stdout
-     * @return this
-     */
-    abstract T redirectStdOut(Boolean redirect)
-
-    /**
-     * Returns the log category.
-     * <p>
-     * The log category property is used to instruct unity to log its output to specific sub directories in the logs folder.
-     * This helper is intended for tools such as Jenkins which doesn't allow to override the file path when archiving artifacts.
-     * <p>
-     * The value can be set in multiple ways (gradle properties, environment variable, parameter in code)
-     * The precedence order is:
-     * <ul>
-     *    <li><b>direct parameter in code</b>
-     *    <li><b>gradle properties</b>
-     *    <li><b>environment variables</b>
-     *    <li><b>hardcoded value</b>
-     * </ul>
-     * @return a category value
-     * @default ""
-     * @see UnityPluginConsts#UNITY_LOG_CATEGORY_OPTION
-     * @see UnityPluginConsts#UNITY_LOG_CATEGORY_ENV_VAR
-     */
-    String logCategory
-
-    /**
-     * Sets the log category value
-     * @param value the new logCategory. Can be {@code NULL}
-     * @return this
-     */
-    abstract T logCategory(String value)
-
 }
