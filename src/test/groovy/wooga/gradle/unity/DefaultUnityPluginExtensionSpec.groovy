@@ -107,13 +107,13 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
         where:
         property                   | osName     | osArch | expectedPath
-        "getUnityPath"             | "windows"  | "64"   | DefaultUnityPluginExtension.UNITY_PATH_WIN
-        "getUnityPath"             | "windows"  | "32"   | DefaultUnityPluginExtension.UNITY_PATH_WIN_32
-        "getUnityPath"             | "linux"    | "64"   | DefaultUnityPluginExtension.UNITY_PATH_LINUX
-        "getUnityPath"             | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_PATH_MAC_OS
-        "getUnityPath"             | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_PATH_MAC_OS
-        "getUnityLicenseDirectory" | "windows"  | "64"   | DefaultUnityPluginExtension.UNITY_LICENSE_DIRECTORY_WIN
-        "getUnityLicenseDirectory" | "mac os x" | "64"   | DefaultUnityPluginExtension.UNITY_LICENSE_DIRECTORY_MAC_OS
+        "getUnityPath"             | "windows"  | "64"   | UnityPluginConsts.UNITY_PATH_WIN
+        "getUnityPath"             | "windows"  | "32"   | UnityPluginConsts.UNITY_PATH_WIN_32
+        "getUnityPath"             | "linux"    | "64"   | UnityPluginConsts.UNITY_PATH_LINUX
+        "getUnityPath"             | "mac os x" | "64"   | UnityPluginConsts.UNITY_PATH_MAC_OS
+        "getUnityPath"             | "mac os x" | "64"   | UnityPluginConsts.UNITY_PATH_MAC_OS
+        "getUnityLicenseDirectory" | "windows"  | "64"   | UnityPluginConsts.UNITY_LICENSE_DIRECTORY_WIN
+        "getUnityLicenseDirectory" | "mac os x" | "64"   | UnityPluginConsts.UNITY_LICENSE_DIRECTORY_MAC_OS
     }
 
     @Rule
@@ -122,8 +122,8 @@ class DefaultUnityPluginExtensionSpec extends Specification {
     @Unroll
     def "default value for #property with env: #envValue and propertie #propertyValue returns #expectedValue"() {
         given:
-        projectProperties[DefaultUnityPluginExtension.REDIRECT_STDOUT_OPTION] = propertyValue
-        environmentVariables.set(DefaultUnityPluginExtension.REDIRECT_STDOUT_ENV_VAR, envValue)
+        projectProperties[UnityPluginConsts.REDIRECT_STDOUT_OPTION] = propertyValue
+        environmentVariables.set(UnityPluginConsts.REDIRECT_STDOUT_ENV_VAR, envValue)
 
         expect:
         subject.invokeMethod(property, null) as Boolean == expectedValue
@@ -316,12 +316,12 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         expectedSize = source.size()
     }
 
-    def "set logCategory with properties"(){
+    def "set logCategory with properties"() {
         given: "mock property in project"
         def testCategory = "helloworld"
 
         and:
-        projectProperties[DefaultUnityPluginExtension.UNITY_LOG_CATEGORY_OPTION] = testCategory
+        projectProperties[UnityPluginConsts.UNITY_LOG_CATEGORY_OPTION] = testCategory
 
         expect:
         subject.logCategory == testCategory

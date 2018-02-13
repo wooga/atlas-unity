@@ -26,8 +26,8 @@ import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPlugin
+import wooga.gradle.unity.UnityPluginConsts
 import wooga.gradle.unity.UnityPluginExtension
-import wooga.gradle.unity.UnityPluginTestExtension
 import wooga.gradle.unity.batchMode.*
 import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
 import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
@@ -38,23 +38,6 @@ import static org.gradle.util.ConfigureUtil.configureUsing
 
 class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginActionExtension {
 
-    static File UNITY_PATH_MAC_OS = new File("/Applications/Unity/Unity.app/Contents/MacOS/Unity")
-    static File UNITY_PATH_WIN = new File("C:\\Program Files\\Unity\\Editor\\Unity.exe")
-    static File UNITY_PATH_WIN_32 = new File("C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe")
-    static File UNITY_PATH_LINUX = new File("/opt/Unity/Editor/Unity")
-
-    static File UNITY_LICENSE_DIRECTORY_MAC_OS = new File("/Library/Application Support/Unity/")
-    static File UNITY_LICENSE_DIRECTORY_WIN = new File("C:\\ProgramData\\Unity")
-
-    static final String UNITY_PATH_OPTION = "unity.path"
-    static final String UNITY_PATH_ENV_VAR = "UNITY_PATH"
-    static final String UNITY_LOG_CATEGORY_OPTION = "unity.logCategory"
-    static final String UNITY_LOG_CATEGORY_ENV_VAR = "UNITY_LOG_CATEGORY"
-
-    static final String REDIRECT_STDOUT_OPTION = "unity.redirectStdout"
-    static final String REDIRECT_STDOUT_ENV_VAR = "UNITY_REDIRECT_STDOUT"
-
-
     static File defaultUnityLocation() {
         File unityPath = null
         String osName = System.getProperty("os.name").toLowerCase()
@@ -62,14 +45,14 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
 
         if (osName.contains("windows")) {
             if (osArch.contains("64")) {
-                unityPath = UNITY_PATH_WIN
+                unityPath = UnityPluginConsts.UNITY_PATH_WIN
             } else {
-                unityPath = UNITY_PATH_WIN_32
+                unityPath = UnityPluginConsts.UNITY_PATH_WIN_32
             }
         } else if (osName.contains("linux")) {
-            unityPath = UNITY_PATH_LINUX
+            unityPath = UnityPluginConsts.UNITY_PATH_LINUX
         } else if (osName.contains("mac os x")) {
-            unityPath = UNITY_PATH_MAC_OS
+            unityPath = UnityPluginConsts.UNITY_PATH_MAC_OS
         }
         unityPath
     }
@@ -95,7 +78,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     private String logCategory
 
     static File getUnityPathFromEnv(Map<String, ?> properties, Map<String, String> env) {
-        String unityPath = properties[UNITY_PATH_OPTION] ?: env[UNITY_PATH_ENV_VAR]
+        String unityPath = properties[UnityPluginConsts.UNITY_PATH_OPTION] ?: env[UnityPluginConsts.UNITY_PATH_ENV_VAR]
         if (unityPath) {
             return new File(unityPath)
         } else {
@@ -104,7 +87,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     static String getUnityLogCategory(Map<String, ?> properties, Map<String, String> env) {
-        properties[UNITY_LOG_CATEGORY_OPTION] ?: env[UNITY_LOG_CATEGORY_ENV_VAR]
+        properties[UnityPluginConsts.UNITY_LOG_CATEGORY_OPTION] ?: env[UnityPluginConsts.UNITY_LOG_CATEGORY_ENV_VAR]
     }
 
     File getUnityPath() {
@@ -122,17 +105,20 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return unityPath
     }
 
+    void setUnityPath(File unityPath) {
+        customUnityPath = fileResolver.resolveLater(unityPath)
+    }
+
     void setUnityPath(Object path) {
         customUnityPath = fileResolver.resolveLater(path)
     }
 
-    static Boolean getRedirectStdOutFromEnv(Map<String, ?> properties, Map<String, String> env) {
-        String rawValue = (properties[REDIRECT_STDOUT_OPTION] ?: env[REDIRECT_STDOUT_ENV_VAR]).toString().toLowerCase()
+    private static Boolean getRedirectStdOutFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String rawValue = (properties[UnityPluginConsts.REDIRECT_STDOUT_OPTION] ?: env[UnityPluginConsts.REDIRECT_STDOUT_ENV_VAR]).toString().toLowerCase()
         rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
         return Boolean.valueOf(rawValue)
     }
 
-    @Override
     Boolean getRedirectStdOut() {
         if (redirectStdOut) {
             return redirectStdOut
@@ -141,26 +127,23 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return getRedirectStdOutFromEnv(project.properties, System.getenv())
     }
 
-    @Override
     void setRedirectStdOut(Boolean redirect) {
         redirectStdOut = redirect
     }
 
-    @Override
     UnityPluginExtension redirectStdOut(Boolean redirect) {
         setRedirectStdOut(redirect)
         return this
     }
 
-    @Override
     File getUnityLicenseDirectory() {
         File licensePath = null
         String osName = System.getProperty("os.name").toLowerCase()
 
         if (osName.contains("windows")) {
-            licensePath = UNITY_LICENSE_DIRECTORY_WIN
+            licensePath = UnityPluginConsts.UNITY_LICENSE_DIRECTORY_WIN
         } else if (osName.contains("mac os x")) {
-            licensePath = UNITY_LICENSE_DIRECTORY_MAC_OS
+            licensePath = UnityPluginConsts.UNITY_LICENSE_DIRECTORY_MAC_OS
         }
         licensePath
     }
@@ -180,7 +163,11 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         reportsDir = fileResolver.resolveLater(file)
     }
 
-    @Override
+    UnityPluginExtension reportsDir(Object reportsDir) {
+        this.setReportsDir(project.file(reportsDir))
+        return this
+    }
+
     File getPluginsDir() {
         if (pluginsDir) {
             return pluginsDir.create()
@@ -189,17 +176,15 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return null
     }
 
-    @Override
-    void setPluginsDir(File reportsDir) {
-        pluginsDir = fileResolver.resolveLater(reportsDir)
+    void setPluginsDir(File path) {
+        pluginsDir = fileResolver.resolveLater(path)
     }
 
-    @Override
-    void setPluginsDir(Object reportsDir) {
-        pluginsDir = fileResolver.resolveLater(reportsDir)
+    UnityPluginExtension pluginsDir(Object path) {
+        this.setPluginsDir(project.file(path))
+        return this
     }
 
-    @Override
     File getAssetsDir() {
         if (assetsDir) {
             return assetsDir.create()
@@ -208,25 +193,22 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return null
     }
 
-    @Override
     void setAssetsDir(File path) {
         assetsDir = fileResolver.resolveLater(path)
     }
 
-    @Override
-    void setAssetsDir(Object path) {
-        assetsDir = fileResolver.resolveLater(path)
+    UnityPluginExtension assetsDir(Object path) {
+        this.setAssetsDir(project.file(path))
+        return this
     }
 
     File projectPath
 
-    @Override
     DefaultUnityPluginExtension unityPath(Object path) {
         this.setUnityPath(path)
         this
     }
 
-    @Override
     DefaultUnityPluginExtension projectPath(File path) {
         projectPath = path
         this
@@ -242,6 +224,13 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         this.authentication.serial = authentication.serial
     }
 
+    UnityPluginExtension authentication(UnityAuthentication authentication) {
+        this.authentication.username = authentication.username
+        this.authentication.password = authentication.password
+        this.authentication.serial = authentication.serial
+        this
+    }
+
     UnityPluginExtension authentication(Closure closure) {
         return authentication(configureUsing(closure))
     }
@@ -251,71 +240,66 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return this
     }
 
-    @Override
     Boolean getAutoReturnLicense() {
         return autoActivateUnity && autoReturnLicense
     }
 
-    @Override
     void setAutoReturnLicense(Boolean value) {
         autoReturnLicense = value
     }
 
-    @Override
     UnityPluginExtension autoReturnLicense(Boolean value) {
         autoReturnLicense = value
         return this
     }
 
-    @Override
     Boolean getAutoActivateUnity() {
         return autoActivateUnity
     }
 
-    @Override
     void setAutoActivateUnity(Boolean value) {
         autoActivateUnity = value
     }
 
-    @Override
+
     UnityPluginExtension autoActivateUnity(Boolean value) {
         autoActivateUnity = value
         return this
     }
 
-    @Override
+
     void setDefaultBuildTarget(BuildTarget value) {
         this.setDefaultBuildTarget(value as Object)
     }
 
-    @Override
+
     void setDefaultBuildTarget(Object value) {
         defaultBuildTarget = value
     }
 
-    @Override
+
     UnityPluginExtension defaultBuildTarget(BuildTarget value) {
         this.setDefaultBuildTarget(value)
         return this
     }
 
-    @Override
+
     void setLogCategory(String value) {
         logCategory = value
     }
 
-    @Override
+
     String getLogCategory() {
         return (logCategory ?: getUnityLogCategory(project.properties, System.getenv())) ?: ""
     }
 
-    @Override
+
     UnityPluginExtension logCategory(String value) {
         this.setLogCategory(value)
         return this
     }
 
-    @Override
+
     BuildTarget getDefaultBuildTarget() {
         if (!defaultBuildTarget) {
             return BuildTarget.undefined
@@ -356,32 +340,30 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return batchModeAction.execute()
     }
 
-    @Override
     ExecResult activate(Closure closure) {
         return activate(configureUsing(closure))
     }
 
-    @Override
+
     ExecResult activate(Action<? super ActivationSpec> action) {
         ActivationAction activationAction = activationActionFactory.create()
         action.execute(activationAction)
         return activationAction.activate()
     }
 
-    @Override
+
     ExecResult returnLicense(Closure closure) {
         return returnLicense(configureUsing(closure))
     }
 
-    @Override
     ExecResult returnLicense(Action<? super BaseBatchModeSpec> action) {
         ActivationAction activationAction = activationActionFactory.create()
         action.execute(activationAction)
         return activationAction.returnLicense()
     }
 
-    @Override
-    UnityPluginTestExtension testBuildTargets(Object... targets) {
+
+    UnityPluginExtension testBuildTargets(Object... targets) {
         if (targets == null) {
             throw new IllegalArgumentException("targets == null!")
         }
@@ -389,20 +371,16 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         return this
     }
 
-    @Override
-    UnityPluginTestExtension testBuildTargets(Iterable<?> targets) {
+    UnityPluginExtension testBuildTargets(Iterable<?> targets) {
         GUtil.addToCollection(testBuildTargets, targets)
         return this
     }
 
-    @Override
-    UnityPluginTestExtension setTestBuildTargets(Iterable<?> targets) {
+    void setTestBuildTargets(Iterable<?> targets) {
         testBuildTargets.clear()
         testBuildTargets.addAll(targets)
-        return this
     }
 
-    @Override
     Set<BuildTarget> getTestBuildTargets() {
         if (testBuildTargets.empty && project.properties.containsKey("unity.testBuildTargets")) {
             return EnumSet.copyOf(project.properties.get("unity.testBuildTargets").toString().split(",").collect({
