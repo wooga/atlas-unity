@@ -120,7 +120,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     @Override
-    BatchModeAction logCategory(String value) {
+    DefaultBatchModeAction logCategory(String value) {
         this.setLogCategory(value)
         return this
     }
@@ -225,14 +225,14 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     @Override
-    BaseBatchModeSpec redirectStdOut(Boolean redirect) {
+    DefaultBatchModeAction redirectStdOut(Boolean redirect) {
         setRedirectStdOut(redirect)
         return this
     }
 
     //TODO remove OBJECT API
     @Override
-    UnityActionConvention unityPath(Object path) {
+    DefaultBatchModeAction unityPath(Object path) {
         this
     }
 
@@ -266,7 +266,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     @Override
-    BatchModeSpec batchMode(Boolean value) {
+    DefaultBatchModeAction batchMode(Boolean value) {
         this.batchMode = value
         this
     }

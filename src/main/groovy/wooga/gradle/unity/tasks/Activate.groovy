@@ -115,11 +115,12 @@ class Activate extends AbstractUnityActivationTask implements ActivationSpec {
      * Configures the activation credentials.
      * <pre>
      * {@code
-     * authentication{
+     *     authentication{
      *         username = "user@something.com"
      *         password = "thePassword"
      *         serial = "unitySerialNumber"
-     *}*}
+     *     }
+     * }
      * </pre>
      * @param closure the configuration closure
      * @return the activation task
@@ -134,13 +135,15 @@ class Activate extends AbstractUnityActivationTask implements ActivationSpec {
      * Configures the activation credentials.
      * <pre>
      * {@code
-     * this.authentication ( new Action < UnityAuthentication > ( ){
-     * @Override
-     * void execute(UnityAuthentication authentication) {
+     *     this.authentication ( new Action <UnityAuthentication> () {
+     *         @Override
+     *         void execute(UnityAuthentication authentication) {
      *             authentication.username = "user@something.com"
      *             authentication.password = "thePassword"
      *             authentication.serial = "unitySerialNumber"
-     *}*}*}
+     *         }
+     *     }
+     * }
      * </pre>
      * @param action the configuration action
      * @return the activation task
