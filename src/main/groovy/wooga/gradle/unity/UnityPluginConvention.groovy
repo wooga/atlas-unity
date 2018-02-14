@@ -2,7 +2,7 @@ package wooga.gradle.unity
 
 import wooga.gradle.unity.batchMode.BuildTarget
 
-trait UnityActionConvention<T extends UnityPluginConvention> {
+interface UnityActionConvention {
 
     /**
      * Returns a {@code File} path to a Unity installation.
@@ -27,34 +27,47 @@ trait UnityActionConvention<T extends UnityPluginConvention> {
      * @see UnityPluginConsts#UNITY_PATH_LINUX
      * @return the path to unity executable
      */
-    File unityPath
+    File getUnityPath()
+
+    /**
+    * Sets custom path to Unity executable.
+    * @param path to Unity executable
+    */
+    void setUnityPath(File path)
+
+    //TODO remove OBJECT API
+    /**
+     * Sets custom path to Unity executable.
+     * @param path to Unity executable
+     * @return this
+     */
+    abstract UnityActionConvention unityPath(Object path)
 
     /**
      * Sets custom path to Unity executable.
      * @param path to Unity executable
      * @return this
      */
-    abstract T unityPath(Object path)
-
-    /**
-     * Sets custom path to Unity executable.
-     * @param path to Unity executable
-     * @return this
-     */
-    abstract T unityPath(File path)
+    abstract UnityActionConvention unityPath(File path)
 
     /**
      * Returns the {@code File} path to the Unity project.
      * @default gradle {@code $projectDir}
      * @return the path to the unity project
      */
-    File projectPath
+    File getProjectPath()
 
     /** Sets the path to the Unity project.
      * @param path unity project path
      * @return this
      */
-    abstract T projectPath(File path)
+    void setProjectPath(File path)
+
+    /** Sets the path to the Unity project.
+     * @param path unity project path
+     * @return this
+     */
+    abstract UnityActionConvention projectPath(File path)
 
     /**
      * Returns if the external unity command should redirect stdOut.
@@ -67,14 +80,20 @@ trait UnityActionConvention<T extends UnityPluginConvention> {
      * @return true if log should be redirected to stdout
      * @default false
      */
-    Boolean redirectStdOut
+    Boolean getRedirectStdOut()
+
+    /**
+     * Sets {@code Boolean} flag if Unity log should be redirected to stdout.
+     * @param redirect {@code true} if Unity log should be redirected to stdout
+     */
+    void setRedirectStdOut(Boolean redirect)
 
     /**
      * Sets {@code Boolean} flag if Unity log should be redirected to stdout.
      * @param redirect {@code true} if Unity log should be redirected to stdout
      * @return this
      */
-    abstract T redirectStdOut(Boolean redirect)
+    abstract UnityActionConvention redirectStdOut(Boolean redirect)
 
     /**
      * Returns the log category.
@@ -95,21 +114,27 @@ trait UnityActionConvention<T extends UnityPluginConvention> {
      * @see UnityPluginConsts#UNITY_LOG_CATEGORY_OPTION
      * @see UnityPluginConsts#UNITY_LOG_CATEGORY_ENV_VAR
      */
-    String logCategory
+    String getLogCategory()
+
+    /**
+     * Sets the log category value
+     * @param value the new logCategory. Can be {@code NULL}
+     */
+    void setLogCategory(String category)
 
     /**
      * Sets the log category value
      * @param value the new logCategory. Can be {@code NULL}
      * @return this
      */
-    abstract T logCategory(String value)
+    abstract UnityActionConvention logCategory(String value)
 }
 
 
 /**
  * A Unity Plugin convention object.
  */
-trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityActionConvention {
+interface UnityPluginConvention extends UnityActionConvention {
 
     /**
      * Returns a {@code File} path to the Unity license directory.
@@ -119,27 +144,33 @@ trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityAction
      * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_MAC_OS
      * @see UnityPluginConsts#UNITY_LICENSE_DIRECTORY_WIN
      */
-    abstract File getUnityLicenseDirectory()
+    File getUnityLicenseDirectory()
 
     /**
      * Returns the {@code File} path to the reports output directory.
      * @default {@code buildDir/reports}
      * @return reports output directory path
      */
-    File reportsDir
+    File getReportsDir()
 
     /**
      * Sets the {@code File} path to the reports output directory.
      * @param reportsDir reports output directory
      */
-    abstract void setReportsDir(Object reportsDir)
+    void setReportsDir(File reportsDir)
+
+    /**
+     * Sets the {@code File} path to the reports output directory.
+     * @param reportsDir reports output directory
+     */
+    void setReportsDir(Object reportsDir)
 
     /**
      * Sets the {@code File} path to the reports output directory.
      * @param reportsDir reports output directory
      * @return this
      */
-    abstract T reportsDir(Object reportsDir)
+    UnityPluginConvention reportsDir(Object reportsDir)
 
     /**
      * Returns the {@code File} path to {@code Assets} directory.
@@ -147,14 +178,20 @@ trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityAction
      * @return path to assets directory
      * @see #getProjectPath
      */
-    File assetsDir
+    File getAssetsDir()
+
+    /**
+     * Sets the {@code File} path to {@code Assets} directory.
+     * @param path path to assets directory
+     */
+    void setAssetsDir(File path)
 
     /**
      * Sets the {@code File} path to {@code Assets} directory.
      * @param path path to assets directory
      * @return this
      */
-    abstract T assetsDir(Object path)
+    UnityPluginConvention assetsDir(Object path)
 
     /**
      * Returns the {@code File} path to the plugins directory
@@ -162,13 +199,19 @@ trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityAction
      * @return path to plugins directory
      * @see #getAssetsDir
      */
-    File pluginsDir
+    File getPluginsDir()
 
     /**
      * Sets the {@code File} path to {@code Plugins} directory.
      * @param path path to plugins directory
      */
-    abstract T pluginsDir(Object path)
+    void setPluginsDir(File path)
+
+    /**
+     * Sets the {@code File} path to {@code Plugins} directory.
+     * @param path path to plugins directory
+     */
+    UnityPluginConvention pluginsDir(Object path)
 
     /**
      * Returns the default build target.
@@ -179,18 +222,18 @@ trait UnityPluginConvention<T extends UnityPluginConvention> extends UnityAction
      * @see wooga.gradle.unity.batchMode.BuildTarget
      * @see wooga.gradle.unity.tasks.internal.AbstractUnityTask
      */
-    BuildTarget defaultBuildTarget
+    BuildTarget getDefaultBuildTarget()
 
     /**
      * Sets the default build target.
      * @param value an object that can be evaluated to a {@code BuildTarget} object
      */
-    abstract void setDefaultBuildTarget(Object value)
+    void setDefaultBuildTarget(Object value)
 
     /**
      * Sets the default build target.
      * @param value the new default buildtarget
      * @return this
      */
-    abstract T defaultBuildTarget(BuildTarget value)
+    UnityPluginConvention defaultBuildTarget(BuildTarget value)
 }

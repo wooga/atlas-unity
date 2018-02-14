@@ -1,8 +1,6 @@
 package wooga.gradle.unity
 
-import org.gradle.authentication.Authentication
-
-trait UnityAuthentication implements Authentication {
+interface UnityAuthentication {
 
     /**
      * Returns the unity account username.
@@ -19,7 +17,13 @@ trait UnityAuthentication implements Authentication {
      * @see UnityPluginConsts#UNITY_USER_PROPERTY
      * @see UnityPluginConsts#UNITY_USER_ENV
      */
-    String username
+    String getUsername()
+
+    /**
+     * Sets username value
+     * @param username the username
+     */
+    void setUsername(String username)
 
     /**
      * Returns the unity account password.
@@ -32,12 +36,17 @@ trait UnityAuthentication implements Authentication {
      *    <li><b>environment variables</b>
      *    <li><b>hardcoded value</b>
      * </ul>
-     * @return the username
+     * @return the password
      * @see UnityPluginConsts#UNITY_PASSWORD_PROPERTY
      * @see UnityPluginConsts#UNITY_PASSWORD_ENV
-     * @return the password
      */
-    String password
+    String getPassword()
+
+    /**
+     * Sets the password
+     * @param password
+     */
+    void setPassword(String password)
 
     /**
      * Returns the Unity serial number.
@@ -50,10 +59,16 @@ trait UnityAuthentication implements Authentication {
      *    <li><b>environment variables</b>
      *    <li><b>hardcoded value</b>
      * </ul>
-     * @return the username
+     * @return the serial number
      * @see UnityPluginConsts#UNITY_SERIAL_PROPERTY
      * @see UnityPluginConsts#UNITY_SERIAL_ENV
-     * @return the serial number
      */
-    String serial
+    String getSerial()
+
+    /**
+     * Sets the serial
+     * @param serial the serial number
+     * @return
+     */
+    void setSerial(String serial)
 }

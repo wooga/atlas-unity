@@ -20,13 +20,58 @@ package wooga.gradle.unity.batchMode
 import org.gradle.api.Action
 import wooga.gradle.unity.UnityAuthentication
 
+/**
+ * Specification for a activation action.
+ */
 interface ActivationSpec extends BaseBatchModeSpec {
 
+    /**
+     * Returns the {@link wooga.gradle.unity.UnityAuthentication} object.
+     * <p>
+     * This object contains the user and serial credentials used to activate the Unity installation.
+     * @return the Unity authentication credentials
+     * @default empty credentials object
+     */
     UnityAuthentication getAuthentication()
 
+    /**
+     * Sets the authentication object.
+     * @param authentication
+     */
     void setAuthentication(UnityAuthentication authentication)
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     authentication {
+     *         username = "user@something.com"
+     *         password = "thePassword"
+     *         serial = "unitySerialNumber"
+     *     }
+     * }
+     * </pre>
+     * @param closure the configuration closure
+     * @return the activation task
+     */
     ActivationSpec authentication(Closure closure)
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     this.authentication(new Action<UnityAuthentication>() {
+     *         @Override
+     *         void execute(UnityAuthentication authentication) {
+     *             authentication.username = "user@something.com"
+     *             authentication.password = "thePassword"
+     *             authentication.serial = "unitySerialNumber"
+     *         }
+     *     }
+     * }
+     * </pre>
+     * @param action the configuration action
+     * @return the activation task
+     */
     ActivationSpec authentication(Action<? super UnityAuthentication> action)
 }

@@ -37,7 +37,7 @@ import java.util.concurrent.Callable
 
 abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BaseBatchModeSpec, ConventionMapping {
 
-    static Logger logger = Logging.getLogger(AbstractUnityTask)
+    private static Logger logger = Logging.getLogger(AbstractUnityTask)
 
     private final Class<T> taskType
 

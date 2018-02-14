@@ -31,6 +31,7 @@ import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
+import wooga.gradle.unity.UnityActionConvention
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
@@ -63,7 +64,14 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     private final UnityTestTaskReport reports
 
     @Override
-    AbstractUnityTask unityPath(File path) {
+    Test unityPath(File path) {
+        unityVersion = null
+        super.unityPath(path)
+        return this
+    }
+
+    @Override
+    Test unityPath(Object path) {
         unityVersion = null
         super.unityPath(path)
         return this

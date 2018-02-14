@@ -30,6 +30,7 @@ import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecHandleBuilder
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
+import wooga.gradle.unity.UnityActionConvention
 import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
@@ -83,6 +84,11 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         return null
     }
 
+    @Override
+    void setLogFile(File file) {
+        setLogFile(file as Object)
+    }
+
     void setLogFile(Object file) {
         logFile = null
         if (file) {
@@ -114,7 +120,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     }
 
     @Override
-    BaseBatchModeSpec logCategory(String value) {
+    BatchModeAction logCategory(String value) {
         this.setLogCategory(value)
         return this
     }
@@ -224,6 +230,12 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         return this
     }
 
+    //TODO remove OBJECT API
+    @Override
+    UnityActionConvention unityPath(Object path) {
+        this
+    }
+
     @Override
     DefaultBatchModeAction unityPath(File path) {
         unityPath = path
@@ -273,17 +285,20 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     DefaultBatchModeAction args(Object... args) {
-        return DefaultBatchModeAction.cast(super.args(args))
+        super.args(args)
+        this
     }
 
     @Override
     DefaultBatchModeAction args(Iterable<?> args) {
-        return DefaultBatchModeAction.cast(super.args(args))
+        super.args(args)
+        return this
     }
 
     @Override
     DefaultBatchModeAction setArgs(Iterable<?> arguments) {
-        return DefaultBatchModeAction.cast(super.setArgs(arguments))
+        super.setArgs(arguments)
+        return this
     }
 
     @Override

@@ -53,40 +53,31 @@ import java.util.concurrent.Callable
  * Example:
  * <pre>
  * {@code
- *     plugins {
+ * plugins{
  *         id "net.wooga.unity" version "0.16.0"
- *     }
- *
+ *}*
  *     unity {
  *         authentication {
  *             username = "username@company.com"
  *             password = "password"
  *             serial = "unityserial"
- *         }
- *
- *     }
- *     exportUnityPackage {
+ *}*
+ *}*     exportUnityPackage {
  *         inputFiles file('Assets')
- *     }
- *
+ *}*
  *     task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
  *         args "-executeMethod", "MyEditorScript.PerformBuild"
- *     }
- *
+ *}*
  *     task(performMultipleBuilds) {
  *         doLast {
  *             unity.batchMode {
  *                 unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
  *                 args "-executeMethod", "MyEditorScript.PerformBuild"
- *             }
- *
+ *}*
  *             unity.batchMode {
  *                 unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
  *                 args "-executeMethod", "MyEditorScript.PerformBuild"
- *             }
- *         }
- *     }
- * }
+ *}*}*}*}
  * </pre>
  */
 class UnityPlugin implements Plugin<Project> {
@@ -151,9 +142,9 @@ class UnityPlugin implements Plugin<Project> {
             void execute(AbstractUnityTask task) {
                 ConventionMapping taskConventionMapping = task.conventionMapping
                 applyBaseConvention(taskConventionMapping, extension)
-                taskConventionMapping.logFile = {
+                taskConventionMapping.map('logFile', {
                     project.file("${project.buildDir}/logs/${task.getLogCategory()}/${task.name}.log")
-                }
+                })
             }
         })
     }
@@ -165,7 +156,8 @@ class UnityPlugin implements Plugin<Project> {
         taskConventionMapping.map "redirectStdOut", { extension.redirectStdOut }
     }
 
-    private static void configureAutoActivationDeactivation(final Project project, final UnityPluginExtension extension) {
+    private static void configureAutoActivationDeactivation(
+            final Project project, final UnityPluginExtension extension) {
         Task activationTask = project.tasks[ACTIVATE_TASK_NAME]
         Task returnLicenseTask = project.tasks[RETURN_LICENSE_TASK_NAME]
 
@@ -223,7 +215,8 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks[LifecycleBasePlugin.CHECK_TASK_NAME].dependsOn testTask
     }
 
-    private static Test createTestTask(final Project project, String name, TestPlatform testPlatform, BuildTarget testBuildTarget) {
+    private static Test createTestTask(
+            final Project project, String name, TestPlatform testPlatform, BuildTarget testBuildTarget) {
         def task = project.tasks.create(name: name, type: Test, group: GROUP) as Test
         task.testPlatform = testPlatform
         task.buildTarget = testBuildTarget

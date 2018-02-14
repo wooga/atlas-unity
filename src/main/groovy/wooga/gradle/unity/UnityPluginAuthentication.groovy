@@ -2,7 +2,7 @@ package wooga.gradle.unity
 
 import org.gradle.api.Action
 
-trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
+interface UnityPluginAuthentication {
 
     /**
      * Returns a {@code true} if the Unity license should be returned after all Unity tasks have been executed.
@@ -10,14 +10,20 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @default true
      * @see wooga.gradle.unity.tasks.ReturnLicense
      */
-    Boolean autoReturnLicense
+    Boolean getAutoReturnLicense()
+
+    /**
+     * Sets the {@code autoReturnLicense} flag.
+     * @param value {@code true} if the license should be auto returned
+     */
+    void setAutoReturnLicense(Boolean value)
 
     /**
      * Sets the {@code autoReturnLicense} flag.
      * @param value {@code true} if the license should be auto returned
      * @return this
      */
-    abstract T autoReturnLicense(Boolean value)
+    UnityPluginAuthentication autoReturnLicense(Boolean value)
 
     /**
      * Returns a {@code true} if the Unity should be activated before the first Unity task starts executing.
@@ -25,14 +31,20 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @default true
      * @see wooga.gradle.unity.tasks.Activate
      */
-    Boolean autoActivateUnity
+    Boolean getAutoActivateUnity()
+
+    /**
+     * Sets the {@code autoActivateUnity} flag.
+     * @param value {@code true} if the should be auto activated
+     */
+    void setAutoActivateUnity(Boolean value)
 
     /**
      * Sets the {@code autoActivateUnity} flag.
      * @param value {@code true} if the should be auto activated
      * @return this
      */
-    abstract T autoActivateUnity(Boolean value)
+    abstract UnityPluginAuthentication autoActivateUnity(Boolean value)
 
     /**
      * Returns the {@link wooga.gradle.unity.UnityAuthentication} object.
@@ -41,7 +53,16 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @return the Unity authentication credentials
      * @default empty credentials object
      */
-    UnityAuthentication authentication
+    UnityAuthentication getAuthentication()
+
+    /**
+     * Sets the authentication object values with a {@link wooga.gradle.unity.UnityAuthentication} object.
+     * <p>
+     * The authentication values within the provided {@link wooga.gradle.unity.UnityAuthentication} object will be copied
+     * to the internal {@link wooga.gradle.unity.UnityAuthentication authentication} object.
+     * @param authentication
+     */
+    void setAuthentication(UnityAuthentication authentication)
 
     /**
      * Sets the authentication object values with a {@link wooga.gradle.unity.UnityAuthentication} object.
@@ -51,7 +72,7 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @param authentication
      * @return this
      */
-    abstract T authentication(UnityAuthentication authentication)
+    abstract UnityPluginAuthentication authentication(UnityAuthentication authentication)
 
     /**
      * Configures the {@link wooga.gradle.unity.UnityAuthentication authentication} object with a closure.
@@ -61,7 +82,7 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @param closure The closure for configuring the authentication.
      * @return this
      */
-    abstract T authentication(Closure closure)
+    abstract UnityPluginAuthentication authentication(Closure closure)
 
     /**
      * Configures the {@link wooga.gradle.unity.UnityAuthentication authentication} object with an action.
@@ -71,5 +92,5 @@ trait UnityPluginAuthentication<T extends UnityPluginAuthentication> {
      * @param action The action for configuring the authentication.
      * @return this
      */
-    abstract T authentication(Action<? super UnityAuthentication> action)
+    abstract UnityPluginAuthentication authentication(Action<? super UnityAuthentication> action)
 }

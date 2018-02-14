@@ -86,10 +86,10 @@ class UnityPluginConsts {
 
     /**
      * Gradle property name to set the default value for {@code authentication.username}.
-     * @value "unity.authentication.username"
+     * @value "unity.username"
      * @see UnityAuthentication#username
      */
-    static final String UNITY_USER_PROPERTY = "unity.authentication.username"
+    static final String UNITY_USER_PROPERTY = "unity.username"
 
     /**
      * Environment variable name to set the default value for {@code authentication.username}.
@@ -100,10 +100,10 @@ class UnityPluginConsts {
 
     /**
      * Gradle property name to set the default value for {@code authentication.password}.
-     * @value "unity.authentication.password"
+     * @value "unity.password"
      * @see UnityAuthentication#password
      */
-    static final String UNITY_PASSWORD_PROPERTY = "unity.authentication.password"
+    static final String UNITY_PASSWORD_PROPERTY = "unity.password"
 
     /**
      * Environment variable name to set the default value for {@code authentication.password}.
@@ -114,7 +114,7 @@ class UnityPluginConsts {
 
     /**
      * Gradle property name to set the default value for {@code authentication.serial}.
-     * @value "unity.authentication.serial"
+     * @value "unity.serial"
      * @see UnityAuthentication#serial
      */
     static final String UNITY_SERIAL_PROPERTY = "unity.serial"

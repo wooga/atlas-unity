@@ -17,10 +17,11 @@
 
 package wooga.gradle.unity.internal
 
+import org.gradle.authentication.Authentication
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPluginConsts
 
-class DefaultUnityAuthentication implements UnityAuthentication {
+class DefaultUnityAuthentication implements UnityAuthentication, Authentication {
     private Map<String, ?> env
     private Map<String, ?> properties
     private String username
