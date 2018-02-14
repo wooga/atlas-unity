@@ -230,12 +230,6 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
         return this
     }
 
-    //TODO remove OBJECT API
-    @Override
-    DefaultBatchModeAction unityPath(Object path) {
-        this
-    }
-
     @Override
     DefaultBatchModeAction unityPath(File path) {
         unityPath = path

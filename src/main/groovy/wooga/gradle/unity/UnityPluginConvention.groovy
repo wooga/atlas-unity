@@ -35,20 +35,12 @@ interface UnityActionConvention {
     */
     void setUnityPath(File path)
 
-    //TODO remove OBJECT API
     /**
      * Sets custom path to Unity executable.
      * @param path to Unity executable
      * @return this
      */
-    abstract UnityActionConvention unityPath(Object path)
-
-    /**
-     * Sets custom path to Unity executable.
-     * @param path to Unity executable
-     * @return this
-     */
-    abstract UnityActionConvention unityPath(File path)
+    UnityActionConvention unityPath(File path)
 
     /**
      * Returns the {@code File} path to the Unity project.
@@ -67,7 +59,7 @@ interface UnityActionConvention {
      * @param path unity project path
      * @return this
      */
-    abstract UnityActionConvention projectPath(File path)
+    UnityActionConvention projectPath(File path)
 
     /**
      * Returns if the external unity command should redirect stdOut.
@@ -93,7 +85,7 @@ interface UnityActionConvention {
      * @param redirect {@code true} if Unity log should be redirected to stdout
      * @return this
      */
-    abstract UnityActionConvention redirectStdOut(Boolean redirect)
+    UnityActionConvention redirectStdOut(Boolean redirect)
 
     /**
      * Returns the log category.
@@ -127,7 +119,7 @@ interface UnityActionConvention {
      * @param value the new logCategory. Can be {@code NULL}
      * @return this
      */
-    abstract UnityActionConvention logCategory(String value)
+    UnityActionConvention logCategory(String value)
 }
 
 

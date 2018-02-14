@@ -71,13 +71,6 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     }
 
     @Override
-    Test unityPath(Object path) {
-        unityVersion = null
-        super.unityPath(path)
-        return this
-    }
-
-    @Override
     void setUnityPath(File path) {
         unityVersion = null
         super.setUnityPath(path)
