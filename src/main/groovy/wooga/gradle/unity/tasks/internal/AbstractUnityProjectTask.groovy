@@ -27,7 +27,7 @@ abstract class AbstractUnityProjectTask<T extends AbstractUnityProjectTask> exte
     }
 
     @Override
-    BaseBatchModeSpec retrieveAction() {
+    protected BaseBatchModeSpec retrieveAction() {
         return batchModeAction
     }
 

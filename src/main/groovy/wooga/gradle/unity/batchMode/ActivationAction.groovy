@@ -20,7 +20,25 @@ package wooga.gradle.unity.batchMode
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 
+/**
+ * An Activation action provides methods to activate a Unity instance and return
+ * a license to the license server.
+ */
 interface ActivationAction extends ActivationSpec, BatchModeSpec {
+
+    /**
+     * Executes a Unity license activation with the configured credentials.
+     *
+     * @return the result of the execution
+     * @throws ExecException
+     */
     ExecResult activate() throws ExecException
+
+    /**
+     * Executes a Unity return license action.
+     *
+     * @return the result of the execution
+     * @throws ExecException
+     */
     ExecResult returnLicense() throws ExecException
 }

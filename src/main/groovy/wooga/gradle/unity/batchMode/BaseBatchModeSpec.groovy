@@ -17,36 +17,37 @@
 
 package wooga.gradle.unity.batchMode
 
-import org.gradle.api.internal.IConventionAware
+import wooga.gradle.unity.UnityActionConvention
 
-interface BaseBatchModeSpec extends IConventionAware {
-    File getUnityPath()
+/**
+ * Base Unity batchmode settings.
+ */
+interface BaseBatchModeSpec extends UnityActionConvention {
 
-    BaseBatchModeSpec unityPath(File path)
-
-    void setUnityPath(File path)
-
-    File getProjectPath()
-
-    BaseBatchModeSpec projectPath(File path)
-
-    void setProjectPath(File path)
-
+    /**
+     * Returns a {@code File} path to a log file location.
+     * @return path to logfile
+     */
     File getLogFile()
 
-    BaseBatchModeSpec logFile(Object file)
+    /**
+     * Sets custom path to Unity logfile location.
+     * @param file the log file
+     * @return this
+     */
+    void setLogFile(File file)
 
+    /**
+     * Sets custom path to Unity logfile location.
+     * @param file the log file
+     * @return this
+     */
     void setLogFile(Object file)
 
-    Boolean getRedirectStdOut()
-
-    BaseBatchModeSpec redirectStdOut(Boolean redirect)
-
-    void setRedirectStdOut(Boolean redirect)
-
-    String getLogCategory()
-
-    BaseBatchModeSpec logCategory(String category)
-
-    void setLogCategory(String category)
+    /**
+     * Sets custom path to Unity logfile location.
+     * @param file the log file
+     * @return this
+     */
+    abstract BaseBatchModeSpec logFile(Object file)
 }

@@ -27,8 +27,6 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
-import org.gradle.process.internal.ExecException
-import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.internal.UnityPluginActionExtension
@@ -37,18 +35,18 @@ import java.util.concurrent.Callable
 
 abstract class AbstractUnityTask<T extends AbstractUnityTask> extends ConventionTask implements BaseBatchModeSpec, ConventionMapping {
 
-    static Logger logger = Logging.getLogger(AbstractUnityTask)
+    private static Logger logger = Logging.getLogger(AbstractUnityTask)
 
     private final Class<T> taskType
 
-    abstract BaseBatchModeSpec retrieveAction()
+    abstract protected BaseBatchModeSpec retrieveAction()
 
     protected Factory<BatchModeAction> retrieveBatchModeActionFactory() {
-        return retrieveDefaultUnityExtension().batchModeActionFactory
+        retrieveUnityActionExtension().batchModeActionFactory
     }
 
-    protected UnityPluginActionExtension retrieveDefaultUnityExtension() {
-        return project.extensions.getByType(UnityPluginActionExtension) as UnityPluginExtension
+    protected UnityPluginActionExtension retrieveUnityActionExtension() {
+        project.extensions.getByType(UnityPluginActionExtension)
     }
 
     AbstractUnityTask(Class<T> taskType) {
@@ -96,7 +94,7 @@ abstract class AbstractUnityTask<T extends AbstractUnityTask> extends Convention
         return batchModeResult
     }
 
-    ConventionMapping retrieveActionMapping() {
+    protected ConventionMapping retrieveActionMapping() {
         this.retrieveAction().conventionMapping
     }
 

@@ -27,20 +27,55 @@ import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.batchMode.ActivationSpec
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 
+/**
+ * Activates a Unity installation with unity account and a serial number.
+ * Example:
+ * <pre>
+ * {@code
+ *     task activateUnity(type:wooga.gradle.unity.tasks.Activate) {
+ *         authentication {
+ *             username = "user@something.com"
+ *             password = "thePassword"
+ *             serial = "unitySerialNumber"
+ *         }
+ *     }
+ * }
+ * </pre>
+ *
+ * Make sure that license file folder exists, and has appropriate permissions before running this task.
+ */
 class Activate extends AbstractUnityActivationTask implements ActivationSpec {
+
+    /**
+     * OnlyIf {@code Spec < Activate >} predicate type.
+     */
+    static class ActivateSpec implements Spec<Activate> {
+
+        /**
+         * Returns a {@code Boolean} value indicating if the given element is valid.
+         * <p>
+         * Checks if the {@link Activate} task properties are satisfied.
+         * The method will check if the {@code username}, {@code password} and {@code serial} properties are provided.
+         * If any of the parameters is either {@code empty} or {@code null} the method returns {@code false}.
+         *
+         * @param element the element to check if the predicate is satisfied
+         * @return {@code true} if the predicate is satisfied.
+         * @see wooga.gradle.unity.tasks.Activate#getUsername
+         * @see wooga.gradle.unity.tasks.Activate#getPassword
+         * @see wooga.gradle.unity.tasks.Activate#getSerial
+         */
+        boolean isSatisfiedBy(Activate element) {
+            return ((element.username && !element.username.isEmpty())
+                    && (element.password && !element.password.isEmpty())
+                    && (element.serial && !element.serial.isEmpty()))
+        }
+    }
 
     private ExecResult batchModeResult
 
     Activate() {
         super(Activate.class)
-        onlyIf(new Spec<Activate>() {
-            @Override
-            boolean isSatisfiedBy(Activate task) {
-                return ((task.userName && !task.userName.isEmpty())
-                        && (task.password && !task.password.isEmpty())
-                        && (task.serial && !task.serial.isEmpty()))
-            }
-        })
+        onlyIf(new ActivateSpec())
     }
 
     @TaskAction
@@ -48,39 +83,74 @@ class Activate extends AbstractUnityActivationTask implements ActivationSpec {
         batchModeResult = activationAction.activate()
     }
 
+    /**
+     * Returns the unity account username.
+     * @return the username
+     */
     @Input
-    String getUserName() {
+    String getUsername() {
         return authentication.username
     }
 
+    /**
+     * Returns the unity account password.
+     * @return the password
+     */
     @Input
     String getPassword() {
         return authentication.password
     }
 
+    /**
+     * Returns the Unity serial number.
+     * @return the serial number
+     */
     @Optional
     @Input
     String getSerial() {
         return authentication.serial
     }
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     authentication{
+     *         username = "user@something.com"
+     *         password = "thePassword"
+     *         serial = "unitySerialNumber"
+     *     }
+     * }
+     * </pre>
+     * @param closure the configuration closure
+     * @return the activation task
+     */
     @Override
     Activate authentication(Closure closure) {
         activationAction.authentication(closure)
         return this
     }
 
+    /**
+     * Configures the activation credentials.
+     * <pre>
+     * {@code
+     *     this.authentication ( new Action <UnityAuthentication> () {
+     *         @Override
+     *         void execute(UnityAuthentication authentication) {
+     *             authentication.username = "user@something.com"
+     *             authentication.password = "thePassword"
+     *             authentication.serial = "unitySerialNumber"
+     *         }
+     *     }
+     * }
+     * </pre>
+     * @param action the configuration action
+     * @return the activation task
+     */
     @Override
     Activate authentication(Action<? super UnityAuthentication> action) {
         activationAction.authentication(action)
         return this
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Input
-    boolean isIgnoreExitValue() {
-        return activationAction.isIgnoreExitValue()
     }
 }

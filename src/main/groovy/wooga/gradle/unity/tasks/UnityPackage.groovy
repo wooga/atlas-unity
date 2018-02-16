@@ -27,101 +27,149 @@ import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 
 import javax.inject.Inject
 
+/**
+ * Exports a <code>*.unitypackage</code> file from configured directories.
+ *
+ * Example:
+ * <pre>
+ * {@code
+ *     task exportPackage(type:wooga.gradle.unity.tasks.UnityPackage) {
+ *         inputFiles [file('Assets/Dir1'), file('Assets/Dir2')]
+ *         destinationDir = file('out')
+ *         archiveName = "myExport"
+ *     }
+ * }
+ * </pre>
+ */
+
 class UnityPackage extends AbstractUnityProjectTask {
 
-    private final FileResolver fileResolver
-    private FileCollection inputFiles
-    private String baseName
-    private String appendix
-    private String version
-    private String extension
+    /**
+     * Returns the base name of the archive.
+     *
+     * @return the base name.
+     */
+    @Internal("Represented as part of archiveName")
+    String baseName
 
-    public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
+    /**
+     * Returns the appendix part of the archive name, if any.
+     *
+     * @return the appendix. May be null
+     */
+    @Internal("Represented as part of archiveName")
+    String appendix
 
-    @Internal("Represented as part of archivePath")
+    /**
+     * Returns the version part of the archive name, if any.
+     *
+     * @return the version. May be null.
+     */
+    @Internal("Represented as part of archiveName")
+    String version
+
+    /**
+     * Returns the extension part of the archive name.
+     */
+    @Internal("Represented as part of archiveName")
+    String extension
+
+    /**
+     * Returns the directory where the archive is generated into.
+     *
+     * @return the directory
+     */
+    @OutputDirectory
     File destinationDir
 
-    private String customName
+    /**
+     * File extension value for Unity packages (unitypackage).
+     */
+    public static final String UNITY_PACKAGE_EXTENSION = "unitypackage"
 
-    File getDestinationDir() {
-        return destinationDir
-    }
+    /**
+     * Returns the archive name. If the name has not been explicitly set, the pattern for the name is:
+     * <code>[baseName]-[appendix]-[version].[extension]</code>
+     *
+     * @return the archive name.
+     */
+    @Internal("Represented as part of archivePath")
+    String archiveName
 
-    void setDestinationDir(File destinationDir) {
-        this.destinationDir = destinationDir
-    }
-
-    @Internal("Represented as part of archiveName")
-    String getBaseName() {
-        return baseName
-    }
-
-    void setBaseName(String baseName) {
-        this.baseName = baseName
-    }
-
-    @Internal("Represented as part of archiveName")
-    String getAppendix() {
-        return appendix
-    }
-
-    void setAppendix(String appendix) {
-        this.appendix = appendix
-    }
-
-    @Internal("Represented as part of archiveName")
-    String getVersion() {
-        return version
-    }
-
-    void setVersion(String version) {
-        this.version = version
-    }
-
-    @Internal("Represented as part of archiveName")
-    String getExtension() {
-        return extension
-    }
-
-    void setExtension(String extension) {
-        this.extension = extension
-    }
-
+    /**
+     * Returns the archive name. If the name has not been explicitly set, the pattern for the name is:
+     * <code>[baseName]-[appendix]-[version].[extension]</code>
+     *
+     * @return the archive name.
+     */
     @Internal("Represented as part of archivePath")
     String getArchiveName() {
-        if (this.customName != null) {
-            return this.customName
+        if (this.archiveName) {
+            return this.archiveName
         } else {
             String name = (String) GUtil.elvis(getBaseName(), "") + maybe(getBaseName(), getAppendix())
-            name = name + this.maybe(name, getVersion())
+            name = name + maybe(name, getVersion())
             name = name + (GUtil.isTrue(getExtension()) ? "." + getExtension() : "")
             return name
         }
     }
 
-    void setArchiveName(String name) {
-        customName = name
-    }
-
-    private String maybe(String prefix, String value) {
+    private static String maybe(String prefix, String value) {
         return GUtil.isTrue(value) ? (GUtil.isTrue(prefix) ? "-".concat(value) : value) : ""
     }
 
+    /**
+     * The path where the archive is constructed. The path is simply the {@code destinationDir} plus the {@code archiveName}.
+     *
+     * @return a File object with the path to the archive
+     */
     @OutputFile
     File getArchivePath() {
         return new File(this.getDestinationDir(), getArchiveName())
     }
 
+    /**
+     * Returns the files to pack into the unity package.
+     * Currently, this option only exports whole folders at a time.
+     * This means that {@code File} objects pointing to files not directories
+     * will be converted to the parent.
+     * @return
+     */
     @SkipWhenEmpty
     @InputFiles
-    FileCollection getInputFiles() {
-        inputFiles
-    }
+    FileCollection inputFiles
 
+    /**
+     * Sets the input file collection
+     * @param files input files
+     */
     void setInputFiles(FileCollection files) {
         inputFiles = files
     }
 
+    /**
+     * Sets the input file collection with a single {@code File} object
+     * The file object will be packed into a {@code FileCollection} object.
+     * @param files input files
+     */
+    void setInputFiles(File source) {
+        inputFiles = project.files([source])
+    }
+
+    /**
+     * Sets the input file collection with a single {@code String} file path.
+     * The patht will be converted into a {@code File} obbject and
+     * packed into a {@code FileCollection} object.
+     * @param files input files
+     */
+    void setInputFiles(String source) {
+        inputFiles = project.files([source])
+    }
+
+    /**
+     * Adds a {@code FileCollection} to the current collection of input files.
+     * @param source a collection of files to add
+     */
     void inputFiles(FileCollection source) {
         if (!inputFiles) {
             inputFiles = source
@@ -130,18 +178,26 @@ class UnityPackage extends AbstractUnityProjectTask {
         }
     }
 
+    /**
+     * Adds a {@code File} to the current collection of input files.
+     * @param source a file to add
+     */
     void inputFiles(File source) {
         inputFiles(project.files([source]))
     }
 
+    /**
+     * Adds a {@code String} filepath to the current collection of input files.
+     * The value will be converted to a {@code File} object.
+     * @param source a file to add
+     */
     void inputFiles(String source) {
         inputFiles(project.files([source]))
     }
 
     @Inject
-    UnityPackage(FileResolver fileResolver) {
+    UnityPackage() {
         super(UnityPackage.class)
-        this.fileResolver = fileResolver
         this.extension = UNITY_PACKAGE_EXTENSION
         outputs.upToDateWhen { false }
     }

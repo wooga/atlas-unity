@@ -31,6 +31,7 @@ import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecSpec
+import wooga.gradle.unity.UnityActionConvention
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
@@ -42,18 +43,28 @@ import wooga.gradle.unity.utils.internal.ProjectSettings
 
 import javax.inject.Inject
 
+/**
+ * Executes Unity edit or play-mode test runner.
+ * Example:
+ * <pre>
+ *     task activateUnity(type:wooga.gradle.unity.tasks.Test) {
+ *         testPlatform = 'editMode'
+ *         reports.xml.enabled = true
+ *         reports.xml.destination = file('out/reports/NUnitReport.xml')
+ *     }
+ * </pre>
+ */
 class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskReport> {
 
-    static Logger logger = Logging.getLogger(Test)
+    private static Logger logger = Logging.getLogger(Test)
 
-    private final FileResolver fileResolver
     private TestPlatform testPlatform = TestPlatform.editmode
     private DefaultArtifactVersion unityVersion
 
     private final UnityTestTaskReport reports
 
     @Override
-    AbstractUnityTask unityPath(File path) {
+    Test unityPath(File path) {
         unityVersion = null
         super.unityPath(path)
         return this
@@ -65,6 +76,11 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         super.setUnityPath(path)
     }
 
+    /**
+     * The unity test-platform to invoke defaults to 'editmode'
+     * @see TestPlatform
+     * @return the test-platform
+     */
     @Input
     @Optional
     TestPlatform getTestPlatform() {
@@ -95,9 +111,8 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     }
 
     @Inject
-    Test(FileResolver fileResolver) {
+    Test() {
         super(Test.class)
-        this.fileResolver = fileResolver
         description = "Executes Unity in batch mode and executes specified method"
 
         reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
@@ -174,7 +189,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         testArgs
     }
 
-    DefaultArtifactVersion getUnityVersion(File pathToUnity) {
+    protected DefaultArtifactVersion getUnityVersion(File pathToUnity) {
         if (unityVersion != null) {
             return unityVersion
         }
@@ -184,7 +199,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         unityVersion
     }
 
-    static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
+    private static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
         def versionString = defaultVersion
         String osName = System.getProperty("os.name").toLowerCase()
         if (osName.contains("mac os x")) {
@@ -234,7 +249,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     }
 
 
-    boolean getPlayModeTestsEnabled() {
+    protected boolean getPlayModeTestsEnabled() {
         def file = new File(projectPath, "ProjectSettings/ProjectSettings.asset")
         def settings = new ProjectSettings(file)
         return settings.playModeTestRunnerEnabled

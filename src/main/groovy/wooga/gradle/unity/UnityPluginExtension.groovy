@@ -24,64 +24,125 @@ import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeSpec
 import wooga.gradle.unity.batchMode.BuildTarget
 
-interface UnityPluginExtension extends UnityPluginTestExtension {
+/**
+ * Extension point for the unity plugin.
+ */
+interface UnityPluginExtension<T extends UnityPluginExtension> extends UnityPluginConvention, UnityPluginAuthentication {
 
-    File getUnityPath()
-    void setUnityPath(Object path)
-    UnityPluginExtension unityPath(Object path)
-
-    File getUnityLicenseDirectory()
-
-    File getProjectPath()
-    void setProjectPath(File path)
-    UnityPluginExtension projectPath(File path)
-
-    File getReportsDir()
-    void setReportsDir(File reportsDir)
-    void setReportsDir(Object reportsDir)
-
-    File getPluginsDir()
-    void setPluginsDir(File reportsDir)
-    void setPluginsDir(Object reportsDir)
-
-    File getAssetsDir()
-    void setAssetsDir(File reportsDir)
-    void setAssetsDir(Object reportsDir)
-
+    /**
+     * Executes a command in Unity.
+     * <p>
+     * The closure configures a {@link wooga.gradle.unity.batchMode.BatchModeSpec}.
+     *
+     * @param closure The closure for configuring the execution.
+     * @return the result of the execution
+     */
     ExecResult batchMode(Closure closure)
+
+    /**
+     * Executes a command in Unity.
+     * <p>
+     * The given action configures a {@link wooga.gradle.unity.batchMode.BatchModeSpec}, which is used to launch the process.
+     * This method blocks until the process terminates, with its result being returned.
+     *
+     * @param action The action for configuring the execution.
+     * @return the result of the execution
+     */
     ExecResult batchMode(Action<? super BatchModeSpec> action)
 
+    /**
+     * Executes Unity license activation.
+     * <p>
+     * The closure configures a {@link wooga.gradle.unity.batchMode.ActivationSpec}.
+     * @param closure The closure for configuring the activation.
+     * @return the result of the execution
+     */
     ExecResult activate(Closure closure)
+
+    /**
+     * Executes Unity license activation.
+     * <p>
+     * The given action configures a {@link wooga.gradle.unity.batchMode.ActivationSpec}, which is used to launch the process.
+     * This method blocks until the process terminates, with its result being returned.
+     *
+     * @param action The action for configuring the execution.
+     * @return the result of the execution
+     */
     ExecResult activate(Action<? super ActivationSpec> action)
 
+    /**
+     * Executes Unity license return command.
+     * <p>
+     * The closure configures a {@link wooga.gradle.unity.batchMode.BaseBatchModeSpec}.
+     * @param closure The closure for configuring the activation.
+     * @return the result of the execution
+     */
     ExecResult returnLicense(Closure closure)
+
+    /**
+     * Executes Unity license activation.
+     * <p>
+     * The given action configures a {@link wooga.gradle.unity.batchMode.BaseBatchModeSpec}, which is used to launch the process.
+     * This method blocks until the process terminates, with its result being returned.
+     *
+     * @param action The action for configuring the execution.
+     * @return the result of the execution
+     */
     ExecResult returnLicense(Action<? super BaseBatchModeSpec> action)
 
-    Boolean getAutoReturnLicense()
-    void setAutoReturnLicense(Boolean value)
-    UnityPluginExtension autoReturnLicense(Boolean value)
+    /**
+     * Returns a {@link java.util.Set} of {@link wooga.gradle.unity.batchMode.BuildTarget} objects to construct unity
+     * editmode/playmode tasks.
+     * <p>
+     * The plugin constructs a series of test tasks based on the returned {@link java.util.Set set}.
+     * <p>
+     * <b>Example Test Task structure with two test build targets:</b>
+     * <pre>
+     * {@code
+     * :check
+     * |--- :test
+     * +--- :testEditMode
+     * |    +--- :testEditModeAndroid
+     * |    |--- :testEditModeIos
+     * |--- :testPlayMode
+     *      +--- :testPlayModeAndroid
+     *      |--- :testPlayModeIos
+     * }
+     *
+     * @return the buildtargets to generate test tasks for
+     * @default the a set with the {@code defaultBuildTarget}
+     * @see wooga.gradle.unity.UnityPluginConvention#defaultBuildTarget
+     */
+    Set<BuildTarget> getTestBuildTargets()
 
-    Boolean getAutoActivateUnity()
-    void setAutoActivateUnity(Boolean value)
-    UnityPluginExtension autoActivateUnity(Boolean value)
+    /**
+     * Adds one or more test build target objects.
+     * <p>
+     * The provided objects can be a {@link groovy.lang.Closure}, {@link java.lang.String} or {@link wooga.gradle.unity.batchMode.BuildTarget} objects
+     *
+     * @param targets test build targets to add
+     * @return this
+     */
+    T testBuildTargets(Object... targets)
 
-    UnityAuthentication getAuthentication()
-    void setAuthentication(UnityAuthentication authentication)
+    /**
+     * Adds one or more test build target objects.
+     * <p>
+     * The provided objects can be a {@link groovy.lang.Closure}, {@link java.lang.String} or {@link wooga.gradle.unity.batchMode.BuildTarget} objects
+     *
+     * @param targets test build targets to add
+     * @return this
+     */
+    T testBuildTargets(Iterable<?> targets)
 
-    UnityPluginExtension authentication(Closure closure)
-    UnityPluginExtension authentication(Action<? super UnityAuthentication> action)
+    /**
+     * Sets one or more test build target objects.
+     * <p>
+     * The provided objects can be a {@link groovy.lang.Closure}, {@link java.lang.String} or {@link wooga.gradle.unity.batchMode.BuildTarget} objects
+     *
+     * @param targets test build targets to add
+     * @return this
+     */
+    void setTestBuildTargets(Iterable<?> targets)
 
-    BuildTarget getDefaultBuildTarget()
-    void setDefaultBuildTarget(BuildTarget value)
-    void setDefaultBuildTarget(Object value)
-    UnityPluginExtension defaultBuildTarget(BuildTarget value)
-
-    Boolean getRedirectStdOut()
-    void setRedirectStdOut(Boolean redirect)
-    UnityPluginExtension redirectStdOut(Boolean redirect)
-
-    void setLogCategory(String value)
-    String getLogCategory()
-    UnityPluginExtension logCategory(String value)
 }
-

@@ -17,18 +17,11 @@
 
 package wooga.gradle.unity.internal
 
+import org.gradle.authentication.Authentication
 import wooga.gradle.unity.UnityAuthentication
+import wooga.gradle.unity.UnityPluginConsts
 
-class DefaultUnityAuthentication implements UnityAuthentication {
-
-    static final String UNITY_PASSWORD_ENV = "UNITY_PWD"
-    static final String UNITY_USER_ENV = "UNITY_USR"
-    static final String UNITY_SERIAL_ENV = "UNITY_SERIAL"
-
-    static final String UNITY_PASSWORD_PROPERTY = "unity.password"
-    static final String UNITY_USER_PROPERTY = "unity.username"
-    static final String UNITY_SERIAL_PROPERTY = "unity.serial"
-
+class DefaultUnityAuthentication implements UnityAuthentication, Authentication {
     private Map<String, ?> env
     private Map<String, ?> properties
     private String username
@@ -39,7 +32,7 @@ class DefaultUnityAuthentication implements UnityAuthentication {
         if (this.username) {
             return username
         }
-        return properties[UNITY_USER_PROPERTY] ?: env[UNITY_USER_ENV]
+        return properties[UnityPluginConsts.UNITY_USER_PROPERTY] ?: env[UnityPluginConsts.UNITY_USER_ENV]
     }
 
     void setUsername(String username) {
@@ -50,7 +43,7 @@ class DefaultUnityAuthentication implements UnityAuthentication {
         if (this.password) {
             return password
         }
-        return properties[UNITY_PASSWORD_PROPERTY] ?: env[UNITY_PASSWORD_ENV]
+        return properties[UnityPluginConsts.UNITY_PASSWORD_PROPERTY] ?: env[UnityPluginConsts.UNITY_PASSWORD_ENV]
     }
 
     void setPassword(String password) {
@@ -61,7 +54,7 @@ class DefaultUnityAuthentication implements UnityAuthentication {
         if (this.serial) {
             return serial
         }
-        return properties[UNITY_SERIAL_PROPERTY] ?: env[UNITY_SERIAL_ENV]
+        return properties[UnityPluginConsts.UNITY_SERIAL_PROPERTY] ?: env[UnityPluginConsts.UNITY_SERIAL_ENV]
     }
 
     void setSerial(String serial) {
