@@ -40,6 +40,7 @@ import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
+import wooga.gradle.unity.tasks.UnityPackageArtifact
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
@@ -121,11 +122,11 @@ class UnityPlugin implements Plugin<Project> {
         final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
 
         configureUnityExtensionConvention(project, unityExtension)
+        createUnityPackageConfiguration(project)
         configureUnityTasks(project, unityExtension)
         addTestTasks(project, unityExtension)
         addPackageTask(project)
         addActivateAndReturnLicenseTasks(project, unityExtension)
-        createUnityPackageConfiguration(project)
         addDefaultReportTasks(project, unityExtension)
         configureArchiveDefaults(project, basePluginConvention)
 
@@ -242,6 +243,7 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void configureArchiveDefaults(final Project project, final BasePluginConvention pluginConvention) {
+        def configuration = project.configurations.getByName(UNITY_PACKAGE_CONFIGURATION_NAME)
         project.getTasks().withType(UnityPackage.class, new Action<UnityPackage>() {
             void execute(UnityPackage task) {
                 ConventionMapping taskConventionMapping = task.getConventionMapping()
@@ -265,7 +267,8 @@ class UnityPlugin implements Plugin<Project> {
                     }
                 })
 
-                project.artifacts.add(UNITY_PACKAGE_CONFIGURATION_NAME, [file: task.archivePath, builtBy: task])
+                UnityPackageArtifact artifact = UnityPackageArtifact.fromTask(task)
+                configuration.getArtifacts().add(artifact)
             }
         })
     }
