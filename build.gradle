@@ -16,14 +16,14 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '0.3.0'
+    id 'net.wooga.plugins' version '1.1.0'
 }
 
 group 'net.wooga.gradle'
 description = 'a Unity 3D gradle plugin.'
 
 pluginBundle {
-    website = 'https://github.com/wooga/atlas-unity'
+    website = 'https://wooga.github.io/atlas-unity/'
     vcsUrl = 'https://github.com/wooga/atlas-unity'
     tags = ['Unity3D']
 

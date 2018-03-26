@@ -96,6 +96,7 @@ tasks.returnUnityLicense.mustRunAfter performMultipleBuilds
 
 - [API docs](https://wooga.github.io/atlas-unity/docs/api/)
 - [Tasks](docs/Tasks.md)
+- [Release Notes](RELEASE_NOTES.md)
 
 Gradle and Java Compatibility
 =============================
@@ -116,6 +117,11 @@ Tested with Oracle JDK8
 | 3.5.1          | ![yes]      |
 | 4.0            | ![yes]      |
 
+
+Development
+===========
+
+[Code of Conduct](docs/Code-of-conduct.md)
 
 LICENSE
 =======
