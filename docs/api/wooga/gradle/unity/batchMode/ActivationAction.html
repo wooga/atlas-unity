@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.gradle.process.ProcessForkOptions
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.gradle.process.ProcessForkOptions
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,8 +99,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/batchMode/BatchModeSpec.html'>BatchModeSpec</a>, org.gradle.process.ProcessForkOptions</dd>
+                <dd><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a>, <a href='../../../../wooga/gradle/unity/batchMode/BatchModeSpec.html'>BatchModeSpec</a>, org.gradle.process.ProcessForkOptions</dd>
             </dl>
+
+    <p> An Activation action provides methods to activate a Unity instance and return
+ a license to the license server.
+ </p>
 
           </li>
     </ul>
@@ -143,13 +147,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#activate()">activate</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#activate()">activate</a></strong>()</code><br>Executes a Unity license activation with the configured credentials.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#returnLicense()">returnLicense</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#returnLicense()">returnLicense</a></strong>()</code><br>Executes a Unity return license action.</td>
                         </tr>
                         
                     </table>
@@ -176,7 +180,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>interface org.gradle.process.BaseExecSpec</code></td>
-                            <td class="colLast"><code>org.gradle.process.BaseExecSpec#setStandardOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setErrorOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setIgnoreExitValue(boolean), org.gradle.process.BaseExecSpec#isIgnoreExitValue(), org.gradle.process.BaseExecSpec#getStandardInput(), org.gradle.process.BaseExecSpec#getStandardOutput(), org.gradle.process.BaseExecSpec#getErrorOutput(), org.gradle.process.BaseExecSpec#getCommandLine(), org.gradle.process.BaseExecSpec#setStandardInput(java.io.InputStream), org.gradle.process.BaseExecSpec#environment(java.lang.String, java.lang.Object), org.gradle.process.BaseExecSpec#environment(java.util.Map), org.gradle.process.BaseExecSpec#setExecutable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.String), org.gradle.process.BaseExecSpec#executable(java.lang.Object), org.gradle.process.BaseExecSpec#getExecutable(), org.gradle.process.BaseExecSpec#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.BaseExecSpec#workingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.io.File), org.gradle.process.BaseExecSpec#getEnvironment(), org.gradle.process.BaseExecSpec#getWorkingDir(), org.gradle.process.BaseExecSpec#setEnvironment(java.util.Map)</code></td>
+                            <td class="colLast"><code>org.gradle.process.BaseExecSpec#setStandardOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setErrorOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setIgnoreExitValue(boolean), org.gradle.process.BaseExecSpec#setStandardInput(java.io.InputStream), org.gradle.process.BaseExecSpec#isIgnoreExitValue(), org.gradle.process.BaseExecSpec#getStandardInput(), org.gradle.process.BaseExecSpec#getStandardOutput(), org.gradle.process.BaseExecSpec#getErrorOutput(), org.gradle.process.BaseExecSpec#getCommandLine(), org.gradle.process.BaseExecSpec#executable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.String), org.gradle.process.BaseExecSpec#environment(java.util.Map), org.gradle.process.BaseExecSpec#environment(java.lang.String, java.lang.Object), org.gradle.process.BaseExecSpec#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.BaseExecSpec#setWorkingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.io.File), org.gradle.process.BaseExecSpec#getExecutable(), org.gradle.process.BaseExecSpec#workingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setEnvironment(java.util.Map), org.gradle.process.BaseExecSpec#getWorkingDir(), org.gradle.process.BaseExecSpec#getEnvironment()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -214,7 +218,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>activate</strong>()</h4>
-                                <p></p>
+                                <p> Executes a Unity license activation with the configured credentials.<DL><DT><B>throws:</B></DT><DD>ExecException</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -222,7 +227,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>returnLicense</strong>()</h4>
-                                <p></p>
+                                <p> Executes a Unity return license action.<DL><DT><B>throws:</B></DT><DD>ExecException</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     

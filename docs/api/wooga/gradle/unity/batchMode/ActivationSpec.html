@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.batchMode.BaseBatchModeSpec
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.UnityActionConvention
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,8 +99,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a></dd>
+                <dd><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a></dd>
             </dl>
+
+    <p> Specification for a activation action.
+ </p>
 
           </li>
     </ul>
@@ -143,25 +146,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#authentication(groovy.lang.Closure)">authentication</a></strong>(groovy.lang.Closure closure)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#authentication(groovy.lang.Closure)">authentication</a></strong>(groovy.lang.Closure closure)</code><br>Configures the activation credentials.
+ </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#authentication(Action<? super UnityAuthentication>)">authentication</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#authentication(Action<? super UnityAuthentication>)">authentication</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</code><br>Configures the activation credentials.
+ </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getAuthentication()">getAuthentication</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getAuthentication()">getAuthentication</a></strong>()</code><br>Returns the <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a> object.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAuthentication(wooga.gradle.unity.UnityAuthentication)">setAuthentication</a></strong>(<a href='../../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> authentication)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setAuthentication(wooga.gradle.unity.UnityAuthentication)">setAuthentication</a></strong>(<a href='../../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> authentication)</code><br>Sets the authentication object.</td>
                         </tr>
                         
                     </table>
@@ -180,7 +185,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>interface <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a></code></td>
-                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getLogFile()'>getLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getProjectPath()'>getProjectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getRedirectStdOut()'>getRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getUnityPath()'>getUnityPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#logFile(java.lang.Object)'>logFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#projectPath(java.io.File)'>projectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#redirectStdOut(java.lang.Boolean)'>redirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.lang.Object)'>setLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setProjectPath(java.io.File)'>setProjectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setRedirectStdOut(java.lang.Boolean)'>setRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setUnityPath(java.io.File)'>setUnityPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#unityPath(java.io.File)'>unityPath</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getLogFile()'>getLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#logFile(java.lang.Object)'>logFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.io.File)'>setLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.lang.Object)'>setLogFile</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>interface <a href='../../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/UnityActionConvention.html#getLogCategory()'>getLogCategory</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#getProjectPath()'>getProjectPath</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#getRedirectStdOut()'>getRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#getUnityPath()'>getUnityPath</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#logCategory(java.lang.String)'>logCategory</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#projectPath(java.io.File)'>projectPath</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#redirectStdOut(java.lang.Boolean)'>redirectStdOut</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#setLogCategory(java.lang.String)'>setLogCategory</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#setProjectPath(java.io.File)'>setProjectPath</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#setRedirectStdOut(java.lang.Boolean)'>setRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#setUnityPath(java.io.File)'>setUnityPath</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html#unityPath(java.io.File)'>unityPath</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -218,7 +227,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a> <strong>authentication</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
+                                <p> Configures the activation credentials.
+ <pre>
+ <CODE>authentication {
+         username = "user@something.com"
+         password = "thePassword"
+         serial = "unitySerialNumber"
+     </CODE>
+ }
+ </pre>
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  the configuration closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>the activation task</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -226,7 +244,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/unity/batchMode/ActivationSpec.html'>ActivationSpec</a> <strong>authentication</strong>(org.gradle.api.Action&lt;? super <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</h4>
-                                <p></p>
+                                <p> Configures the activation credentials.
+ <pre>
+ <CODE>this.authentication(new Action&lt;UnityAuthentication&gt;() {
+         @Override
+         void execute(UnityAuthentication authentication) {
+             authentication.username = "user@something.com"
+             authentication.password = "thePassword"
+             authentication.serial = "unitySerialNumber"
+         </CODE>
+     }
+ }
+ </pre>
+     <DL><DT><B>Parameters:</B></DT><DD><code>action</code> -  the configuration action</DD></DL><DL><DT><B>Returns:</B></DT><DD>the activation task</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -234,7 +264,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> <strong>getAuthentication</strong>()</h4>
-                                <p></p>
+                                <p> Returns the <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a> object.
+ <p>
+ This object contains the user and serial credentials used to activate the Unity installation.
+     <DL><DT><B>Returns:</B></DT><DD>the Unity authentication credentials</DD></DL><DL><DT><B>Default:</B></DT><DD>empty credentials object</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -242,7 +275,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>setAuthentication</strong>(<a href='../../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> authentication)</h4>
-                                <p></p>
+                                <p> Sets the authentication object.
+     <DL><DT><B>Parameters:</B></DT><DD>authentication</DD></DL></p>
                             </li>
                         </ul>
                     

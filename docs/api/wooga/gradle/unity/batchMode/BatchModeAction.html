@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.gradle.process.ProcessForkOptions
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.gradle.process.ProcessForkOptions
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../wooga/gradle/unity/batchMode/BatchModeSpec.html'>BatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a>, org.gradle.process.ProcessForkOptions</dd>
+                <dd><a href='../../../../wooga/gradle/unity/batchMode/BatchModeSpec.html'>BatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a>, <a href='../../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a>, org.gradle.process.ProcessForkOptions</dd>
             </dl>
 
           </li>
@@ -143,7 +143,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#execute()">execute</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#execute()">execute</a></strong>()</code><br>Executes this with Unity action and returns the result as <CODE>ExecResult</CODE></td>
                         </tr>
                         
                     </table>
@@ -166,11 +166,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>interface <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html'>BaseBatchModeSpec</a></code></td>
-                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getLogFile()'>getLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getProjectPath()'>getProjectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getRedirectStdOut()'>getRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getUnityPath()'>getUnityPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#logFile(java.lang.Object)'>logFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#projectPath(java.io.File)'>projectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#redirectStdOut(java.lang.Boolean)'>redirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.lang.Object)'>setLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setProjectPath(java.io.File)'>setProjectPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setRedirectStdOut(java.lang.Boolean)'>setRedirectStdOut</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setUnityPath(java.io.File)'>setUnityPath</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#unityPath(java.io.File)'>unityPath</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#getLogFile()'>getLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#logFile(java.lang.Object)'>logFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.io.File)'>setLogFile</a>, <a href='../../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html#setLogFile(java.lang.Object)'>setLogFile</a></code></td>
                         </tr>
                         <tr class="rowColor">
                             <td class="colFirst"><code>interface org.gradle.process.BaseExecSpec</code></td>
-                            <td class="colLast"><code>org.gradle.process.BaseExecSpec#setStandardOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setErrorOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setIgnoreExitValue(boolean), org.gradle.process.BaseExecSpec#isIgnoreExitValue(), org.gradle.process.BaseExecSpec#getStandardInput(), org.gradle.process.BaseExecSpec#getStandardOutput(), org.gradle.process.BaseExecSpec#getErrorOutput(), org.gradle.process.BaseExecSpec#getCommandLine(), org.gradle.process.BaseExecSpec#setStandardInput(java.io.InputStream), org.gradle.process.BaseExecSpec#environment(java.lang.String, java.lang.Object), org.gradle.process.BaseExecSpec#environment(java.util.Map), org.gradle.process.BaseExecSpec#setExecutable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.String), org.gradle.process.BaseExecSpec#executable(java.lang.Object), org.gradle.process.BaseExecSpec#getExecutable(), org.gradle.process.BaseExecSpec#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.BaseExecSpec#workingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.io.File), org.gradle.process.BaseExecSpec#getEnvironment(), org.gradle.process.BaseExecSpec#getWorkingDir(), org.gradle.process.BaseExecSpec#setEnvironment(java.util.Map)</code></td>
+                            <td class="colLast"><code>org.gradle.process.BaseExecSpec#setStandardOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setErrorOutput(java.io.OutputStream), org.gradle.process.BaseExecSpec#setIgnoreExitValue(boolean), org.gradle.process.BaseExecSpec#setStandardInput(java.io.InputStream), org.gradle.process.BaseExecSpec#isIgnoreExitValue(), org.gradle.process.BaseExecSpec#getStandardInput(), org.gradle.process.BaseExecSpec#getStandardOutput(), org.gradle.process.BaseExecSpec#getErrorOutput(), org.gradle.process.BaseExecSpec#getCommandLine(), org.gradle.process.BaseExecSpec#executable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.Object), org.gradle.process.BaseExecSpec#setExecutable(java.lang.String), org.gradle.process.BaseExecSpec#environment(java.util.Map), org.gradle.process.BaseExecSpec#environment(java.lang.String, java.lang.Object), org.gradle.process.BaseExecSpec#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.BaseExecSpec#setWorkingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setWorkingDir(java.io.File), org.gradle.process.BaseExecSpec#getExecutable(), org.gradle.process.BaseExecSpec#workingDir(java.lang.Object), org.gradle.process.BaseExecSpec#setEnvironment(java.util.Map), org.gradle.process.BaseExecSpec#getWorkingDir(), org.gradle.process.BaseExecSpec#getEnvironment()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -208,7 +208,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>execute</strong>()</h4>
-                                <p></p>
+                                <p> Executes this with Unity action and returns the result as <CODE>ExecResult</CODE><DL><DT><B>throws:</B></DT><DD>ExecException</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     

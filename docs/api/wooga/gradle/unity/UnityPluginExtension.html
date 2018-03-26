@@ -87,11 +87,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>wooga.gradle.unity</strong></div>
 
-    <h2 title="[Groovy] Interface UnityPluginExtension" class="title">[Groovy] Interface UnityPluginExtension</h2>
+    <h2 title="[Groovy] Interface UnityPluginExtension&lt;T extends UnityPluginExtension&gt;" class="title">[Groovy] Interface UnityPluginExtension&lt;T extends UnityPluginExtension&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.UnityPluginTestExtension
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.UnityActionConvention
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,8 +99,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html'>UnityPluginTestExtension</a></dd>
+                <dd><a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html'>UnityPluginAuthentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html'>UnityPluginConvention</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a></dd>
             </dl>
+
+    <p> Extension point for the unity plugin.
+ </p>
 
           </li>
     </ul>
@@ -143,247 +146,62 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#activate(groovy.lang.Closure)">activate</a></strong>(groovy.lang.Closure closure)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#activate(groovy.lang.Closure)">activate</a></strong>(groovy.lang.Closure closure)</code><br>Executes Unity license activation.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#activate(Action<? super ActivationSpec>)">activate</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/ActivationSpec.html' title='ActivationSpec'>ActivationSpec</a>&gt; action)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#authentication(groovy.lang.Closure)">authentication</a></strong>(groovy.lang.Closure closure)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#authentication(Action<? super UnityAuthentication>)">authentication</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#autoActivateUnity(java.lang.Boolean)">autoActivateUnity</a></strong>(java.lang.Boolean value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#autoReturnLicense(java.lang.Boolean)">autoReturnLicense</a></strong>(java.lang.Boolean value)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#activate(Action<? super ActivationSpec>)">activate</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/ActivationSpec.html' title='ActivationSpec'>ActivationSpec</a>&gt; action)</code><br>Executes Unity license activation.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#batchMode(groovy.lang.Closure)">batchMode</a></strong>(groovy.lang.Closure closure)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#batchMode(groovy.lang.Closure)">batchMode</a></strong>(groovy.lang.Closure closure)</code><br>Executes a command in Unity.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#batchMode(Action<? super BatchModeSpec>)">batchMode</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BatchModeSpec.html' title='BatchModeSpec'>BatchModeSpec</a>&gt; action)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#batchMode(Action<? super BatchModeSpec>)">batchMode</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BatchModeSpec.html' title='BatchModeSpec'>BatchModeSpec</a>&gt; action)</code><br>Executes a command in Unity.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#defaultBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)">defaultBuildTarget</a></strong>(<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>groovy.util.Factory&lt;<a href='../../../wooga/gradle/unity/batchMode/ActivationAction.html' title='ActivationAction'>ActivationAction</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getActivationActionFactory()">getActivationActionFactory</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getAssetsDir()">getAssetsDir</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getAuthentication()">getAuthentication</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#getAutoActivateUnity()">getAutoActivateUnity</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#getAutoReturnLicense()">getAutoReturnLicense</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>groovy.util.Factory&lt;<a href='../../../wooga/gradle/unity/batchMode/BatchModeAction.html' title='BatchModeAction'>BatchModeAction</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getBatchModeActionFactory()">getBatchModeActionFactory</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getDefaultBuildTarget()">getDefaultBuildTarget</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getPluginsDir()">getPluginsDir</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getProjectPath()">getProjectPath</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#getRedirectStdOut()">getRedirectStdOut</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getReportsDir()">getReportsDir</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getUnityLicenseDirectory()">getUnityLicenseDirectory</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.io.File</code></td>
-                            <td class="colLast"><code><strong><a href="#getUnityPath()">getUnityPath</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#projectPath(java.io.File)">projectPath</a></strong>(java.io.File path)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#redirectStdOut(java.lang.Boolean)">redirectStdOut</a></strong>(java.lang.Boolean redirect)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#returnLicense(groovy.lang.Closure)">returnLicense</a></strong>(groovy.lang.Closure closure)</code><br></td>
+                            <td class="colLast"><code>java.util.Set&lt;<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a>&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getTestBuildTargets()">getTestBuildTargets</a></strong>()</code><br>Returns a java.util.Set of <a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a> objects to construct unity
+ editmode/playmode tasks.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
-                            <td class="colLast"><code><strong><a href="#returnLicense(Action<? super BaseBatchModeSpec>)">returnLicense</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html' title='BaseBatchModeSpec'>BaseBatchModeSpec</a>&gt; action)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#returnLicense(groovy.lang.Closure)">returnLicense</a></strong>(groovy.lang.Closure closure)</code><br>Executes Unity license return command.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAssetsDir(java.io.File)">setAssetsDir</a></strong>(java.io.File reportsDir)</code><br></td>
+                            <td class="colLast"><code>org.gradle.process.ExecResult</code></td>
+                            <td class="colLast"><code><strong><a href="#returnLicense(Action<? super BaseBatchModeSpec>)">returnLicense</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html' title='BaseBatchModeSpec'>BaseBatchModeSpec</a>&gt; action)</code><br>Executes Unity license activation.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAssetsDir(java.lang.Object)">setAssetsDir</a></strong>(java.lang.Object reportsDir)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTestBuildTargets(Iterable<?>)">setTestBuildTargets</a></strong>(java.lang.Iterable&lt;?&gt; targets)</code><br>Sets one or more test build target objects.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAuthentication(wooga.gradle.unity.UnityAuthentication)">setAuthentication</a></strong>(<a href='../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> authentication)</code><br></td>
+                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code><strong><a href="#testBuildTargets(java.lang.Object)">testBuildTargets</a></strong>(java.lang.Object... targets)</code><br>Adds one or more test build target objects.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAutoActivateUnity(java.lang.Boolean)">setAutoActivateUnity</a></strong>(java.lang.Boolean value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setAutoReturnLicense(java.lang.Boolean)">setAutoReturnLicense</a></strong>(java.lang.Boolean value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setDefaultBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)">setDefaultBuildTarget</a></strong>(<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setDefaultBuildTarget(java.lang.Object)">setDefaultBuildTarget</a></strong>(java.lang.Object value)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setPluginsDir(java.io.File)">setPluginsDir</a></strong>(java.io.File reportsDir)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setPluginsDir(java.lang.Object)">setPluginsDir</a></strong>(java.lang.Object reportsDir)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setProjectPath(java.io.File)">setProjectPath</a></strong>(java.io.File path)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setRedirectStdOut(java.lang.Boolean)">setRedirectStdOut</a></strong>(java.lang.Boolean redirect)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setReportsDir(java.io.File)">setReportsDir</a></strong>(java.io.File reportsDir)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setReportsDir(java.lang.Object)">setReportsDir</a></strong>(java.lang.Object reportsDir)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setUnityPath(java.lang.Object)">setUnityPath</a></strong>(java.lang.Object path)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a></code></td>
-                            <td class="colLast"><code><strong><a href="#unityPath(java.lang.Object)">unityPath</a></strong>(java.lang.Object path)</code><br></td>
+                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code><strong><a href="#testBuildTargets(Iterable<?>)">testBuildTargets</a></strong>(java.lang.Iterable&lt;?&gt; targets)</code><br>Adds one or more test build target objects.</td>
                         </tr>
                         
                     </table>
@@ -401,8 +219,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>interface <a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html'>UnityPluginTestExtension</a></code></td>
-                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html#getTestBuildTargets()'>getTestBuildTargets</a>, <a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html#setTestBuildTargets(Iterable<?>)'>setTestBuildTargets</a>, <a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html#testBuildTargets(java.lang.Object)'>testBuildTargets</a>, <a href='../../../wooga/gradle/unity/UnityPluginTestExtension.html#testBuildTargets(Iterable<?>)'>testBuildTargets</a></code></td>
+                            <td class="colFirst"><code>interface <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html'>UnityPluginAuthentication</a></code></td>
+                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#authentication(wooga.gradle.unity.UnityAuthentication)'>authentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#authentication(groovy.lang.Closure)'>authentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#authentication(Action<? super UnityAuthentication>)'>authentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#autoActivateUnity(java.lang.Boolean)'>autoActivateUnity</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#autoReturnLicense(java.lang.Boolean)'>autoReturnLicense</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#getAuthentication()'>getAuthentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#getAutoActivateUnity()'>getAutoActivateUnity</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#getAutoReturnLicense()'>getAutoReturnLicense</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#setAuthentication(wooga.gradle.unity.UnityAuthentication)'>setAuthentication</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#setAutoActivateUnity(java.lang.Boolean)'>setAutoActivateUnity</a>, <a href='../../../wooga/gradle/unity/UnityPluginAuthentication.html#setAutoReturnLicense(java.lang.Boolean)'>setAutoReturnLicense</a></code></td>
+                        </tr>
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>interface <a href='../../../wooga/gradle/unity/UnityPluginConvention.html'>UnityPluginConvention</a></code></td>
+                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityPluginConvention.html#assetsDir(java.lang.Object)'>assetsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#defaultBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)'>defaultBuildTarget</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#getAssetsDir()'>getAssetsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#getDefaultBuildTarget()'>getDefaultBuildTarget</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#getPluginsDir()'>getPluginsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#getReportsDir()'>getReportsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#getUnityLicenseDirectory()'>getUnityLicenseDirectory</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#pluginsDir(java.lang.Object)'>pluginsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#reportsDir(java.lang.Object)'>reportsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#setAssetsDir(java.io.File)'>setAssetsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#setDefaultBuildTarget(java.lang.Object)'>setDefaultBuildTarget</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#setPluginsDir(java.io.File)'>setPluginsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#setReportsDir(java.io.File)'>setReportsDir</a>, <a href='../../../wooga/gradle/unity/UnityPluginConvention.html#setReportsDir(java.lang.Object)'>setReportsDir</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>interface <a href='../../../wooga/gradle/unity/UnityActionConvention.html'>UnityActionConvention</a></code></td>
+                            <td class="colLast"><code><a href='../../../wooga/gradle/unity/UnityActionConvention.html#getLogCategory()'>getLogCategory</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#getProjectPath()'>getProjectPath</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#getRedirectStdOut()'>getRedirectStdOut</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#getUnityPath()'>getUnityPath</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#logCategory(java.lang.String)'>logCategory</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#projectPath(java.io.File)'>projectPath</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#redirectStdOut(java.lang.Boolean)'>redirectStdOut</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#setLogCategory(java.lang.String)'>setLogCategory</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#setProjectPath(java.io.File)'>setProjectPath</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#setRedirectStdOut(java.lang.Boolean)'>setRedirectStdOut</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#setUnityPath(java.io.File)'>setUnityPath</a>, <a href='../../../wooga/gradle/unity/UnityActionConvention.html#unityPath(java.io.File)'>unityPath</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -440,7 +266,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>activate</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
+                                <p> Executes Unity license activation.
+ <p>
+ The closure configures a <a href='../../../wooga/gradle/unity/batchMode/ActivationSpec.html' title='ActivationSpec'>ActivationSpec</a>.
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  The closure for configuring the activation.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -448,39 +277,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>activate</strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/ActivationSpec.html' title='ActivationSpec'>ActivationSpec</a>&gt; action)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="authentication(groovy.lang.Closure)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>authentication</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="authentication(Action<? super UnityAuthentication>)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>authentication</strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="autoActivateUnity(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>autoActivateUnity</strong>(java.lang.Boolean value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="autoReturnLicense(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>autoReturnLicense</strong>(java.lang.Boolean value)</h4>
-                                <p></p>
+                                <p> Executes Unity license activation.
+ <p>
+ The given action configures a <a href='../../../wooga/gradle/unity/batchMode/ActivationSpec.html' title='ActivationSpec'>ActivationSpec</a>, which is used to launch the process.
+ This method blocks until the process terminates, with its result being returned.
+     <DL><DT><B>Parameters:</B></DT><DD><code>action</code> -  The action for configuring the execution.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -488,7 +289,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>batchMode</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
+                                <p> Executes a command in Unity.
+ <p>
+ The closure configures a <a href='../../../wooga/gradle/unity/batchMode/BatchModeSpec.html' title='BatchModeSpec'>BatchModeSpec</a>.
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  The closure for configuring the execution.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -496,135 +300,35 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>batchMode</strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BatchModeSpec.html' title='BatchModeSpec'>BatchModeSpec</a>&gt; action)</h4>
-                                <p></p>
+                                <p> Executes a command in Unity.
+ <p>
+ The given action configures a <a href='../../../wooga/gradle/unity/batchMode/BatchModeSpec.html' title='BatchModeSpec'>BatchModeSpec</a>, which is used to launch the process.
+ This method blocks until the process terminates, with its result being returned.
+     <DL><DT><B>Parameters:</B></DT><DD><code>action</code> -  The action for configuring the execution.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="defaultBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)"><!-- --></a>
+                        <a name="getTestBuildTargets()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>defaultBuildTarget</strong>(<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getActivationActionFactory()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>groovy.util.Factory&lt;<a href='../../../wooga/gradle/unity/batchMode/ActivationAction.html' title='ActivationAction'>ActivationAction</a>&gt; <strong>getActivationActionFactory</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getAssetsDir()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getAssetsDir</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getAuthentication()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> <strong>getAuthentication</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getAutoActivateUnity()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.Boolean <strong>getAutoActivateUnity</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getAutoReturnLicense()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.Boolean <strong>getAutoReturnLicense</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getBatchModeActionFactory()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>groovy.util.Factory&lt;<a href='../../../wooga/gradle/unity/batchMode/BatchModeAction.html' title='BatchModeAction'>BatchModeAction</a>&gt; <strong>getBatchModeActionFactory</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getDefaultBuildTarget()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> <strong>getDefaultBuildTarget</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getPluginsDir()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getPluginsDir</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getProjectPath()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getProjectPath</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getRedirectStdOut()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.Boolean <strong>getRedirectStdOut</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getReportsDir()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getReportsDir</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getUnityLicenseDirectory()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getUnityLicenseDirectory</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getUnityPath()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.io.File <strong>getUnityPath</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="projectPath(java.io.File)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>projectPath</strong>(java.io.File path)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="redirectStdOut(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>redirectStdOut</strong>(java.lang.Boolean redirect)</h4>
-                                <p></p>
+                                <h4>java.util.Set&lt;<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a>&gt; <strong>getTestBuildTargets</strong>()</h4>
+                                <p> Returns a java.util.Set of <a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a> objects to construct unity
+ editmode/playmode tasks.
+ <p>
+ The plugin constructs a series of test tasks based on the returned java.util.Set.
+ <p>
+ <b>Example Test Task structure with two test build targets:</b>
+ <pre>
+ <CODE>:check
+ |--- :test
+ +--- :testEditMode
+ |    +--- :testEditModeAndroid
+ |    |--- :testEditModeIos
+ |--- :testPlayMode
+      +--- :testPlayModeAndroid
+      |--- :testPlayModeIos
+ </CODE>
+     <DL><DT><B>Returns:</B></DT><DD>the buildtargets to generate test tasks for</DD></DL><DL><DT><B>Default:</B></DT><DD>the a set with the <CODE>defaultBuildTarget</CODE></DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='../../../wooga/gradle/unity/UnityPluginConvention.html#defaultBuildTarget' title='UnityPluginConvention.defaultBuildTarget'>UnityPluginConvention.defaultBuildTarget</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -632,7 +336,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>returnLicense</strong>(groovy.lang.Closure closure)</h4>
-                                <p></p>
+                                <p> Executes Unity license return command.
+ <p>
+ The closure configures a <a href='../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html' title='BaseBatchModeSpec'>BaseBatchModeSpec</a>.
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  The closure for configuring the activation.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -640,127 +347,44 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.gradle.process.ExecResult <strong>returnLicense</strong>(org.gradle.api.Action&lt;? super <a href='../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html' title='BaseBatchModeSpec'>BaseBatchModeSpec</a>&gt; action)</h4>
-                                <p></p>
+                                <p> Executes Unity license activation.
+ <p>
+ The given action configures a <a href='../../../wooga/gradle/unity/batchMode/BaseBatchModeSpec.html' title='BaseBatchModeSpec'>BaseBatchModeSpec</a>, which is used to launch the process.
+ This method blocks until the process terminates, with its result being returned.
+     <DL><DT><B>Parameters:</B></DT><DD><code>action</code> -  The action for configuring the execution.</DD></DL><DL><DT><B>Returns:</B></DT><DD>the result of the execution</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="setAssetsDir(java.io.File)"><!-- --></a>
+                        <a name="setTestBuildTargets(Iterable<?>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>setAssetsDir</strong>(java.io.File reportsDir)</h4>
-                                <p></p>
+                                <h4>void <strong>setTestBuildTargets</strong>(java.lang.Iterable&lt;?&gt; targets)</h4>
+                                <p> Sets one or more test build target objects.
+ <p>
+ The provided objects can be a groovy.lang.Closure, java.lang.String or <a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a> objects
+     <DL><DT><B>Parameters:</B></DT><DD><code>targets</code> -  test build targets to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="setAssetsDir(java.lang.Object)"><!-- --></a>
+                        <a name="testBuildTargets(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>setAssetsDir</strong>(java.lang.Object reportsDir)</h4>
-                                <p></p>
+                                <h4>T <strong>testBuildTargets</strong>(java.lang.Object... targets)</h4>
+                                <p> Adds one or more test build target objects.
+ <p>
+ The provided objects can be a groovy.lang.Closure, java.lang.String or <a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a> objects
+     <DL><DT><B>Parameters:</B></DT><DD><code>targets</code> -  test build targets to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="setAuthentication(wooga.gradle.unity.UnityAuthentication)"><!-- --></a>
+                        <a name="testBuildTargets(Iterable<?>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>setAuthentication</strong>(<a href='../../../wooga/gradle/unity/UnityAuthentication.html'>UnityAuthentication</a> authentication)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setAutoActivateUnity(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setAutoActivateUnity</strong>(java.lang.Boolean value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setAutoReturnLicense(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setAutoReturnLicense</strong>(java.lang.Boolean value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setDefaultBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setDefaultBuildTarget</strong>(<a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setDefaultBuildTarget(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setDefaultBuildTarget</strong>(java.lang.Object value)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setPluginsDir(java.io.File)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setPluginsDir</strong>(java.io.File reportsDir)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setPluginsDir(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setPluginsDir</strong>(java.lang.Object reportsDir)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setProjectPath(java.io.File)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setProjectPath</strong>(java.io.File path)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setRedirectStdOut(java.lang.Boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setRedirectStdOut</strong>(java.lang.Boolean redirect)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setReportsDir(java.io.File)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setReportsDir</strong>(java.io.File reportsDir)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setReportsDir(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setReportsDir</strong>(java.lang.Object reportsDir)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setUnityPath(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>void <strong>setUnityPath</strong>(java.lang.Object path)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="unityPath(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../wooga/gradle/unity/UnityPluginExtension.html'>UnityPluginExtension</a> <strong>unityPath</strong>(java.lang.Object path)</h4>
-                                <p></p>
+                                <h4>T <strong>testBuildTargets</strong>(java.lang.Iterable&lt;?&gt; targets)</h4>
+                                <p> Adds one or more test build target objects.
+ <p>
+ The provided objects can be a groovy.lang.Closure, java.lang.String or <a href='../../../wooga/gradle/unity/batchMode/BuildTarget.html' title='BuildTarget'>BuildTarget</a> objects
+     <DL><DT><B>Parameters:</B></DT><DD><code>targets</code> -  test build targets to add</DD></DL><DL><DT><B>Returns:</B></DT><DD>this</DD></DL></p>
                             </li>
                         </ul>
                     

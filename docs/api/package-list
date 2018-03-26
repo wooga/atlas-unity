@@ -1,6 +1,9 @@
-wooga.gradle
 wooga.gradle.unity
 wooga.gradle.unity.batchMode
+wooga.gradle.unity.batchMode.internal
+wooga.gradle.unity.internal
 wooga.gradle.unity.tasks
+wooga.gradle.unity.tasks.internal
 wooga.gradle.unity.testing
-wooga.gradle.unity.utils
+wooga.gradle.unity.testing.internal
+wooga.gradle.unity.utils.internal
