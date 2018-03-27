@@ -11,7 +11,7 @@
 
 ### 0.16.0 - Dec 06 2017
 
-* ![REOVE] wooga unity package development logic from plugin
+* ![REMOVE] wooga unity package development logic from plugin
 
 ### 0.15.0 - Nov 25 2017
 
