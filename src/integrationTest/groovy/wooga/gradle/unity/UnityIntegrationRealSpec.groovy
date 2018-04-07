@@ -17,7 +17,6 @@
 
 package wooga.gradle.unity
 
-import nebula.test.IntegrationSpec
 import org.apache.commons.lang.StringEscapeUtils
 import spock.lang.Ignore
 

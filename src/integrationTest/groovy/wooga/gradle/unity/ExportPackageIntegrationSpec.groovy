@@ -30,7 +30,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains(":mUnity NO-SOURCE")
+        result.standardOutput.contains(":mUnity NO-SOURCE") || result.standardOutput.contains("Skipping task ':mUnity' as it has no source files")
         !result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE)
         !result.standardOutput.contains("${moduleName}.unitypackage")
     }
