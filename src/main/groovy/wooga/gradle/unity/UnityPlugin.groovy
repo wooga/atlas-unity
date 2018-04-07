@@ -161,7 +161,7 @@ class UnityPlugin implements Plugin<Project> {
 
     static void applyBaseConvention(ConventionMapping taskConventionMapping, UnityPluginExtension extension) {
         taskConventionMapping.map "unityPath", { extension.unityPath }
-        taskConventionMapping.logCategory = { extension.logCategory }
+        taskConventionMapping.map "logCategory", { extension.logCategory }
         taskConventionMapping.map "projectPath", { extension.projectPath }
         taskConventionMapping.map "redirectStdOut", { extension.redirectStdOut }
     }

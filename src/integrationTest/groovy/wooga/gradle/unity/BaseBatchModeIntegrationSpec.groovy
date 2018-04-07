@@ -180,11 +180,14 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
     def "set log category with #method to #value"() {
         given:
         buildFile << """
-        
-        task (mUnity, type: ${Unity.name}) {
-            $method("${value}") 
-        }
+        task (mUnity, type: ${Unity.name})
         """.stripIndent()
+
+        if (value) {
+            buildFile << """
+            mUnity.$method("${value}")
+            """.stripIndent()
+        }
 
         when:
         def result = runTasksSuccessfully("mUnity")
@@ -200,6 +203,8 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
         "helloworld" | false     | "helloworld/mUnity.log"
         ""           | true      | "mUnity.log"
         ""           | false     | "mUnity.log"
+        null         | true      | "mUnity.log"
+        null         | false     | "mUnity.log"
 
         method = (useSetter) ? "setLogCategory" : "logCategory"
 
