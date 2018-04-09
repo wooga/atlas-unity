@@ -279,7 +279,7 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.wasExecuted("activateUnity")
         result.wasExecuted("returnUnityLicense")
-        result.standardOutput.contains("returnUnityLicense NO-SOURCE")
+        result.standardOutput.contains("returnUnityLicense NO-SOURCE") || result.standardOutput.contains("Skipping task ':returnUnityLicense' as it has no source files")
     }
 
     def "skips activateUnity and returnUnityLicense when authentication is not set"() {
