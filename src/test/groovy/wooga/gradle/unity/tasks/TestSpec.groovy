@@ -120,6 +120,7 @@ class TestSpec extends ProjectSpec {
                                                         PosixFilePermission.GROUP_EXECUTE,
         ].toSet())
         environmentVariables.set("WMIC_PATH", wmic.path)
+        environmentVariables.set("REDIRECT_STDOUT_ENV_VAR", "false")
 
         expect:
         Test.retrieveUnityVersion(project, unityPath, "5.5.0").toString() == version
