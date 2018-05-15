@@ -62,7 +62,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     private Boolean autoActivateUnity
 
     private final Instantiator instantiator
-    private final FileResolver fileResolver
+    protected final FileResolver fileResolver
     private final Project project
     private final UnityAuthentication authentication
 
@@ -107,11 +107,16 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     void setUnityPath(File unityPath) {
-        customUnityPath = fileResolver.resolveLater(unityPath)
+        setUnityPath(unityPath as Object)
     }
 
     void setUnityPath(Object path) {
-        customUnityPath = fileResolver.resolveLater(path)
+        customUnityPath = new Factory<File>() {
+            @Override
+            File create() {
+                fileResolver.resolve(path)
+            }
+        }
     }
 
     private static Boolean getRedirectStdOutFromEnv(Map<String, ?> properties, Map<String, String> env) {
@@ -157,11 +162,21 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     void setReportsDir(File file) {
-        reportsDir = fileResolver.resolveLater(file)
+        reportsDir = new Factory<File>() {
+            @Override
+            File create() {
+                fileResolver.resolve(file)
+            }
+        }
     }
 
     void setReportsDir(Object file) {
-        reportsDir = fileResolver.resolveLater(file)
+        reportsDir = new Factory<File>() {
+            @Override
+            File create() {
+                fileResolver.resolve(file)
+            }
+        }
     }
 
     UnityPluginExtension reportsDir(Object reportsDir) {
@@ -178,7 +193,12 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     void setPluginsDir(File path) {
-        pluginsDir = fileResolver.resolveLater(path)
+        pluginsDir = new Factory<File>() {
+            @Override
+            File create() {
+                fileResolver.resolve(path)
+            }
+        }
     }
 
     UnityPluginExtension pluginsDir(Object path) {
@@ -195,7 +215,12 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     void setAssetsDir(File path) {
-        assetsDir = fileResolver.resolveLater(path)
+        assetsDir = new Factory<File>() {
+            @Override
+            File create() {
+                return fileResolver.resolve(path)
+            }
+        }
     }
 
     UnityPluginExtension assetsDir(Object path) {

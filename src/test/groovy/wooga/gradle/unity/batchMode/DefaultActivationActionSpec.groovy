@@ -20,6 +20,7 @@ package wooga.gradle.unity.batchMode
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.internal.file.PathToFileResolver
 import spock.lang.Specification
@@ -38,7 +39,7 @@ class DefaultActivationActionSpec extends Specification {
     static String DEFAULT_SERIAL = "test-serial"
 
     def projectProperties = [:]
-    def fileResolver = Mock(PathToFileResolver)
+    def fileResolver = Mock(FileResolver)
     def authentication = new DefaultUnityAuthentication(DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SERIAL)
     def extension = Mock(UnityPluginExtension)
     def extensions = Mock(ExtensionContainer)
