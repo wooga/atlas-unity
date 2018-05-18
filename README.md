@@ -120,8 +120,9 @@ Tested with Oracle JDK8
 | 4.2            | ![yes]      |
 | 4.3            | ![yes]      |
 | 4.4            | ![yes]      |
-| 4.5            | ![no]       |
-| 4.6            | ![no]       |
+| 4.5            | ![yes]      |
+| 4.6            | ![yes]      |
+| 4.7            | ![yes]      |
 
 
 Development

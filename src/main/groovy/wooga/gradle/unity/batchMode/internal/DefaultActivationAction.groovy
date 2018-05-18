@@ -20,7 +20,7 @@ package wooga.gradle.unity.batchMode.internal
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.internal.file.PathToFileResolver
+import org.gradle.api.internal.file.FileResolver
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
@@ -57,7 +57,7 @@ class DefaultActivationAction extends DefaultBatchModeAction implements Activati
         return this
     }
 
-    DefaultActivationAction(Project project, PathToFileResolver fileResolver, UnityAuthentication authentication) {
+    DefaultActivationAction(Project project, FileResolver fileResolver, UnityAuthentication authentication) {
         super(project, fileResolver)
         this.authentication = authentication
     }

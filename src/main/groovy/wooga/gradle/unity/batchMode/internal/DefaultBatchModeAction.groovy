@@ -22,34 +22,36 @@ import org.gradle.api.Project
 import org.gradle.api.internal.ConventionAwareHelper
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
+import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
-import org.gradle.internal.file.PathToFileResolver
 import org.gradle.internal.io.LineBufferingOutputStream
 import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
-import org.gradle.process.internal.DefaultExecHandleBuilder
+import org.gradle.process.ExecSpec
+import org.gradle.process.internal.DefaultExecActionFactory
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
-import wooga.gradle.unity.UnityActionConvention
-import wooga.gradle.unity.utils.internal.FileUtils
+import org.gradle.process.internal.ExecHandleBuilder
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
-import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeFlags
-import wooga.gradle.unity.batchMode.BatchModeSpec
 import wooga.gradle.unity.batchMode.BuildTarget
+import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.utils.internal.ForkTextStream
 
-class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchModeAction, IConventionAware {
+class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
     private final UnityPluginExtension extension
-    private final PathToFileResolver fileResolver
+    protected final FileResolver fileResolver
     private final ConventionMapping conventionMapping
 
     private File customUnityPath
     private File customProjectPath
     private BuildTarget customBuildTarget
     private String logCategory
+
+    @Delegate()
+    ExecHandleBuilder execHandleBuilder
 
     File getUnityPath() {
         if (customUnityPath) {
@@ -92,7 +94,12 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     void setLogFile(Object file) {
         logFile = null
         if (file) {
-            logFile = fileResolver.resolveLater(file)
+            logFile = new Factory<File>() {
+                @Override
+                File create() {
+                    return fileResolver.resolve(file)
+                }
+            }
         }
     }
 
@@ -142,15 +149,16 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
     Boolean batchMode = true
     Boolean noGraphics = false
 
-    DefaultBatchModeAction(Project project, PathToFileResolver fileResolver) {
-        super(fileResolver)
+    DefaultBatchModeAction(Project project, FileResolver fileResolver) {
         this.fileResolver = fileResolver
         this.extension = project.getExtensions().findByName(UnityPlugin.EXTENSION_NAME) as UnityPluginExtension
         this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
+        def execFactory = new DefaultExecActionFactory(fileResolver)
+        this.execHandleBuilder = execFactory.newExec()
     }
 
     ExecResult execute() {
-        def additionalArguments = getAllArguments()
+        def additionalArguments = getArgs()
         def batchModeArgs = []
 
         if (getUnityPath() == null || !getUnityPath().exists()) {
@@ -197,7 +205,7 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
                 if (getRedirectStdOut()) {
                     TextStream handler = new ForkTextStream()
                     def outStream = new LineBufferingOutputStream(handler)
-                    this.standardOutput = outStream
+                    this.setStandardOutput(outStream)
 
                     if (getLogFile()) {
                         handler.addWriter(getLogFile().newPrintWriter())
@@ -279,19 +287,25 @@ class DefaultBatchModeAction extends DefaultExecHandleBuilder implements BatchMo
 
     @Override
     DefaultBatchModeAction args(Object... args) {
-        super.args(args)
+        execHandleBuilder.args(args)
         this
     }
 
     @Override
     DefaultBatchModeAction args(Iterable<?> args) {
-        super.args(args)
+        execHandleBuilder.args(args)
+        return this
+    }
+
+    @Override
+    DefaultBatchModeAction setArgs(List<String> arguments) {
+        execHandleBuilder.setArgs(arguments)
         return this
     }
 
     @Override
     DefaultBatchModeAction setArgs(Iterable<?> arguments) {
-        super.setArgs(arguments)
+        execHandleBuilder.setArgs(arguments)
         return this
     }
 
