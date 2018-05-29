@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.batchMode.internal.DefaultBatchModeAction
+<li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.batchMode.internal.DefaultBatchModeAction
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -105,7 +105,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <hr>
             <br>
 <pre>class DefaultBatchModeAction
-extends org.gradle.process.internal.DefaultExecHandleBuilder
+extends java.lang.Object
 
 </pre>
 
@@ -124,6 +124,30 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;org.gradle.api.internal.file.FileResolver</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#fileResolver">fileResolver</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -145,11 +169,16 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>org.gradle.process.internal.ExecHandleBuilder</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#execHandleBuilder">execHandleBuilder</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#noGraphics">noGraphics</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#quit">quit</a></code><br></td>
                         </tr>
@@ -177,8 +206,8 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#DefaultBatchModeAction(org.gradle.api.Project, org.gradle.internal.file.PathToFileResolver)">DefaultBatchModeAction</a>
-                                (org.gradle.api.Project project, org.gradle.internal.file.PathToFileResolver fileResolver)</code><br></td>
+                                <code><a href="#DefaultBatchModeAction(org.gradle.api.Project, org.gradle.api.internal.file.FileResolver)">DefaultBatchModeAction</a>
+                                (org.gradle.api.Project project, org.gradle.api.internal.file.FileResolver fileResolver)</code><br></td>
                         </tr>
                         
                     </table>
@@ -313,52 +342,58 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/unity/batchMode/internal/DefaultBatchModeAction.html'>DefaultBatchModeAction</a></code></td>
-                            <td class="colLast"><code><strong><a href="#setArgs(Iterable<?>)">setArgs</a></strong>(java.lang.Iterable&lt;?&gt; arguments)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setArgs(List<String>)">setArgs</a></strong>(java.util.List&lt;java.lang.String&gt; arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../wooga/gradle/unity/batchMode/internal/DefaultBatchModeAction.html'>DefaultBatchModeAction</a></code></td>
+                            <td class="colLast"><code><strong><a href="#setArgs(Iterable<?>)">setArgs</a></strong>(java.lang.Iterable&lt;?&gt; arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setBuildTarget(wooga.gradle.unity.batchMode.BuildTarget)">setBuildTarget</a></strong>(<a href='../../../../../wooga/gradle/unity/batchMode/BuildTarget.html'>BuildTarget</a> target)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setLogCategory(java.lang.String)">setLogCategory</a></strong>(java.lang.String value)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setLogFile(java.io.File)">setLogFile</a></strong>(java.io.File file)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setLogFile(java.lang.Object)">setLogFile</a></strong>(java.lang.Object file)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setProjectPath(java.io.File)">setProjectPath</a></strong>(java.io.File path)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setRedirectStdOut(java.lang.Boolean)">setRedirectStdOut</a></strong>(java.lang.Boolean redirect)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setUnityPath(java.io.File)">setUnityPath</a></strong>(java.io.File path)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../wooga/gradle/unity/batchMode/internal/DefaultBatchModeAction.html'>DefaultBatchModeAction</a></code></td>
                             <td class="colLast"><code><strong><a href="#unityPath(java.io.File)">unityPath</a></strong>(java.io.File path)</code><br></td>
@@ -379,12 +414,8 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class org.gradle.process.internal.DefaultExecHandleBuilder</code></td>
-                            <td class="colLast"><code>org.gradle.process.internal.DefaultExecHandleBuilder#executable(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#executable(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#setDaemon(boolean), org.gradle.process.internal.DefaultExecHandleBuilder#args(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#args([Ljava.lang.Object;), org.gradle.process.internal.DefaultExecHandleBuilder#args([Ljava.lang.Object;), org.gradle.process.internal.DefaultExecHandleBuilder#args(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#listener(org.gradle.process.internal.ExecHandleListener), org.gradle.process.internal.DefaultExecHandleBuilder#listener(org.gradle.process.internal.ExecHandleListener), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardOutput(java.io.OutputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardOutput(java.io.OutputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardOutput(java.io.OutputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setIgnoreExitValue(boolean), org.gradle.process.internal.DefaultExecHandleBuilder#setIgnoreExitValue(boolean), org.gradle.process.internal.DefaultExecHandleBuilder#setIgnoreExitValue(boolean), org.gradle.process.internal.DefaultExecHandleBuilder#workingDir(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#workingDir(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#setCommandLine(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#setCommandLine(java.util.List), org.gradle.process.internal.DefaultExecHandleBuilder#setCommandLine([Ljava.lang.Object;), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardInput(java.io.InputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardInput(java.io.InputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setStandardInput(java.io.InputStream), org.gradle.process.internal.DefaultExecHandleBuilder#commandLine(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#commandLine([Ljava.lang.Object;), org.gradle.process.internal.DefaultExecHandleBuilder#commandLine([Ljava.lang.Object;), org.gradle.process.internal.DefaultExecHandleBuilder#commandLine(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#setArgs(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#setArgs(java.util.List), org.gradle.process.internal.DefaultExecHandleBuilder#setArgs(java.util.List), org.gradle.process.internal.DefaultExecHandleBuilder#setArgs(java.lang.Iterable), org.gradle.process.internal.DefaultExecHandleBuilder#getArgs(), org.gradle.process.internal.DefaultExecHandleBuilder#redirectErrorStream(), org.gradle.process.internal.DefaultExecHandleBuilder#redirectErrorStream(), org.gradle.process.internal.DefaultExecHandleBuilder#getAllArguments(), org.gradle.process.internal.DefaultExecHandleBuilder#setTimeout(int), org.gradle.process.internal.DefaultExecHandleBuilder#setTimeout(int), org.gradle.process.internal.DefaultExecHandleBuilder#setDisplayName(java.lang.String), org.gradle.process.internal.DefaultExecHandleBuilder#setDisplayName(java.lang.String), org.gradle.process.internal.DefaultExecHandleBuilder#getDisplayName(), org.gradle.process.internal.DefaultExecHandleBuilder#setErrorOutput(java.io.OutputStream), org.gradle.process.internal.DefaultExecHandleBuilder#setErrorOutput(java.io.OutputStream), org.gradle.process.internal.DefaultExecHandleBuilder#isIgnoreExitValue(), org.gradle.process.internal.DefaultExecHandleBuilder#getStandardInput(), org.gradle.process.internal.DefaultExecHandleBuilder#getStandardOutput(), org.gradle.process.internal.DefaultExecHandleBuilder#getErrorOutput(), org.gradle.process.internal.DefaultExecHandleBuilder#getCommandLine(), org.gradle.process.internal.DefaultExecHandleBuilder#build(), org.gradle.process.internal.DefaultExecHandleBuilder#streamsHandler(org.gradle.process.internal.streams.StreamsHandler), org.gradle.process.internal.DefaultExecHandleBuilder#setExecutable(java.lang.String), org.gradle.process.internal.DefaultExecHandleBuilder#setExecutable(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#environment(java.util.Map), org.gradle.process.internal.DefaultExecHandleBuilder#environment(java.lang.String, java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#getExecutable(), org.gradle.process.internal.DefaultExecHandleBuilder#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.internal.DefaultExecHandleBuilder#setWorkingDir(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#setWorkingDir(java.io.File), org.gradle.process.internal.DefaultExecHandleBuilder#getEnvironment(), org.gradle.process.internal.DefaultExecHandleBuilder#getWorkingDir(), org.gradle.process.internal.DefaultExecHandleBuilder#setEnvironment(java.util.Map), org.gradle.process.internal.DefaultExecHandleBuilder#getActualEnvironment(), org.gradle.process.internal.DefaultExecHandleBuilder#wait(long, int), org.gradle.process.internal.DefaultExecHandleBuilder#wait(long), org.gradle.process.internal.DefaultExecHandleBuilder#wait(), org.gradle.process.internal.DefaultExecHandleBuilder#equals(java.lang.Object), org.gradle.process.internal.DefaultExecHandleBuilder#toString(), org.gradle.process.internal.DefaultExecHandleBuilder#hashCode(), org.gradle.process.internal.DefaultExecHandleBuilder#getClass(), org.gradle.process.internal.DefaultExecHandleBuilder#notify(), org.gradle.process.internal.DefaultExecHandleBuilder#notifyAll()</code></td>
-                        </tr>
-                        <tr class="altColor">
-                            <td class="colFirst"><code>class org.gradle.process.internal.AbstractExecHandleBuilder</code></td>
-                            <td class="colLast"><code>org.gradle.process.internal.AbstractExecHandleBuilder#getDisplayName(), org.gradle.process.internal.AbstractExecHandleBuilder#listener(org.gradle.process.internal.ExecHandleListener), org.gradle.process.internal.AbstractExecHandleBuilder#setStandardOutput(java.io.OutputStream), org.gradle.process.internal.AbstractExecHandleBuilder#setStandardOutput(java.io.OutputStream), org.gradle.process.internal.AbstractExecHandleBuilder#setErrorOutput(java.io.OutputStream), org.gradle.process.internal.AbstractExecHandleBuilder#setErrorOutput(java.io.OutputStream), org.gradle.process.internal.AbstractExecHandleBuilder#setIgnoreExitValue(boolean), org.gradle.process.internal.AbstractExecHandleBuilder#setIgnoreExitValue(boolean), org.gradle.process.internal.AbstractExecHandleBuilder#setStandardInput(java.io.InputStream), org.gradle.process.internal.AbstractExecHandleBuilder#setStandardInput(java.io.InputStream), org.gradle.process.internal.AbstractExecHandleBuilder#isIgnoreExitValue(), org.gradle.process.internal.AbstractExecHandleBuilder#getStandardInput(), org.gradle.process.internal.AbstractExecHandleBuilder#getStandardOutput(), org.gradle.process.internal.AbstractExecHandleBuilder#getErrorOutput(), org.gradle.process.internal.AbstractExecHandleBuilder#getCommandLine(), org.gradle.process.internal.AbstractExecHandleBuilder#build(), org.gradle.process.internal.AbstractExecHandleBuilder#redirectErrorStream(), org.gradle.process.internal.AbstractExecHandleBuilder#getAllArguments(), org.gradle.process.internal.AbstractExecHandleBuilder#setTimeout(int), org.gradle.process.internal.AbstractExecHandleBuilder#streamsHandler(org.gradle.process.internal.streams.StreamsHandler), org.gradle.process.internal.AbstractExecHandleBuilder#setDisplayName(java.lang.String), org.gradle.process.internal.AbstractExecHandleBuilder#executable(java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#setExecutable(java.lang.String), org.gradle.process.internal.AbstractExecHandleBuilder#setExecutable(java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#environment(java.util.Map), org.gradle.process.internal.AbstractExecHandleBuilder#environment(java.lang.String, java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#getExecutable(), org.gradle.process.internal.AbstractExecHandleBuilder#copyTo(org.gradle.process.ProcessForkOptions), org.gradle.process.internal.AbstractExecHandleBuilder#setWorkingDir(java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#setWorkingDir(java.io.File), org.gradle.process.internal.AbstractExecHandleBuilder#workingDir(java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#getEnvironment(), org.gradle.process.internal.AbstractExecHandleBuilder#getWorkingDir(), org.gradle.process.internal.AbstractExecHandleBuilder#setEnvironment(java.util.Map), org.gradle.process.internal.AbstractExecHandleBuilder#getActualEnvironment(), org.gradle.process.internal.AbstractExecHandleBuilder#wait(long, int), org.gradle.process.internal.AbstractExecHandleBuilder#wait(long), org.gradle.process.internal.AbstractExecHandleBuilder#wait(), org.gradle.process.internal.AbstractExecHandleBuilder#equals(java.lang.Object), org.gradle.process.internal.AbstractExecHandleBuilder#toString(), org.gradle.process.internal.AbstractExecHandleBuilder#hashCode(), org.gradle.process.internal.AbstractExecHandleBuilder#getClass(), org.gradle.process.internal.AbstractExecHandleBuilder#notify(), org.gradle.process.internal.AbstractExecHandleBuilder#notifyAll()</code></td>
+                            <td class="colFirst"><code>class java.lang.Object</code></td>
+                            <td class="colLast"><code>java.lang.Object#wait(long, int), java.lang.Object#wait(long), java.lang.Object#wait(), java.lang.Object#equals(java.lang.Object), java.lang.Object#toString(), java.lang.Object#hashCode(), java.lang.Object#getClass(), java.lang.Object#notify(), java.lang.Object#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -402,6 +433,24 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
            
 
             
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="fileResolver"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;final&nbsp;org.gradle.api.internal.file.FileResolver <strong>fileResolver</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
             
             <!-- =========== PROPERTY DETAIL =========== -->
@@ -415,6 +464,15 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.Boolean <strong>batchMode</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="execHandleBuilder"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.lang.Delegate()
+org.gradle.process.internal.ExecHandleBuilder <strong>execHandleBuilder</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -449,10 +507,10 @@ extends org.gradle.process.internal.DefaultExecHandleBuilder
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="DefaultBatchModeAction(org.gradle.api.Project, org.gradle.internal.file.PathToFileResolver)"><!-- --></a>
+                        <a name="DefaultBatchModeAction(org.gradle.api.Project, org.gradle.api.internal.file.FileResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>DefaultBatchModeAction</strong>(org.gradle.api.Project project, org.gradle.internal.file.PathToFileResolver fileResolver)</h4>
+                                <h4><strong>DefaultBatchModeAction</strong>(org.gradle.api.Project project, org.gradle.api.internal.file.FileResolver fileResolver)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -627,6 +685,15 @@ java.lang.Boolean <strong>getRedirectStdOut</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="setArgs(List<String>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../wooga/gradle/unity/batchMode/internal/DefaultBatchModeAction.html'>DefaultBatchModeAction</a> <strong>setArgs</strong>(java.util.List&lt;java.lang.String&gt; arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="setArgs(Iterable<?>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -739,11 +806,11 @@ void <strong>setRedirectStdOut</strong>(java.lang.Boolean redirect)</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Gradle Unity plugin API</p>
