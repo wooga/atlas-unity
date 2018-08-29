@@ -18,52 +18,12 @@
 
 package wooga.gradle.unity.utils.internal
 
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-import org.yaml.snakeyaml.Yaml
+import groovy.transform.InheritConstructors
 
-class ProjectSettings {
-
-    static Logger logger = Logging.getLogger(ProjectSettings)
-    private def content
-
-    ProjectSettings(File projectSettingsFile) {
-        this(projectSettingsFile.text)
-    }
-
-    ProjectSettings(String templateContent) {
-        try {
-            Yaml parser = new Yaml()
-            content = parser.load(stripUnityInstructions(templateContent))
-        }
-        catch (Exception e) {
-            logger.warn("Project Settings file not parsable. Please make sure it's not set to binary.")
-            content = null
-        }
-    }
+@InheritConstructors
+class ProjectSettings extends UnityAssetFile {
 
     boolean getPlayModeTestRunnerEnabled() {
-        isValidSettingsObject() && content['PlayerSettings']['playModeTestRunnerEnabled'] && content['PlayerSettings']['playModeTestRunnerEnabled'] == 1
-    }
-
-    boolean isValidSettingsObject() {
-        return content && content.getClass() == LinkedHashMap && content['PlayerSettings']
-    }
-
-    static String stripUnityInstructions(String content) {
-        def lines = content.readLines()
-        lines.collect {
-            if (it.matches(/%TAG !u! tag:unity3d.com,.*:/)) {
-                return ""
-            }
-
-            def m = it =~ /(--- )!u!\d+( &\d+)/
-            if (m) {
-                return "${m[0][1]}${m[0][2]}"
-            }
-
-            return it
-        }
-        .join("\n")
+        content['playModeTestRunnerEnabled'] && content['playModeTestRunnerEnabled'] == 1
     }
 }

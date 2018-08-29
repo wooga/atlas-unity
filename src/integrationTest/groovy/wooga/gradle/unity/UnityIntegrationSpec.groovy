@@ -18,7 +18,7 @@
 package wooga.gradle.unity
 
 import org.apache.commons.lang.StringEscapeUtils
-import wooga.gradle.unity.utils.ProjectSettingsSpec
+import wooga.gradle.unity.utils.internal.ProjectSettingsSpec
 
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
