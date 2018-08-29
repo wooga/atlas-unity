@@ -1,7 +1,7 @@
 package wooga.gradle.unity
 
 import spock.lang.Unroll
-import wooga.gradle.unity.utils.ProjectSettingsSpec
+import wooga.gradle.unity.utils.internal.ProjectSettingsSpec
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
