@@ -60,4 +60,15 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
         "String"   | TEMPLATE_CONTENT_ENABLED
         "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT_ENABLED
     }
+
+    def "playModeTestRunnerEnabled returns false with invalid project settings file"() {
+        when: "initialize projectSettings with binary content"
+        ProjectSettings settings = new ProjectSettings(content)
+
+        then:
+        !settings.playModeTestRunnerEnabled
+
+        where:
+        content << [INVALID_CONTENT]
+    }
 }

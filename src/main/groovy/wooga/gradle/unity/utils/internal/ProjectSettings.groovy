@@ -24,10 +24,6 @@ import groovy.transform.InheritConstructors
 class ProjectSettings extends UnityAssetFile {
 
     boolean getPlayModeTestRunnerEnabled() {
-        isValidSettingsObject() && content['playModeTestRunnerEnabled'] && content['playModeTestRunnerEnabled'] == 1
-    }
-
-    boolean isValidSettingsObject() {
-        return content && content.getClass() == LinkedHashMap
+        content['playModeTestRunnerEnabled'] && content['playModeTestRunnerEnabled'] == 1
     }
 }
