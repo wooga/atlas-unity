@@ -1,3 +1,20 @@
+### 1.4.0 - Aug 30 2018
+
+* ![ADD] Add Unity Asset file support
+
+### 1.3.0 - May 29 2018
+
+* ![FIX] compatibility for gradle > 4.4
+
+### 1.2.0 - May 09 2018
+
+* ![IMPROVE] activate test task feature for 2018.1
+
+### 1.1.0 - Apr 11 2018
+
+* ![FIX] logCategory default value
+* ![UPDATE] list of supported gradle versions
+
 ### 1.0.0 - Mar 23 2018
 
 * ![NEW] stable major release

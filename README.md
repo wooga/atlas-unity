@@ -15,7 +15,7 @@ This plugin provides tasks to run unity batchmode commands in [gradle][gradle]. 
 **build.gradle**
 ```groovy
 plugins {
-    id 'net.wooga.unity' version '1.1.0'
+    id 'net.wooga.unity' version '1.4.0'
 }
 ```
 

@@ -6,4 +6,5 @@ wooga.gradle.unity.tasks
 wooga.gradle.unity.tasks.internal
 wooga.gradle.unity.testing
 wooga.gradle.unity.testing.internal
+wooga.gradle.unity.utils
 wooga.gradle.unity.utils.internal
