@@ -136,7 +136,9 @@ class TestSpec extends ProjectSpec {
         "MAC OS X" | "2017.3.0" | "-runTests"
         "MAC OS X" | "2017.4.0" | "-runTests"
         "MAC OS X" | "2018.1.0" | "-runTests"
-        "MAC OS X" | "2018.2.0" | ""
+        "MAC OS X" | "2018.2.0" | "-runTests"
+        "MAC OS X" | "2018.3.0" | "-runTests"
+        "MAC OS X" | "2019.1.0" | "-runTests"
         "WINDOWS"  | "5.4.0"    | ""
         "WINDOWS"  | "5.5.0"    | "-runEditorTests"
         "WINDOWS"  | "5.6.0"    | "-runTests"
@@ -145,7 +147,9 @@ class TestSpec extends ProjectSpec {
         "WINDOWS"  | "2017.3.0" | "-runTests"
         "WINDOWS"  | "2017.4.0" | "-runTests"
         "WINDOWS"  | "2018.1.0" | "-runTests"
-        "WINDOWS"  | "2018.2.0" | ""
+        "WINDOWS"  | "2018.2.0" | "-runTests"
+        "WINDOWS"  | "2018.3.0" | "-runTests"
+        "WINDOWS"  | "2019.2.0" | "-runTests"
 
     }
 }
