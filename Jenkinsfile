@@ -1,5 +1,5 @@
 #!groovy
-@Library('github.com/wooga/atlas-jenkins-pipeline@fix/lazy_env') _
+@Library('atlas-jenkins-pipeline@fix/lazy_env') _
 
 withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', variable: 'artifactory_publish'),
                  usernameColonPassword(credentialsId: 'artifactory_deploy', variable: 'artifactory_deploy'),
@@ -8,7 +8,7 @@ withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', var
     def testEnvironment = [
                             "artifactoryCredentials=${artifactory_publish}",
                             "nugetkey=${artifactory_deploy}",
-                            {"UNITY_PATH=${APPLICATIONS_HOME}/Unity-2017.1.0p5/${UNITY_EXEC_PACKAGE_PATH}"}
+                            {pathToUnity("2017.1.0p5")}
                           ]
 
     buildGradlePlugin plaforms: ['osx','windows'],
