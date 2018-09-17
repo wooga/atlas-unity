@@ -1,5 +1,6 @@
 #!groovy
-@Library('github.com/wooga/atlas-jenkins-pipeline@fix/lazy_env') _
+
+@Library('github.com/wooga/atlas-jenkins-pipeline@1.x') _
 
 withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', variable: 'artifactory_publish'),
                  usernameColonPassword(credentialsId: 'artifactory_deploy', variable: 'artifactory_deploy'),
