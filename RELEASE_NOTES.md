@@ -1,3 +1,8 @@
+### 1.5.0 - Sep 24 2018
+
+* ![UPDATE] `net.wooga.plugins` to `1.2.0`
+* ![ADD] activate test task feature for Unity 2018
+
 ### 1.4.0 - Aug 30 2018
 
 * ![ADD] Add Unity Asset file support
