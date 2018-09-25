@@ -195,7 +195,6 @@ class UnityPackage extends AbstractUnityProjectTask {
         inputFiles(project.files([source]))
     }
 
-    @Inject
     UnityPackage() {
         super(UnityPackage.class)
         this.extension = UNITY_PACKAGE_EXTENSION
