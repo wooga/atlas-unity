@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity.utils.internal
 
+import groovy.json.JsonBuilder
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import spock.lang.Shared
@@ -67,9 +68,9 @@ class UnityHubSpec extends Specification {
         secondaryInstallPathConfig = new File(hubBasePath, UnityHub.HUB_INSTALL_LOCATION)
         secondaryInstallPathConfig.createNewFile()
 
-        editorsConfig.text = "{}"
-        defaultEditorConfig.text = ""
-        secondaryInstallPathConfig.text = "\"${secondaryInstallPath.path}\""
+        editorsConfig.text = new JsonBuilder([:]).toPrettyString()
+        defaultEditorConfig.text = new JsonBuilder("").toPrettyString()
+        secondaryInstallPathConfig.text = new JsonBuilder(secondaryInstallPath.path).toPrettyString()
     }
 
     File mockUnityInstallation(File basePath, String version) {
@@ -81,6 +82,16 @@ class UnityHubSpec extends Specification {
         }
 
         versionPath
+    }
+
+    Map mockEditorsConfig(File location, String version) {
+        def config = [:]
+        config.put(version, [
+                "version" : version,
+                "location": location.path,
+                "manual"  : true
+        ])
+        config
     }
 
     @Unroll("isAvailable returns #expectedResult if unity hub path #message")
@@ -132,16 +143,7 @@ class UnityHubSpec extends Specification {
         if (unityHubExists && hasInstallation) {
 
             def location = mockUnityInstallation(manualInstallPath, version)
-
-            editorsConfig.text = """
-            {
-                "${version}": {
-                    "version":"${version}",
-                    "location": ["${location.path}"],
-                    "manual":true
-                }
-            }
-            """.stripIndent().trim()
+            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, version) ).toPrettyString()
         }
 
         expect:
@@ -200,16 +202,7 @@ class UnityHubSpec extends Specification {
         def manualVersion = "2017.1.0f3"
         if (unityHubExists && hasManualInstallation) {
             def location = mockUnityInstallation(manualInstallPath, manualVersion)
-
-            editorsConfig.text = """
-            {
-                "${manualVersion}": {
-                    "version":"${manualVersion}",
-                    "location": ["${location.path}"],
-                    "manual":true
-                }
-            }
-            """.stripIndent().trim()
+            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, manualVersion) ).toPrettyString()
         }
 
         and: "hub unity editor versions"
@@ -277,16 +270,7 @@ class UnityHubSpec extends Specification {
         and: "manual unity editor versions"
         if (unityHubExists && hasManualInstallation) {
             def location = mockUnityInstallation(manualInstallPath, hasManualInstallation)
-
-            editorsConfig.text = """
-            {
-                "${hasManualInstallation}": {
-                    "version":"${hasManualInstallation}",
-                    "location": ["${location.path}"],
-                    "manual":true
-                }
-            }
-            """.stripIndent().trim()
+            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, hasManualInstallation) ).toPrettyString()
         }
 
         and: "hub unity editor versions"
