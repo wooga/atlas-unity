@@ -99,6 +99,8 @@ class DefaultUnityPluginExtensionSpec extends Specification {
     def "get default #property with #osName #osArch"() {
         given:
         environmentVariables.set("UNITY_PATH", null)
+        environmentVariables.set("HOME", File.createTempDir().path)
+        environmentVariables.set("HOMEPATH", File.createTempDir().path)
         System.setProperty("os.name", osName)
         System.setProperty("os.arch", osArch)
 

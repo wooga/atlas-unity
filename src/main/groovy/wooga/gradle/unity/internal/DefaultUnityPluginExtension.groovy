@@ -32,6 +32,7 @@ import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.*
 import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
 import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
+import wooga.gradle.unity.utils.internal.UnityHub
 
 import java.util.concurrent.Callable
 
@@ -98,6 +99,11 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         }
 
         unityPath = getUnityPathFromEnv(project.properties, System.getenv())
+
+        if (unityPath == null) {
+            //read unity-hub version if available
+            unityPath = UnityHub.defaultEditor
+        }
 
         if (unityPath == null) {
             unityPath = defaultUnityLocation()
