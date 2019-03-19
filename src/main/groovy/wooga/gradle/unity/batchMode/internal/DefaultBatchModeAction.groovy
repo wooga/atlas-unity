@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity.batchMode.internal
 
+import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionAwareHelper
@@ -27,7 +28,6 @@ import org.gradle.internal.Factory
 import org.gradle.internal.io.LineBufferingOutputStream
 import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
-import org.gradle.process.ExecSpec
 import org.gradle.process.internal.DefaultExecActionFactory
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
@@ -39,11 +39,13 @@ import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.BuildTarget
 import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.utils.internal.ForkTextStream
+import wooga.gradle.unity.utils.internal.UnityVersionManager
 
 class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
     private final UnityPluginExtension extension
     protected final FileResolver fileResolver
     private final ConventionMapping conventionMapping
+    private final Project project
 
     private File customUnityPath
     private File customProjectPath
@@ -71,6 +73,10 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
         }
 
         extension.projectPath
+    }
+
+    protected ArtifactVersion getUnityVersion() {
+        UnityVersionManager.retrieveUnityVersion(getUnityPath(), project.properties.get("defaultUnityTestVersion", "5.6.0").toString())
     }
 
     void setProjectPath(File path) {
@@ -150,6 +156,7 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
     Boolean noGraphics = false
 
     DefaultBatchModeAction(Project project, FileResolver fileResolver) {
+        this.project = project
         this.fileResolver = fileResolver
         this.extension = project.getExtensions().findByName(UnityPlugin.EXTENSION_NAME) as UnityPluginExtension
         this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
@@ -187,35 +194,7 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
         }
 
-        if (getLogFile()) {
-            FileUtils.ensureFile(getLogFile())
-        }
-
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
-            if (getLogFile()) {
-                FileUtils.ensureFile(getLogFile())
-                batchModeArgs << BatchModeFlags.LOG_FILE
-                batchModeArgs << getLogFile().path
-            }
-        } else {
-            if (getRedirectStdOut() || getLogFile()) {
-                batchModeArgs << BatchModeFlags.LOG_FILE
-
-                if (getRedirectStdOut()) {
-                    TextStream handler = new ForkTextStream()
-                    def outStream = new LineBufferingOutputStream(handler)
-                    this.setStandardOutput(outStream)
-
-                    if (getLogFile()) {
-                        handler.addWriter(getLogFile().newPrintWriter())
-                    }
-                    handler.addWriter(System.out.newPrintWriter())
-                } else {
-                    batchModeArgs << getLogFile().path
-                }
-            }
-        }
+        setupLogFile(batchModeArgs)
 
         ignoreExitValue = true
         commandLine = batchModeArgs
@@ -230,6 +209,45 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
         }
 
         return execResult
+    }
+
+    protected void setupLogFile(List batchModeArgs) {
+        if (getLogFile()) {
+            FileUtils.ensureFile(getLogFile())
+        }
+
+        String osName = System.getProperty("os.name").toLowerCase()
+
+        def unityVersion = getUnityVersion()
+
+        if (osName.contains("windows") && unityVersion.majorVersion < 2019) {
+            if (getLogFile()) {
+                FileUtils.ensureFile(getLogFile())
+                batchModeArgs << BatchModeFlags.LOG_FILE
+                batchModeArgs << getLogFile().path
+            }
+        } else {
+            if (getRedirectStdOut() || getLogFile()) {
+                batchModeArgs << BatchModeFlags.LOG_FILE
+
+                if (getRedirectStdOut()) {
+                    if(unityVersion.majorVersion >= 2019) {
+                        batchModeArgs << "-"
+                    }
+
+                    TextStream handler = new ForkTextStream()
+                    def outStream = new LineBufferingOutputStream(handler)
+                    this.setStandardOutput(outStream)
+
+                    if (getLogFile()) {
+                        handler.addWriter(getLogFile().newPrintWriter())
+                    }
+                    handler.addWriter(System.out.newPrintWriter())
+                } else {
+                    batchModeArgs << getLogFile().path
+                }
+            }
+        }
     }
 
     @Override
