@@ -17,11 +17,10 @@
 
 package wooga.gradle.unity.tasks
 
+import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.gradle.api.Action
-import org.gradle.api.Project
 import org.gradle.api.internal.ClosureBackedAction
-import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
@@ -30,16 +29,14 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
-import org.gradle.process.ExecSpec
-import wooga.gradle.unity.UnityActionConvention
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
-import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 import wooga.gradle.unity.testing.UnityTestTaskReport
 import wooga.gradle.unity.testing.internal.UnityTestTaskReportsImpl
 import wooga.gradle.unity.utils.internal.NUnitReportNormalizer
 import wooga.gradle.unity.utils.internal.ProjectSettings
+import wooga.gradle.unity.utils.internal.UnityVersionManager
 
 import javax.inject.Inject
 
@@ -138,11 +135,10 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     @TaskAction
     @Override
     protected void exec() {
-        DefaultArtifactVersion unityVersion = getUnityVersion(getUnityPath())
+        ArtifactVersion unityVersion = getUnityVersion(getUnityPath())
         logger.info("unity version major:${unityVersion.majorVersion} minor: ${unityVersion.minorVersion}")
 
         args(buildTestArguments(unityVersion))
-
         try {
             super.exec()
         }
@@ -161,7 +157,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         }
     }
 
-    protected List<String> buildTestArguments(DefaultArtifactVersion unityVersion) {
+    protected List<String> buildTestArguments(ArtifactVersion unityVersion) {
         def testArgs = []
         if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
                 || unityVersion.majorVersion <= 2019) {
@@ -189,65 +185,14 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
         testArgs
     }
 
-    protected DefaultArtifactVersion getUnityVersion(File pathToUnity) {
+    protected ArtifactVersion getUnityVersion(File pathToUnity) {
         if (unityVersion != null) {
             return unityVersion
         }
 
         String versionString = project.properties.get("defaultUnityTestVersion", "5.6.0")
-        unityVersion = retrieveUnityVersion(project, pathToUnity, versionString)
-        unityVersion
+        UnityVersionManager.retrieveUnityVersion(pathToUnity, versionString)
     }
-
-    private static DefaultArtifactVersion retrieveUnityVersion(Project project, File pathToUnity, String defaultVersion) {
-        def versionString = defaultVersion
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("mac os x")) {
-            File infoPlist = new File(pathToUnity.parentFile.parentFile, "Info.plist")
-            def standardOutput = new ByteArrayOutputStream()
-            if (infoPlist.exists()) {
-                def readResult = project.exec(new Action<ExecSpec>() {
-                    @Override
-                    void execute(ExecSpec execSpec) {
-                        execSpec.standardOutput = standardOutput
-                        execSpec.ignoreExitValue = true
-                        execSpec.commandLine "defaults", "read", infoPlist.path, "CFBundleVersion"
-                    }
-                })
-                if (readResult.exitValue == 0) {
-                    versionString = standardOutput.toString().trim()
-                    logger.info("Found unity version $versionString")
-                }
-            }
-        }
-
-        if (osName.contains("windows")) {
-            def standardOutput = new ByteArrayOutputStream()
-            def readResult = project.exec(new Action<ExecSpec>() {
-                @Override
-                void execute(ExecSpec execSpec) {
-                    execSpec.standardOutput = standardOutput
-                    execSpec.ignoreExitValue = true
-                    String winPath = pathToUnity.path.replace('\\', "\\\\")
-
-                    //Todo find a better solution to test this
-                    String wmicPath = System.getenv("WMIC_PATH") ? System.getenv("WMIC_PATH") : "wmic"
-                    execSpec.commandLine wmicPath, "datafile", "where", "Name=\"${winPath}\"", "get", "Version"
-                }
-            })
-            if (readResult.exitValue == 0) {
-                def wmicOut = standardOutput.toString().trim()
-                def versionMatch = wmicOut =~ /(\d+)\.(\d+)\.(\d+)/
-                if (versionMatch) {
-                    versionString = versionMatch[0][0]
-                    logger.info("Found unity version $versionString")
-                }
-            }
-        }
-
-        new DefaultArtifactVersion(versionString.split(/f|p/).first().toString())
-    }
-
 
     protected boolean getPlayModeTestsEnabled() {
         def file = new File(projectPath, "ProjectSettings/ProjectSettings.asset")
