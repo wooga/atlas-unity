@@ -10,6 +10,6 @@ class UnityVersionManager {
             versionString = defaultVersion
         }
 
-        new DefaultArtifactVersion(versionString.split(/f|p/).first().toString())
+        new DefaultArtifactVersion(versionString.split(/f|p|b|a/).first().toString())
     }
 }
