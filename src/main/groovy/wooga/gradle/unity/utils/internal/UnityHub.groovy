@@ -25,8 +25,19 @@ class UnityHub {
     static HUB_MANUAL_EDITORS = "editors.json"
     static HUB_DEFAULT_EDITOR = "defaultEditor.json"
 
+    static File HOME_DIR() {
+        if(isWindows()) {
+            return new File(System.getenv('HOMEPATH'))
+        }
+        return new File(System.getenv('HOME'))
+    }
+
     static File DEFAULT_UNITY_HUB_INSTALL_LOCATION_MAC_OS() {
         new File("/Applications/Unity/Hub/Editor")
+    }
+
+    static File DEFAULT_UNITY_HUB_INSTALL_LOCATION_LINUX() {
+        new File(HOME_DIR(), "Unity/Hub/Editor")
     }
 
     static File DEFAULT_UNITY_HUB_INSTALL_LOCATION_WINDOWS() {
@@ -34,41 +45,48 @@ class UnityHub {
     }
 
     private static File UNITY_HUB_CONFIG_PATH_MAC_OS() {
-        new File("${System.env.get('HOME')}/Library/Application Support/UnityHub")
+        new File(HOME_DIR(), "Library/Application Support/UnityHub")
+    }
+
+    private static File UNITY_HUB_CONFIG_PATH_LINUX() {
+        def configDir = new File(System.getenv().get("XDG_CONFIG_HOME", "${System.getenv("HOME")}/.config".toString()))
+        new File(configDir,"UnityHub")
     }
 
     private static File UNITY_HUB_CONFIG_PATH_WINDOWS() {
-        new File("${System.env.get('HOMEPATH')}\\AppData\\Roaming\\UnityHub")
+        new File(HOME_DIR(), "AppDate/Roaming/UnityHub")
     }
 
     static File getConfigLocation() {
         File unityHubConfigPath = null
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
+
+        if (isWindows()) {
             unityHubConfigPath = UNITY_HUB_CONFIG_PATH_WINDOWS()
-        } else if (osName.contains("mac os x")) {
+        } else if (isMac()) {
             unityHubConfigPath = UNITY_HUB_CONFIG_PATH_MAC_OS()
+        } else if (isLinux()) {
+            unityHubConfigPath = UNITY_HUB_CONFIG_PATH_LINUX()
         }
         unityHubConfigPath
     }
 
     static File getDefaultInstallLocation() {
         File unityHubDefaultInstallLocation = null
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
+
+        if (isWindows()) {
             unityHubDefaultInstallLocation = DEFAULT_UNITY_HUB_INSTALL_LOCATION_WINDOWS()
-        } else if (osName.contains("mac os x")) {
+        } else if (isMac()) {
             unityHubDefaultInstallLocation = DEFAULT_UNITY_HUB_INSTALL_LOCATION_MAC_OS()
+        } else if (isLinux()) {
+            unityHubDefaultInstallLocation = DEFAULT_UNITY_HUB_INSTALL_LOCATION_LINUX()
         }
         unityHubDefaultInstallLocation
     }
 
     static File unitySytemBinaryPath(File basePath) {
-        File unityBinary = null
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
-            unityBinary = basePath
-        } else if (osName.contains("mac os x")) {
+        File unityBinary = basePath
+
+        if (isMac()) {
             unityBinary = new File(basePath, "Contents/MacOS/Unity")
         }
         unityBinary
@@ -76,15 +94,14 @@ class UnityHub {
 
     static String getUnitySytemAppName() {
         String appName = "Unity"
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
+
+        if (isWindows()) {
             appName = "${appName}.exe"
-        } else if (osName.contains("mac os x")) {
+        } else if (isMac()) {
             appName = "${appName}.app"
         }
         appName
     }
-
 
     static boolean getIsAvailable() {
         return configLocation && configLocation.exists()
@@ -155,4 +172,18 @@ class UnityHub {
         }
         null
     }
+
+    private static String OS = System.getProperty("os.name").toLowerCase()
+    private static boolean isWindows() {
+        return (OS.indexOf("win") >= 0)
+    }
+
+    private static boolean isMac() {
+        return (OS.indexOf("mac") >= 0)
+    }
+
+    private static boolean isLinux() {
+        return (OS.indexOf("linux") >= 0)
+    }
+
 }

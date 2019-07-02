@@ -80,7 +80,7 @@ class ExportPackageIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString + " " + assetsDirString2)
+        result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString + " " + assetsDirString2) || result.standardOutput.contains(BatchModeFlags.EXPORT_PACKAGE + " " + assetsDirString2 + " " + assetsDirString)
         result.standardOutput.contains("${moduleName}.unitypackage")
     }
 
