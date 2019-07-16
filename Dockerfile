@@ -21,9 +21,12 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="${HOME}/.cargo/bin:${PATH}"
 
 WORKDIR /home/ci/
-RUN git clone https://github.com/Larusso/unity-version-manager.git
-RUN cd unity-version-manager && git fetch && git checkout 744f4f82013237cb39653fbd691470eee268e25a && /home/ci/.cargo/bin/cargo build && ./target/debug/uvm install 2019.1.0a7 /home/ci/.local/share/Unity-2019.1.0a7
-ENV PATH=$PATH:/home/ci/unity-version-manager/target/debug
+
+RUN curl -Lo unity-version-manager-2.2.0.tar.gz https://github.com/Larusso/unity-version-manager/archive/v2.2.0.tar.gz && \
+    tar -xzf unity-version-manager-2.2.0.tar.gz && \
+    cd unity-version-manager-2.2.0 && make install && \
+    uvm install 2019.1.0a7 /home/ci/.local/share/Unity-2019.1.0a7
+
 # Chown all the files to the app user.
 RUN chown -R ci:ci $HOME
 RUN chmod -R 777 $HOME
