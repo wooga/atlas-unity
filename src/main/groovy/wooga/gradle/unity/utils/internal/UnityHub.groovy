@@ -49,8 +49,14 @@ class UnityHub {
     }
 
     private static File UNITY_HUB_CONFIG_PATH_LINUX() {
-        def configDir = new File(System.getenv().get("XDG_CONFIG_HOME", "${System.getenv("HOME")}/.config".toString()))
-        new File(configDir,"UnityHub")
+//        File configDir
+//        if(System.getenv().get("XDG_CONFIG_HOME")) {
+//            configDir = new File(System.getenv("XDG_CONFIG_HOME"))
+//        } else {
+//            configDir = new File("${System.getenv("HOME")}/.config".toString())
+//        }
+
+        new File(HOME_DIR(),".config/UnityHub")
     }
 
     private static File UNITY_HUB_CONFIG_PATH_WINDOWS() {
