@@ -49,10 +49,13 @@ class UnityHubSpec extends Specification {
     File secondaryInstallPathConfig
 
     def setup() {
-        environmentVariables.set("HOME", File.createTempDir().path)
-        environmentVariables.set("HOMEPATH", File.createTempDir().path)
-        secondaryInstallPath = File.createTempDir()
-        manualInstallPath = File.createTempDir()
+        def homePath = File.createTempDir("UnityHubSpec", "homePath").path
+        environmentVariables.set("HOME", homePath)
+        environmentVariables.set("XDG_CONFIG_HOME", new File(homePath, ".config").path)
+        environmentVariables.set("HOMEPATH", homePath)
+
+        secondaryInstallPath = File.createTempDir("UnityHubSpec", "secondaryInstallPath")
+        manualInstallPath = File.createTempDir("UnityHubSpec", "manualInstallPath")
 
         hubBasePath = UnityHub.getConfigLocation()
     }
@@ -116,17 +119,18 @@ class UnityHubSpec extends Specification {
         given: "unity hub configuration"
         if (unityHubExists) {
             setupUnityHubConfiguration()
-            secondaryInstallPathConfig.text = "\"${configuredPath}\""
+            secondaryInstallPathConfig.text = new JsonBuilder(configuredPath).toPrettyString()
         }
 
         expect:
-        UnityHub.hubInstallPath == expectedResult
+        def installPath = (expectedResult == "default") ? UnityHub.defaultInstallLocation : expectedResult
+        UnityHub.hubInstallPath == installPath
 
         where:
-        unityHubExists | configuredPath | expectedResult                  | locationMessage
-        true           | "/custom/path" | new File("/custom/path")        | "path to configured install location"
-        true           | ''             | UnityHub.defaultInstallLocation | "path to default install location"
-        false          | ''             | null                            | "null"
+        unityHubExists | configuredPath | expectedResult           | locationMessage
+        true           | "/custom/path" | new File("/custom/path") | "path to configured install location"
+        true           | ''             | 'default'                | "path to default install location"
+        false          | ''             | null                     | "null"
         message = (unityHubExists) ? "exists" : "does not exist"
 
     }
@@ -143,7 +147,7 @@ class UnityHubSpec extends Specification {
         if (unityHubExists && hasInstallation) {
 
             def location = mockUnityInstallation(manualInstallPath, version)
-            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, version) ).toPrettyString()
+            editorsConfig.text = new JsonBuilder(mockEditorsConfig(location, version)).toPrettyString()
         }
 
         expect:
@@ -202,7 +206,7 @@ class UnityHubSpec extends Specification {
         def manualVersion = "2017.1.0f3"
         if (unityHubExists && hasManualInstallation) {
             def location = mockUnityInstallation(manualInstallPath, manualVersion)
-            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, manualVersion) ).toPrettyString()
+            editorsConfig.text = new JsonBuilder(mockEditorsConfig(location, manualVersion)).toPrettyString()
         }
 
         and: "hub unity editor versions"
@@ -270,7 +274,7 @@ class UnityHubSpec extends Specification {
         and: "manual unity editor versions"
         if (unityHubExists && hasManualInstallation) {
             def location = mockUnityInstallation(manualInstallPath, hasManualInstallation)
-            editorsConfig.text = new JsonBuilder( mockEditorsConfig(location, hasManualInstallation) ).toPrettyString()
+            editorsConfig.text = new JsonBuilder(mockEditorsConfig(location, hasManualInstallation)).toPrettyString()
         }
 
         and: "hub unity editor versions"
