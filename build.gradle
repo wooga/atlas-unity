@@ -45,7 +45,7 @@ dependencies {
         exclude module: 'logback-classic'
     }
 
-    compile 'org.apache.maven:maven-artifact:3.6.1'
+    compile 'org.apache.maven:maven-artifact:3.6.2'
     compile "org.yaml:snakeyaml:1.25"
     compile 'net.wooga:unity-version-manager-jni:1.+'
 }
