@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.tasks.Activate
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.tasks.Activate
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -178,6 +178,10 @@ extends <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActi
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#activationAction'>activationAction</a></code></td>
                         </tr>
                         <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html'>AbstractUnityProjectTask</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#batchModeAction'>batchModeAction</a></code></td>
+                        </tr>
+                        <tr class="altColor">
                             <td class="colFirst"><strong><code>class org.gradle.api.internal.ConventionTask</code></strong></td>
                             <td class="colLast"><code>TASK_NAME, TASK_DESCRIPTION, TASK_GROUP, TASK_TYPE, TASK_DEPENDS_ON, TASK_OVERWRITE, TASK_ACTION</code></td>
                         </tr>
@@ -236,22 +240,22 @@ extends <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#activate()">activate</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/Activate.html'>Activate</a></code></td>
                             <td class="colLast"><code><strong><a href="#authentication(groovy.lang.Closure)">authentication</a></strong>(groovy.lang.Closure closure)</code><br>Configures the activation credentials.
  </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/Activate.html'>Activate</a></code></td>
                             <td class="colLast"><code><strong><a href="#authentication(Action<? super UnityAuthentication>)">authentication</a></strong>(org.gradle.api.Action&lt;? super <a href='../../../../wooga/gradle/unity/UnityAuthentication.html' title='UnityAuthentication'>UnityAuthentication</a>&gt; action)</code><br>Configures the activation credentials.
  </td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#exec()">exec</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -288,7 +292,11 @@ extends <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html'>AbstractUnityActivationTask</a></code></td>
-                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#getConventionMapping()'>getConventionMapping</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveAction()'>retrieveAction</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveActivationActionFactory()'>retrieveActivationActionFactory</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#exec()'>exec</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#getConventionMapping()'>getConventionMapping</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveAction()'>retrieveAction</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveActivationActionFactory()'>retrieveActivationActionFactory</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html'>AbstractUnityProjectTask</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#exec()'>exec</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getArgs()'>getArgs</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getBatchMode()'>getBatchMode</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getBuildTarget()'>getBuildTarget</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getNoGraphics()'>getNoGraphics</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getQuit()'>getQuit</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#retrieveAction()'>retrieveAction</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityTask.html'>AbstractUnityTask</a></code></td>
@@ -348,15 +356,6 @@ extends <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActi
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="activate()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>@org.gradle.api.tasks.TaskAction
-protected&nbsp;void <strong>activate</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
                         <a name="authentication(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -393,6 +392,16 @@ protected&nbsp;void <strong>activate</strong>()</h4>
  }
  </pre>
      <DL><DT><B>Parameters:</B></DT><DD><code>action</code> -  the configuration action</DD></DL><DL><DT><B>Returns:</B></DT><DD>the activation task</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="exec()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+@org.gradle.api.tasks.TaskAction
+protected&nbsp;void <strong>exec</strong>()</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

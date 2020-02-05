@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.tasks.ReturnLicense
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>wooga.gradle.unity.tasks.ReturnLicense
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -135,6 +135,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                                                 <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html'>AbstractUnityActivationTask</a></code></strong></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#activationAction'>activationAction</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html'>AbstractUnityProjectTask</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#batchModeAction'>batchModeAction</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><strong><code>class org.gradle.api.internal.ConventionTask</code></strong></td>
@@ -195,21 +199,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#exec()">exec</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.io.File</code></td>
                             <td class="colLast"><code><strong><a href="#getLicenseDirectory()">getLicenseDirectory</a></strong>()</code><br>A file pointing to the unity license directory.
  </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/ReturnLicense.html'>ReturnLicense</a></code></td>
                             <td class="colLast"><code><strong><a href="#licenseDirectory(java.io.File)">licenseDirectory</a></strong>(java.io.File value)</code><br>Sets the path to the unity license directory</td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#returnLicense()">returnLicense</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -234,7 +238,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html'>AbstractUnityActivationTask</a></code></td>
-                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#getConventionMapping()'>getConventionMapping</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveAction()'>retrieveAction</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveActivationActionFactory()'>retrieveActivationActionFactory</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#exec()'>exec</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#getConventionMapping()'>getConventionMapping</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveAction()'>retrieveAction</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityActivationTask.html#retrieveActivationActionFactory()'>retrieveActivationActionFactory</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html'>AbstractUnityProjectTask</a></code></td>
+                            <td class="colLast"><code><a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#exec()'>exec</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getArgs()'>getArgs</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getBatchMode()'>getBatchMode</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getBuildTarget()'>getBuildTarget</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getNoGraphics()'>getNoGraphics</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#getQuit()'>getQuit</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#isIgnoreExitValue()'>isIgnoreExitValue</a>, <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityProjectTask.html#retrieveAction()'>retrieveAction</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../wooga/gradle/unity/tasks/internal/AbstractUnityTask.html'>AbstractUnityTask</a></code></td>
@@ -294,6 +302,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="exec()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+@org.gradle.api.tasks.TaskAction
+protected&nbsp;void <strong>exec</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getLicenseDirectory()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -312,15 +330,6 @@ java.io.File <strong>getLicenseDirectory</strong>()</h4>
                                 <h4><a href='../../../../wooga/gradle/unity/tasks/ReturnLicense.html'>ReturnLicense</a> <strong>licenseDirectory</strong>(java.io.File value)</h4>
                                 <p> Sets the path to the unity license directory
      <DL><DT><B>Parameters:</B></DT><DD><code>value</code> -  File object pointing to a valid unity license directory.</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="returnLicense()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>@org.gradle.api.tasks.TaskAction
-void <strong>returnLicense</strong>()</h4>
-                                <p></p>
                             </li>
                         </ul>
                     
