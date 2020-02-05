@@ -197,6 +197,28 @@ class UnityActivationIntegrationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("${BatchModeFlags.SERIAL} 123456789")
     }
 
+    def "activates with unity project path"() {
+        given: "a build script with fake test unity authentication"
+        buildFile << """
+            unity {
+                authentication {
+                    username = "test@test.test"
+                    password = "testtesttest"
+                    serial = "abcdefg"
+                }
+            }
+
+            task (mUnity, type: wooga.gradle.unity.tasks.Activate)
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("mUnity")
+
+        then:
+        !result.wasSkipped("mUnity")
+        result.standardOutput.contains("${BatchModeFlags.PROJECT_PATH} ${projectDir}")
+    }
+
     def "runs activation before a unity task when authentication is set once"() {
         given: "a build script with fake test unity location"
         buildFile << """

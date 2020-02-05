@@ -26,6 +26,7 @@ import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
 import org.gradle.process.internal.ExecHandle
+import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.batchMode.ActivationAction
@@ -103,6 +104,8 @@ class DefaultActivationAction extends DefaultBatchModeAction implements Activati
         authenticationArgs << BatchModeFlags.QUIT
         authenticationArgs << BatchModeFlags.RETURN_LICENSE
 
+        authenticationArgs << BatchModeFlags.PROJECT_PATH << getProjectPath().toString()
+
         setupLogFile(authenticationArgs)
 
         authenticationArgs
@@ -134,6 +137,8 @@ class DefaultActivationAction extends DefaultBatchModeAction implements Activati
         authenticationArgs << BatchModeFlags.USER_NAME << getAuthentication().username
         authenticationArgs << BatchModeFlags.PASSWORD << getAuthentication().password
         authenticationArgs << BatchModeFlags.SERIAL << getAuthentication().serial
+
+        authenticationArgs << BatchModeFlags.PROJECT_PATH << getProjectPath().toString()
 
         setupLogFile(authenticationArgs)
 

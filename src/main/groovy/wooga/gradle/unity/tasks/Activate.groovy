@@ -78,8 +78,9 @@ class Activate extends AbstractUnityActivationTask implements ActivationSpec {
         onlyIf(new ActivateSpec())
     }
 
+    @Override
     @TaskAction
-    protected void activate() {
+    protected void exec() {
         batchModeResult = activationAction.activate()
     }
 

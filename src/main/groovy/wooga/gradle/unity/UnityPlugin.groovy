@@ -41,6 +41,7 @@ import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
 import wooga.gradle.unity.tasks.UnityPackageArtifact
+import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
 
@@ -174,14 +175,15 @@ class UnityPlugin implements Plugin<Project> {
         project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
             void execute(AbstractUnityProjectTask task) {
+                if(!AbstractUnityActivationTask.isInstance(task)) {
+                    if (extension.autoActivateUnity) {
+                        task.dependsOn activationTask
+                    }
 
-                if (extension.autoActivateUnity) {
-                    task.dependsOn activationTask
-                }
-
-                if (extension.autoReturnLicense) {
-                    returnLicenseTask.mustRunAfter task
-                    activationTask.finalizedBy returnLicenseTask
+                    if (extension.autoReturnLicense) {
+                        returnLicenseTask.mustRunAfter task
+                        activationTask.finalizedBy returnLicenseTask
+                    }
                 }
             }
         })
