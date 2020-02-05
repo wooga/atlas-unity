@@ -71,8 +71,9 @@ class ReturnLicense extends AbstractUnityActivationTask {
         this
     }
 
+    @Override
     @TaskAction
-    void returnLicense() {
+    protected void exec() {
         activationAction.returnLicense()
     }
 }

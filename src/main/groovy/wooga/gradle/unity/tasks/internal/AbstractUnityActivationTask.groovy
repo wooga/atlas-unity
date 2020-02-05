@@ -19,6 +19,7 @@ package wooga.gradle.unity.tasks.internal
 
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.Factory
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecException
@@ -26,7 +27,7 @@ import wooga.gradle.unity.batchMode.ActivationAction
 import wooga.gradle.unity.batchMode.BaseBatchModeSpec
 import wooga.gradle.unity.internal.UnityPluginActionExtension
 
-abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask> extends AbstractUnityTask {
+abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask> extends AbstractUnityProjectTask {
 
     @Override
     protected BaseBatchModeSpec retrieveAction() {
@@ -37,6 +38,10 @@ abstract class AbstractUnityActivationTask<T extends AbstractUnityActivationTask
     ConventionMapping getConventionMapping() {
         return activationAction.conventionMapping
     }
+
+    @Override
+    @TaskAction
+    abstract protected void exec()
 
     interface ExecuteExclude {
         ExecResult activate() throws ExecException
