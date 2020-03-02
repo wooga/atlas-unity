@@ -46,6 +46,6 @@ dependencies {
     }
 
     compile 'org.apache.maven:maven-artifact:3.6.2'
-    compile "org.yaml:snakeyaml:1.25"
+    compile "org.yaml:snakeyaml:1.26"
     compile 'net.wooga:unity-version-manager-jni:1.+'
 }
