@@ -45,6 +45,10 @@ dependencies {
         exclude module: 'logback-classic'
     }
 
+    testCompile("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.1.0") {
+        exclude module: 'groovy-all'
+    }
+
     compile 'org.apache.maven:maven-artifact:3.6.3'
     compile "org.yaml:snakeyaml:1.26"
     compile 'net.wooga:unity-version-manager-jni:1.+'

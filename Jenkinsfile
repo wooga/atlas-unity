@@ -8,12 +8,11 @@ withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', var
 
     def testEnvironment = [
                             "artifactoryCredentials=${artifactory_publish}",
-                            "nugetkey=${artifactory_deploy}",
-                            {pathToUnity("2017.1.0p5")}
+                            "nugetkey=${artifactory_deploy}"
                           ]
 
-    buildGradlePlugin plaforms: ['osx','windows', 'linux'],
+    buildGradlePlugin plaforms: ['osx','windows','linux'],
                       coverallsToken: coveralls_token,
                       testEnvironment: testEnvironment,
-                      labels: 'unity&&unity_2017.1.0p5e'
+                      labels: 'primary'
 }
