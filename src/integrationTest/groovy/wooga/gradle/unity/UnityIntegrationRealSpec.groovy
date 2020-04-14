@@ -21,11 +21,10 @@ import com.wooga.spock.extensions.uvm.UnityInstallation
 import net.wooga.uvm.Installation
 import org.apache.commons.lang.StringEscapeUtils
 import org.junit.contrib.java.lang.system.EnvironmentVariables
-import spock.lang.Ignore
-import spock.lang.IgnoreIf
+import spock.lang.Requires
 import spock.lang.Shared
 
-@IgnoreIf({ os.windows })
+@Requires({ os.macOs })
 class UnityIntegrationRealSpec extends IntegrationSpec {
 
     def escapedPath(String path) {
