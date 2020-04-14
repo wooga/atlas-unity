@@ -17,10 +17,14 @@
 
 package wooga.gradle.unity
 
+import com.wooga.spock.extensions.uvm.UnityInstallation
+import net.wooga.uvm.Installation
 import org.apache.commons.lang.StringEscapeUtils
-import spock.lang.Ignore
+import org.junit.contrib.java.lang.system.EnvironmentVariables
+import spock.lang.Requires
+import spock.lang.Shared
 
-@Ignore
+@Requires({ os.macOs })
 class UnityIntegrationRealSpec extends IntegrationSpec {
 
     def escapedPath(String path) {
@@ -31,9 +35,18 @@ class UnityIntegrationRealSpec extends IntegrationSpec {
         path
     }
 
+    EnvironmentVariables environmentVariables = new EnvironmentVariables()
+
+    @Shared
+    @UnityInstallation(version="2018.4.18f1", basePath = "build/unity", cleanup = true)
+    Installation preInstalledUnity2018_4_18f1
+
     def "runs batchmode action"() {
         given: "path to future project"
-        def project_path = new File( projectDir,"build/test")
+        def project_path = "build/test_project"
+
+        and: "a pre installed unity editor"
+        environmentVariables.set("UNITY_PATH", unityPath)
 
         and: "a build script"
         buildFile << """
@@ -43,7 +56,7 @@ class UnityIntegrationRealSpec extends IntegrationSpec {
             task mUnity {
                 doLast {
                     unity.batchMode {
-                        args "-createProject", "test"
+                        args "-createProject", "${project_path}"
                     }
                 }
             }
@@ -53,13 +66,19 @@ class UnityIntegrationRealSpec extends IntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains("Unity.exe")
-        fileExists("build/test")
+        result.standardOutput.contains("Starting process 'command '${unityPath}'")
+        fileExists(project_path)
+
+        where:
+        unityPath = preInstalledUnity2018_4_18f1.executable.path
     }
 
     def "runs batchmode task"() {
         given: "path to future project"
-        def project_path = new File( projectDir,"build/test")
+        def project_path = "build/test_project"
+
+        and: "a pre installed unity editor"
+        environmentVariables.set("UNITY_PATH", unityPath)
 
         and: "a build script"
         buildFile << """
@@ -67,7 +86,7 @@ class UnityIntegrationRealSpec extends IntegrationSpec {
             ${applyPlugin(UnityPlugin)}
          
             task (mUnity, type: wooga.gradle.unity.tasks.Unity) {
-                args "-createProject", "${escapedPath(project_path.path)}"
+                args "-createProject", "${project_path}"
             }
         """.stripIndent()
 
@@ -75,7 +94,10 @@ class UnityIntegrationRealSpec extends IntegrationSpec {
         def result = runTasksSuccessfully("mUnity")
 
         then:
-        result.standardOutput.contains("Unity.exe")
-        fileExists("build/test")
+        result.standardOutput.contains("Starting process 'command '${unityPath}'")
+        fileExists(project_path)
+
+        where:
+        unityPath = preInstalledUnity2018_4_18f1.executable.path
     }
 }

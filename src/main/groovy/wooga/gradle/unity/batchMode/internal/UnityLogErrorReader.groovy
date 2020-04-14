@@ -23,7 +23,7 @@ class UnityLogErrorReader {
 
     static String  readErrorMessageFromLog(File logfile) {
         def message = DEFAULT_MESSAGE
-        if(!logfile.exists()) {
+        if(!logfile || !logfile.exists()) {
             return message
         }
 
