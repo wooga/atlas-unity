@@ -163,8 +163,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
                 || unityVersion.majorVersion <= 2019) {
             logger.info("activate unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
-            //new unit test runner does not work in batchmode
-            batchMode = false
+            batchMode = unityVersion.majorVersion >= 2018
             quit = false
 
             testArgs << BatchModeFlags.RUN_TESTS
