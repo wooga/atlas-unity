@@ -52,6 +52,6 @@ dependencies {
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
 
     compile 'org.apache.maven:maven-artifact:3.6.3'
-    compile "org.yaml:snakeyaml:1.26"
+    compile "org.yaml:snakeyaml:1.27"
     compile 'net.wooga:unity-version-manager-jni:1.+'
 }
