@@ -160,7 +160,7 @@ class Test extends AbstractUnityProjectTask implements Reporting<UnityTestTaskRe
     protected List<String> buildTestArguments(ArtifactVersion unityVersion) {
         def testArgs = []
         if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
-                || unityVersion.majorVersion <= 2019) {
+                || unityVersion.majorVersion <= 2020) {
             logger.info("activate unittests with ${BatchModeFlags.RUN_TESTS} switch")
 
             batchMode = unityVersion.majorVersion >= 2018
