@@ -18,6 +18,7 @@
 package wooga.gradle.unity
 
 import wooga.gradle.unity.batchMode.BuildTarget
+import wooga.gradle.unity.batchMode.TestPlatform
 
 /**
  * A Unity Plugin convention object.
@@ -107,8 +108,7 @@ interface UnityPluginConvention extends UnityActionConvention {
      * The default {@code defaultBuildTarget} is applied to all tasks of type {@code AbstractUnityTask}.
      *
      * @return the default build target
-     * @see wooga.gradle.unity.batchMode.BuildTarget
-     * @see wooga.gradle.unity.tasks.internal.AbstractUnityTask
+     * @see wooga.gradle.unity.batchMode.BuildTarget* @see wooga.gradle.unity.tasks.internal.AbstractUnityTask
      */
     BuildTarget getDefaultBuildTarget()
 
@@ -124,4 +124,38 @@ interface UnityPluginConvention extends UnityActionConvention {
      * @return this
      */
     UnityPluginConvention defaultBuildTarget(BuildTarget value)
+
+    /**
+     * Returns if batchmode should be enabled for edit mode tests
+     * @return a{@code Boolean} value
+     */
+    Boolean getBatchModeForEditModeTest()
+
+    /**
+     * Sets the value if batchmode should be enabled for edit mode tests
+     */
+    void setBatchModeForEditModeTest(Boolean value)
+
+    /**
+     * Sets the value if batchmode should be enabled for edit mode tests
+     */
+    UnityPluginConvention batchModeForEditModeTest(Boolean value)
+
+    /**
+     * Returns if batchmode should be enabled for play mode tests
+     * @return a{@code Boolean} value
+     */
+    Boolean getBatchModeForPlayModeTest()
+
+    /**
+     * Sets the value if batchmode should be enabled for play mode tests
+     */
+    void setBatchModeForPlayModeTest(Boolean value)
+
+    /**
+     * Sets the value if batchmode should be enabled for play mode tests
+     */
+    UnityPluginConvention batchModeForPlayModeTest(Boolean value)
+
+    Boolean getBatchMode(TestPlatform testPlatform)
 }

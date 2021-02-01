@@ -61,6 +61,8 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
 
     private Boolean autoReturnLicense
     private Boolean autoActivateUnity
+    private Boolean batchModeForPlayModeTest
+    private Boolean batchModeForEditModeTest
 
     private final Instantiator instantiator
     protected final FileResolver fileResolver
@@ -444,5 +446,68 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         }
 
         return EnumSet.copyOf(targets)
+    }
+
+    private static Boolean getBatchModeForPlayModeTestFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_ENV_VAR]).toString().toLowerCase()
+        rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
+        return Boolean.valueOf(rawValue)
+    }
+
+    @Override
+    Boolean getBatchModeForPlayModeTest() {
+        if (batchModeForPlayModeTest) {
+            return batchModeForPlayModeTest
+        }
+
+        return getBatchModeForPlayModeTestFromEnv(project.properties, System.getenv())
+    }
+
+    @Override
+    void setBatchModeForPlayModeTest(Boolean value) {
+        batchModeForPlayModeTest = value
+    }
+
+    @Override
+    UnityPluginConvention batchModeForPlayModeTest(Boolean value) {
+        setBatchModeForPlayModeTest(value)
+        return this
+    }
+
+    private static Boolean getBatchModeForEditModeTestFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_ENV_VAR]).toString().toLowerCase()
+        rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
+        return Boolean.valueOf(rawValue)
+    }
+
+    @Override
+    Boolean getBatchModeForEditModeTest() {
+        if (batchModeForEditModeTest) {
+            return batchModeForEditModeTest
+        }
+
+        return getBatchModeForEditModeTestFromEnv(project.properties, System.getenv())
+    }
+
+    @Override
+    void setBatchModeForEditModeTest(Boolean value) {
+        batchModeForEditModeTest = value
+    }
+
+    @Override
+    UnityPluginConvention batchModeForEditModeTest(Boolean value) {
+        setBatchModeForEditModeTest(value)
+        return this
+    }
+
+    Boolean getBatchMode(TestPlatform testPlatform) {
+        switch (testPlatform) {
+            case TestPlatform.editmode:
+                return getBatchModeForEditModeTest()
+            case TestPlatform.playmode:
+                return getBatchModeForPlayModeTest()
+            default:
+                return true
+        }
     }
 }

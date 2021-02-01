@@ -18,6 +18,7 @@
 package wooga.gradle.unity
 
 import spock.lang.Unroll
+import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.utils.internal.ProjectSettingsSpec
 
 import java.nio.file.Files
@@ -156,5 +157,42 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         "testPlatform" | true      | 'wooga.gradle.unity.batchMode.TestPlatform.playmode' | '-testPlatform playmode'
         "testPlatform" | true      | 'wooga.gradle.unity.batchMode.TestPlatform.editmode' | '-testPlatform editmode'
         method = (useSetter) ? "set${property.capitalize()}" : property
+    }
+
+    @Unroll
+    def "batchMode override for #testPlatform"() {
+        given: "a build file with custom test task"
+        buildFile << """
+
+        task('customTest', type:wooga.gradle.unity.tasks.Test) {
+            setTestPlatform($testPlatform)
+        }
+        """.stripIndent()
+
+        and: "properties file with custom unity version"
+        createFile("gradle.properties") << """
+        defaultUnityTestVersion=2018.4.0
+        unity.batchModeForPlayModeTest=${batchModeForPlayModeTest}
+        unity.batchModeForEditModeTest=${batchModeForEditModeTest}
+        """.stripIndent()
+
+        and: "a mocked unity project with enabled playmode tests"
+        settings.text = ""
+        settings << ProjectSettingsSpec.TEMPLATE_CONTENT_ENABLED
+
+        when:
+        def result = runTasksSuccessfully("customTest")
+
+        then:
+        result.standardOutput.contains(BatchModeFlags.BATCH_MODE) == containsBatchModeFlag
+
+        where:
+        batchModeForPlayModeTest | batchModeForEditModeTest | testPlatform | containsBatchModeFlag
+        true                     | true                     | '"playmode"' | true
+        false                    | true                     | '"playmode"' | false
+        false                    | false                    | '"playmode"' | false
+        true                     | true                     | '"editmode"' | true
+        true                     | false                    | '"editmode"' | false
+        false                    | false                    | '"editmode"' | false
     }
 }
