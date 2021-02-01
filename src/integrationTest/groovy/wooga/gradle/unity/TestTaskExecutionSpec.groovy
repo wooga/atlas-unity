@@ -170,12 +170,16 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         and: "properties file with custom unity version"
-        createFile("gradle.properties") << """
+        def properties = createFile("gradle.properties") << """
         defaultUnityTestVersion=2018.4.0
-        unity.batchModeForPlayModeTest=${batchModeForPlayModeTest}
-        unity.batchModeForEditModeTest=${batchModeForEditModeTest}
         """.stripIndent()
 
+        if (batchModeForPlayModeTest != _) {
+            properties << "unity.batchModeForPlayModeTest=${batchModeForPlayModeTest}\n"
+        }
+        if (batchModeForEditModeTest != _) {
+            properties << "unity.batchModeForEditModeTest=${batchModeForEditModeTest}\n"
+        }
         and: "a mocked unity project with enabled playmode tests"
         settings.text = ""
         settings << ProjectSettingsSpec.TEMPLATE_CONTENT_ENABLED
@@ -189,9 +193,11 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         where:
         batchModeForPlayModeTest | batchModeForEditModeTest | testPlatform | containsBatchModeFlag
         true                     | true                     | '"playmode"' | true
+        _                        | true                     | '"playmode"' | true
         false                    | true                     | '"playmode"' | false
         false                    | false                    | '"playmode"' | false
         true                     | true                     | '"editmode"' | true
+        true                     | _                        | '"editmode"' | true
         true                     | false                    | '"editmode"' | false
         false                    | false                    | '"editmode"' | false
     }
