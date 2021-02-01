@@ -449,9 +449,13 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     private static Boolean getBatchModeForPlayModeTestFromEnv(Map<String, ?> properties, Map<String, String> env) {
-        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_ENV_VAR]).toString().toLowerCase()
-        rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
-        return Boolean.valueOf(rawValue)
+        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_PLAY_MODE_TEST_ENV_VAR])
+        if (rawValue) {
+            rawValue = rawValue.toString().toLowerCase()
+            rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
+            return Boolean.valueOf(rawValue)
+        }
+        return true
     }
 
     @Override
@@ -475,9 +479,13 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     }
 
     private static Boolean getBatchModeForEditModeTestFromEnv(Map<String, ?> properties, Map<String, String> env) {
-        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_ENV_VAR]).toString().toLowerCase()
-        rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
-        return Boolean.valueOf(rawValue)
+        String rawValue = (properties[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_OPTION] ?: env[UnityPluginConsts.BATCH_MODE_FOR_EDIT_MODE_TEST_ENV_VAR])
+        if (rawValue) {
+            rawValue = rawValue.toString().toLowerCase()
+            rawValue = (rawValue == "1" || rawValue == "yes") ? "true" : rawValue
+            return Boolean.valueOf(rawValue)
+        }
+        true
     }
 
     @Override
