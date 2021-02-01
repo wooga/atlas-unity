@@ -239,6 +239,14 @@ class UnityPlugin implements Plugin<Project> {
         project.getTasks().withType(Test.class, new Action<Test>() {
             @Override
             void execute(Test task) {
+                ConventionMapping taskConventionMapping = task.getConventionMapping()
+                Callable<Boolean> batchmode = new Callable<Boolean>() {
+                    @Override
+                    Boolean call() throws Exception {
+                        extension.getBatchMode(task.getTestPlatform())
+                    }
+                }
+                taskConventionMapping.map("batchMode", batchmode)
                 configureUnityReportDefaults(extension, task)
             }
         })

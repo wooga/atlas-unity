@@ -102,6 +102,34 @@ class UnityPluginConsts {
     static final String REDIRECT_STDOUT_ENV_VAR = "UNITY_REDIRECT_STDOUT"
 
     /**
+     * Gradle property name to set the default value for {@code batchModeForEditModeTest}.
+     * @value "unity.batchModeForEditModeTest"
+     * @see UnityPluginConvention#batchModeForEditModeTest
+     */
+    static final String BATCH_MODE_FOR_EDIT_MODE_TEST_OPTION = "unity.batchModeForEditModeTest"
+
+    /**
+     * Environment variable name to set the default value for {@code batchModeForEditModeTest}.
+     * @value "UNITY_BATCH_MODE_FOR_EDIT_MODE_TEST"
+     * @see UnityPluginConvention#batchModeForEditModeTest
+     */
+    static final String BATCH_MODE_FOR_EDIT_MODE_TEST_ENV_VAR = "UNITY_BATCH_MODE_FOR_EDIT_MODE_TEST"
+
+    /**
+     * Gradle property name to set the default value for {@code batchModeForPlayModeTest}.
+     * @value "unity.batchModeForPlayModeTest"
+     * @see UnityPluginConvention#batchModeForPlayModeTest
+     */
+    static final String BATCH_MODE_FOR_PLAY_MODE_TEST_OPTION = "unity.batchModeForPlayModeTest"
+
+    /**
+     * Environment variable name to set the default value for {@code batchModeForPlayModeTest}.
+     * @value "UNITY_BATCH_MODE_FOR_PLAY_MODE_TEST"
+     * @see UnityPluginConvention#batchModeForPlayModeTest
+     */
+    static final String BATCH_MODE_FOR_PLAY_MODE_TEST_ENV_VAR = "UNITY_BATCH_MODE_FOR_PLAY_MODE_TEST"
+
+    /**
      * Gradle property name to set the default value for {@code authentication.username}.
      * @value "unity.username"
      * @see UnityAuthentication#username

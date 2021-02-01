@@ -174,7 +174,7 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
 
         batchModeArgs << getUnityPath().path
 
-        if (batchMode) {
+        if (getBatchMode()) {
             batchModeArgs << BatchModeFlags.BATCH_MODE
         }
 
