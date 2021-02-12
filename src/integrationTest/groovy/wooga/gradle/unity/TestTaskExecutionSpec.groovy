@@ -159,27 +159,35 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         method = (useSetter) ? "set${property.capitalize()}" : property
     }
 
-    @Unroll
+    String convertPropertyToEnvName(String property) {
+        property.replaceAll(/([A-Z.])/, '_$1').replaceAll(/[.]/, '').toUpperCase()
+    }
+
+    @Unroll("can set use batchMode for #testPlatform in #location with value '#useBatchMode' #message")
     def "batchMode override for #testPlatform"() {
         given: "a build file with custom test task"
-        buildFile << """
-
-        task('customTest', type:wooga.gradle.unity.tasks.Test) {
-            setTestPlatform($testPlatform)
-        }
-        """.stripIndent()
-
-        and: "properties file with custom unity version"
         def properties = createFile("gradle.properties") << """
         defaultUnityTestVersion=2018.4.0
         """.stripIndent()
 
-        if (batchModeForPlayModeTest != _) {
-            properties << "unity.batchModeForPlayModeTest=${batchModeForPlayModeTest}\n"
+        def extensionKey = "unity.$property"
+        def propertiesKey = "unity.$property"
+        def envKey = convertPropertyToEnvName(extensionKey)
+
+        if (location == "environment") {
+            environmentVariables.set(envKey, useBatchMode.toString())
+        } else if (location == "properties") {
+            properties << "${propertiesKey}=${useBatchMode}"
+        } else if (location == "extension") {
+            buildFile << "${extensionKey} = ${useBatchMode}"
         }
-        if (batchModeForEditModeTest != _) {
-            properties << "unity.batchModeForEditModeTest=${batchModeForEditModeTest}\n"
+
+        buildFile << """
+        task('customTest', type:wooga.gradle.unity.tasks.Test) {
+            setTestPlatform('$testPlatform')
         }
+        """.stripIndent()
+
         and: "a mocked unity project with enabled playmode tests"
         settings.text = ""
         settings << ProjectSettingsSpec.TEMPLATE_CONTENT_ENABLED
@@ -188,17 +196,25 @@ class TestTaskExecutionSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("customTest")
 
         then:
-        result.standardOutput.contains(BatchModeFlags.BATCH_MODE) == containsBatchModeFlag
+        result.standardOutput.contains(BatchModeFlags.BATCH_MODE) == expectBatchModeFlag
 
         where:
-        batchModeForPlayModeTest | batchModeForEditModeTest | testPlatform | containsBatchModeFlag
-        true                     | true                     | '"playmode"' | true
-        _                        | true                     | '"playmode"' | true
-        false                    | true                     | '"playmode"' | false
-        false                    | false                    | '"playmode"' | false
-        true                     | true                     | '"editmode"' | true
-        true                     | _                        | '"editmode"' | true
-        true                     | false                    | '"editmode"' | false
-        false                    | false                    | '"editmode"' | false
+        testPlatform | useBatchMode | location      | expectBatchModeFlag
+        "playmode"   | true         | "environment" | true
+        "playmode"   | false        | "environment" | false
+        "playmode"   | true         | "properties"  | true
+        "playmode"   | false        | "properties"  | false
+        "playmode"   | true         | "extension"   | true
+        "playmode"   | false        | "extension"   | false
+        "playmode"   | _            | _             | true
+        "editmode"   | true         | "environment" | true
+        "editmode"   | false        | "environment" | false
+        "editmode"   | true         | "properties"  | true
+        "editmode"   | false        | "properties"  | false
+        "editmode"   | true         | "extension"   | true
+        "editmode"   | false        | "extension"   | false
+        "editmode"   | _            | _             | true
+        property = testPlatform == "playmode" ? "batchModeForPlayModeTest" : "batchModeForEditModeTest"
+        message = expectBatchModeFlag ? "sets batchMode flag" : "unsets batchMode flag"
     }
 }
