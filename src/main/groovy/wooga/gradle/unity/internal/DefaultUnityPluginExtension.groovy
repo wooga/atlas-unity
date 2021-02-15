@@ -460,7 +460,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
 
     @Override
     Boolean getBatchModeForPlayModeTest() {
-        if (batchModeForPlayModeTest) {
+        if (batchModeForPlayModeTest != null) {
             return batchModeForPlayModeTest
         }
 
@@ -490,7 +490,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
 
     @Override
     Boolean getBatchModeForEditModeTest() {
-        if (batchModeForEditModeTest) {
+        if (batchModeForEditModeTest != null) {
             return batchModeForEditModeTest
         }
 
