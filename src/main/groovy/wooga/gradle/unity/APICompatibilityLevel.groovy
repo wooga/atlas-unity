@@ -8,13 +8,26 @@ enum APICompatibilityLevel {
     net_micro(5),
     net_standard_2_0(6)
 
-    private final Integer value
+    private static Map map = new HashMap<>();
+
+    static {
+        for (APICompatibilityLevel apiLevel : APICompatibilityLevel.values()) {
+            map.put(apiLevel.value, apiLevel);
+        }
+    }
 
     APICompatibilityLevel(Integer value) {
         this.value = value
     }
 
-    static APICompatibilityLevel valueOfInt(Integer value) {
-        new APICompatibilityLevel(value)
+    private final Integer value
+    Integer getValue() {
+        value
     }
+
+    static APICompatibilityLevel valueOfInt(Integer value) {
+        return (APICompatibilityLevel) map.get(value);
+    }
+
+    static final String unityProjectSettingsPropertyKey = "apiCompatibilityLevel"
 }

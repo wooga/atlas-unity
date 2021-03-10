@@ -11,26 +11,21 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
     }
 
-    def "runs activation before a unity task when authentication is set once"() {
+    def "sets the api level onto the project settings file"() {
         given: "a build script with fake test unity location"
         buildFile << """
             unity {
-               setCompatibilityLevel(//sdfsdfsdf) 
+               setAPICompatibilityLevel(//sdfsdfsdf) 
             }
-            
-            task (mUnity, type: wooga.gradle.unity.tasks.Test)
-            task (mUnity2, type: wooga.gradle.unity.tasks.Test)
             
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully("test", "mUnity", "mUnity2")
+        def result = runTasksSuccessfully("test")
 
         then:
         !result.wasSkipped("test")
-        !result.wasSkipped("mUnity")
-        !result.wasSkipped("mUnity2")
-        result.wasExecuted("setCompLevel")
+        result.wasExecuted("setAPICompatibilityLevel")
     }
 
     def "return license runs always even when build fails"() {

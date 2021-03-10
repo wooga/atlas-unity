@@ -39,7 +39,6 @@ import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.Test
-import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.tasks.UnityPackage
 import wooga.gradle.unity.tasks.UnityPackageArtifact
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
@@ -57,40 +56,22 @@ import java.util.concurrent.Callable
  * Example:
  * <pre>
  * {@code
- *     plugins {
- *         id "net.wooga.unity" version "0.16.0"
- *     }
- *
- *     unity {
- *         authentication {
- *             username = "username@company.com"
+ *     plugins {*         id "net.wooga.unity" version "0.16.0"
+ *}*
+ *     unity {*         authentication {*             username = "username@company.com"
  *             password = "password"
  *             serial = "unityserial"
- *         }
- *    }
- *
- *    exportUnityPackage {
- *        inputFiles file('Assets')
- *    }
- *
- *    task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
- *        args "-executeMethod", "MyEditorScript.PerformBuild"
- *    }
- *
- *    task(performMultipleBuilds) {
- *        doLast {
- *            unity.batchMode {
- *                unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
+ *}*}*
+ *    exportUnityPackage {*        inputFiles file('Assets')
+ *}*
+ *    task(performBuild, type:wooga.gradle.unity.tasks.Unity) {*        args "-executeMethod", "MyEditorScript.PerformBuild"
+ *}*
+ *    task(performMultipleBuilds) {*        doLast {*            unity.batchMode {*                unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
  *                args "-executeMethod", "MyEditorScript.PerformBuild"
- *            }
- *
- *            unity.batchMode {
- *                unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
+ *}*
+ *            unity.batchMode {*                unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
  *                args "-executeMethod", "MyEditorScript.PerformBuild"
- *            }
- *        }
- *    }
- * }
+ *}*}*}*}
  * </pre>
  */
 class UnityPlugin implements Plugin<Project> {
@@ -101,6 +82,8 @@ class UnityPlugin implements Plugin<Project> {
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
     static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
+    static String SET_API_COMPATIBILITY_LEVEL_TASK_NAME = "setAPICompatibilityLevel"
+    static String UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME = "unsetAPICompatibilityLevel"
     static String EXTENSION_NAME = "unity"
     static String UNITY_PACKAGE_CONFIGURATION_NAME = "unitypackage"
     static String GROUP = "unity"
@@ -129,8 +112,8 @@ class UnityPlugin implements Plugin<Project> {
         configureUnityTasks(project, unityExtension)
         addTestTasks(project, unityExtension)
         addPackageTask(project)
-        addCompLevelSetter(project, unityExtension)
-        configureSetCompLevel(project, unityExtension)
+        addSetAPICompatibilityLevelTasks(project, unityExtension)
+        configureSetAPICompatibilityLevelTasks(project)
         addActivateAndReturnLicenseTasks(project, unityExtension)
         addDefaultReportTasks(project, unityExtension)
         configureArchiveDefaults(project, basePluginConvention)
@@ -179,7 +162,7 @@ class UnityPlugin implements Plugin<Project> {
         project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
             void execute(AbstractUnityProjectTask task) {
-                if(!AbstractUnityActivationTask.isInstance(task)) {
+                if (!AbstractUnityActivationTask.isInstance(task)) {
                     if (extension.autoActivateUnity) {
                         task.dependsOn activationTask
                     }
@@ -193,10 +176,9 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private static void configureSetCompLevel(
-            final Project project, final UnityPluginExtension extension) {
-        Task setAPICompLevel = project.tasks["setAPICompLevel"]
-        Task unsetAPICompLevel = project.tasks["unsetAPICompLevel"]
+    private static void configureSetAPICompatibilityLevelTasks(final Project project) {
+        Task setAPICompLevel = project.tasks[SET_API_COMPATIBILITY_LEVEL_TASK_NAME]
+        Task unsetAPICompLevel = project.tasks[UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME]
 
         project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
@@ -224,28 +206,52 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private static void addCompLevelSetter(final Project project, final UnityPluginExtension extension) {
-        //read old value
-        def projectSettings = new File("/path/to/asset")
+    private static void addSetAPICompatibilityLevelTasks(final Project project, final UnityPluginExtension extension) {
+
+        def apiCompatibilityLevelPropertyKey = APICompatibilityLevel.unityProjectSettingsPropertyKey
+        def apiCompatibilityLevelPropertyPattern = "^${apiCompatibilityLevelPropertyKey}:.*"
+
+        def composeAPICompatibilityLevelReplacement = { APICompatibilityLevel level ->
+            return "^${apiCompatibilityLevelPropertyKey}: ${level.value}"
+        }
+
+        // Read old value
+        def projectSettings = new File(extension.getProjectPath(), "ProjectSettings/ProjectSettings.asset")
         def config = new GenericUnityAsset(projectSettings)
-        def currentLevel = APICompatibilityLevel.valueOfInt(config["apiCompatibilityLevel"] as Integer)
+        def previousAPICompatibilityLevel = APICompatibilityLevel.valueOfInt(config[apiCompatibilityLevelPropertyKey] as Integer)
 
-        AbstractUnityTask setCompLevel = project.tasks.create("setLevel") {
+        // SET
+        AbstractUnityTask setTask = project.tasks.create(SET_API_COMPATIBILITY_LEVEL_TASK_NAME) {
             doLast {
-                ant.replaceregexp(file: projectSettings.absolutePath, match: '^version\\s=.*$', replace:"version = \"${extension.getCompatibilityLevel().value}\"", byline: true)
+                ant.replaceregexp(file: projectSettings.absolutePath,
+                        match: apiCompatibilityLevelPropertyPattern,
+                        replace: composeAPICompatibilityLevelReplacement(extension.getApiCompatibilityLevel()),
+                        byline: true)
             }
         }
 
-        AbstractUnityTask unsetCompLevel = project.tasks.create("setLevel") {
+        // UNSET
+        AbstractUnityTask unsetTask = project.tasks.create(UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME) {
             doLast {
-                ant.replaceregexp(file: projectSettings.absolutePath, match: '^version\\s=.*$', replace:"version = \"${currentLevel.value}\"", byline: true)
+                ant.replaceregexp(file: projectSettings.absolutePath,
+                        match: apiCompatibilityLevelPropertyPattern,
+                        replace: composeAPICompatibilityLevelReplacement(previousAPICompatibilityLevel),
+                        byline: true)
             }
         }
 
-        setCompLevel.onlyIf {
+        def predicate =
+        {
             //read current value
             //compare with configured
-            currentLevel != extension.getCompatibilityLevel()
+            previousAPICompatibilityLevel != extension.getApiCompatibilityLevel()
+        }
+
+        setTask.onlyIf {
+            predicate()
+        }
+        unsetTask.onlyIf {
+            predicate()
         }
     }
 

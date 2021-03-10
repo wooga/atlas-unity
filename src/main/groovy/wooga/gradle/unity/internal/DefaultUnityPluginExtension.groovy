@@ -520,20 +520,18 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
         }
     }
 
-    private APICompatibilityLevel customAPI
+    private APICompatibilityLevel _apiCompatibilityLevel
 
     @Override
-    APICompatibilityLevel getCompatibilityLevel() {
-        if(customAPI) {
-            return customAPI
+    APICompatibilityLevel getApiCompatibilityLevel() {
+        if(_apiCompatibilityLevel) {
+            return _apiCompatibilityLevel
         }
-
-
         return null
     }
 
     @Override
-    void setCompatibilityLevel(APICompatibilityLevel level) {
-
+    void setApiCompatibilityLevel(APICompatibilityLevel level) {
+        _apiCompatibilityLevel = level
     }
 }

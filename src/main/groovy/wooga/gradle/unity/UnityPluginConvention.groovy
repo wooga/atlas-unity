@@ -157,8 +157,20 @@ interface UnityPluginConvention extends UnityActionConvention {
      */
     UnityPluginConvention batchModeForPlayModeTest(Boolean value)
 
+    /**
+     * Returns if batchmode should be enabled
+     * @return a{@code Boolean} value
+     */
     Boolean getBatchMode(TestPlatform testPlatform)
 
-    APICompatibilityLevel getCompatibilityLevel()
-    void setCompatibilityLevel(APICompatibilityLevel level)
+    /**
+     * Returns the {@code APICompatibilityLevel} if one has been assigned
+     * @return the {@code APICompatibilityLevel} value
+     */
+    APICompatibilityLevel getApiCompatibilityLevel()
+
+    /**
+     * Sets the {@code APICompatibilityLevel}, which affects the project's compilation
+     */
+    void setApiCompatibilityLevel(APICompatibilityLevel level)
 }
