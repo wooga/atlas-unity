@@ -329,20 +329,47 @@ class DefaultUnityPluginExtensionSpec extends Specification {
         subject.logCategory == testCategory
     }
 
+    def "set api compatibility level with properties"() {
+        given: "valid api compatibility level"
+        def testCompatibilityLevel = APICompatibilityLevel.net4_6
+
+        and:
+        projectProperties[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION] = testCompatibilityLevel.toString()
+
+        expect:
+        subject.getApiCompatibilityLevel() == testCompatibilityLevel
+    }
+
     def "get logCategory from env returns property value over env"() {
         given: "logCategory set in properties"
         def category = "highPriority"
-        def props = ['unity.logCategory': category]
+        def props = [(UnityPluginConsts.UNITY_LOG_CATEGORY_OPTION): category]
 
         and: "unity path in environment"
         def newCategory = "lowPriority"
-        def env = ['UNITY_LOG_CATEGORY': newCategory]
+        def env = [(UnityPluginConsts.UNITY_LOG_CATEGORY_ENV_VAR): newCategory]
 
         when: "calling getUnityLogCategory"
         def result = subject.getUnityLogCategory(props, env)
 
         then: "file path points to props path"
         result == category
+    }
+
+    def "get api compatibility level from env returns property value over env"() {
+        given: "api compatibility level set in properties"
+        def level = APICompatibilityLevel.net4_6
+        def props = [(UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION): level.toString()]
+
+        and: "unity path in environment"
+        def newLevel = APICompatibilityLevel.net_micro
+        def env = [(UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_ENV_VAR): newLevel.toString()]
+
+        when: "calling getAPICompatibilityLevel"
+        def result = subject.getApiCompatibilityLevelFromEnv(props, env)
+
+        then: "file path points to props path"
+        result == level
     }
 
     class BuildTargetTestObject {

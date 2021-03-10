@@ -20,10 +20,12 @@ package wooga.gradle.unity.internal
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.logging.LogLevel
 import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
+import wooga.gradle.unity.APICompatibilityLevel
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginConsts
@@ -32,6 +34,7 @@ import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.*
 import wooga.gradle.unity.batchMode.internal.DefaultActivationActionFactory
 import wooga.gradle.unity.batchMode.internal.DefaultBatchModeActionFactory
+import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.utils.internal.UnityHub
 
 import java.util.concurrent.Callable
@@ -517,5 +520,28 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
             default:
                 return true
         }
+    }
+
+    private APICompatibilityLevel _apiCompatibilityLevel
+
+    @Override
+    APICompatibilityLevel getApiCompatibilityLevel() {
+        if(_apiCompatibilityLevel) {
+            return _apiCompatibilityLevel
+        }
+        return getApiCompatibilityLevelFromEnv(project.properties, System.getenv())
+    }
+
+    static APICompatibilityLevel getApiCompatibilityLevelFromEnv(Map<String, ?> properties, Map<String, String> env) {
+        String rawValue = (properties[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION] ?: env[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_ENV_VAR])
+        if (rawValue) {
+            return APICompatibilityLevel.valueOf(rawValue)
+        }
+        null
+    }
+
+    @Override
+    void setApiCompatibilityLevel(APICompatibilityLevel level) {
+        _apiCompatibilityLevel = level
     }
 }
