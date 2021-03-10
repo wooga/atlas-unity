@@ -39,11 +39,13 @@ import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.Test
+import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.tasks.UnityPackage
 import wooga.gradle.unity.tasks.UnityPackageArtifact
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
+import wooga.gradle.unity.utils.GenericUnityAsset
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -65,29 +67,29 @@ import java.util.concurrent.Callable
  *             password = "password"
  *             serial = "unityserial"
  *         }
+ *    }
  *
- *         exportUnityPackage {
- *             inputFiles file('Assets')
- *         }
+ *    exportUnityPackage {
+ *        inputFiles file('Assets')
+ *    }
  *
- *         task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
- *             args "-executeMethod", "MyEditorScript.PerformBuild"
- *         }
+ *    task(performBuild, type:wooga.gradle.unity.tasks.Unity) {
+ *        args "-executeMethod", "MyEditorScript.PerformBuild"
+ *    }
  *
- *         task(performMultipleBuilds) {
- *             doLast {
- *                 unity.batchMode {
- *                     unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
- *                     args "-executeMethod", "MyEditorScript.PerformBuild"
- *                 }
+ *    task(performMultipleBuilds) {
+ *        doLast {
+ *            unity.batchMode {
+ *                unityPath = project.file("/Applications/Unity-5.5.3f1/Unity.app/Contents/MacOS/Unity")
+ *                args "-executeMethod", "MyEditorScript.PerformBuild"
+ *            }
  *
- *                 unity.batchMode {
- *                     unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
- *                     args "-executeMethod", "MyEditorScript.PerformBuild"
- *                 }
- *             }
- *         }
- *     }
+ *            unity.batchMode {
+ *                unityPath = project.file("/Applications/Unity-5.6.0f3/Unity.app/Contents/MacOS/Unity")
+ *                args "-executeMethod", "MyEditorScript.PerformBuild"
+ *            }
+ *        }
+ *    }
  * }
  * </pre>
  */
@@ -127,6 +129,8 @@ class UnityPlugin implements Plugin<Project> {
         configureUnityTasks(project, unityExtension)
         addTestTasks(project, unityExtension)
         addPackageTask(project)
+        addCompLevelSetter(project, unityExtension)
+        configureSetCompLevel(project, unityExtension)
         addActivateAndReturnLicenseTasks(project, unityExtension)
         addDefaultReportTasks(project, unityExtension)
         configureArchiveDefaults(project, basePluginConvention)
@@ -189,6 +193,21 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
+    private static void configureSetCompLevel(
+            final Project project, final UnityPluginExtension extension) {
+        Task setAPICompLevel = project.tasks["setAPICompLevel"]
+        Task unsetAPICompLevel = project.tasks["unsetAPICompLevel"]
+
+        project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
+            @Override
+            void execute(AbstractUnityProjectTask task) {
+                task.dependsOn setAPICompLevel
+                unsetAPICompLevel.mustRunAfter task
+                setAPICompLevel.finalizedBy unsetAPICompLevel
+            }
+        })
+    }
+
     private static void addActivateAndReturnLicenseTasks(final Project project, final UnityPluginExtension extension) {
         Task activateTask = project.tasks.create(name: ACTIVATE_TASK_NAME, type: Activate, group: GROUP)
         ReturnLicense returnLicense = (ReturnLicense) project.tasks.create(name: RETURN_LICENSE_TASK_NAME, type: ReturnLicense, group: GROUP)
@@ -203,6 +222,31 @@ class UnityPlugin implements Plugin<Project> {
                 return cliReturnLicense || (activateDidWork && didRunUnityTasks)
             }
         })
+    }
+
+    private static void addCompLevelSetter(final Project project, final UnityPluginExtension extension) {
+        //read old value
+        def projectSettings = new File("/path/to/asset")
+        def config = new GenericUnityAsset(projectSettings)
+        def currentLevel = APICompatibilityLevel.valueOfInt(config["apiCompatibilityLevel"] as Integer)
+
+        AbstractUnityTask setCompLevel = project.tasks.create("setLevel") {
+            doLast {
+                ant.replaceregexp(file: projectSettings.absolutePath, match: '^version\\s=.*$', replace:"version = \"${extension.getCompatibilityLevel().value}\"", byline: true)
+            }
+        }
+
+        AbstractUnityTask unsetCompLevel = project.tasks.create("setLevel") {
+            doLast {
+                ant.replaceregexp(file: projectSettings.absolutePath, match: '^version\\s=.*$', replace:"version = \"${currentLevel.value}\"", byline: true)
+            }
+        }
+
+        setCompLevel.onlyIf {
+            //read current value
+            //compare with configured
+            currentLevel != extension.getCompatibilityLevel()
+        }
     }
 
     private static void addPackageTask(final Project project) {

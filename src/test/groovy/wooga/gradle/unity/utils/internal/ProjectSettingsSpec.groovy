@@ -34,6 +34,7 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
         wiiUDrcBufferDisabled: 0
         wiiUProfilerLibPath: 
         playModeTestRunnerEnabled: 0
+        apiCompatibilityLevel: 2
         actionOnDotNetUnhandledException: 1
     
     """.stripIndent()

@@ -90,6 +90,11 @@ abstract class AbstractUnityProjectTask<T extends AbstractUnityProjectTask> exte
         batchModeAction.noGraphics
     }
 
+    @Input
+    String getApiCompatibilityLevel() {
+
+    }
+
     /**
      * {@inheritDoc}
      */

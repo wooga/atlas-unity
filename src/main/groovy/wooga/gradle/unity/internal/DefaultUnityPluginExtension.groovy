@@ -24,6 +24,7 @@ import org.gradle.internal.Factory
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.util.GUtil
+import wooga.gradle.unity.APICompatibilityLevel
 import wooga.gradle.unity.UnityAuthentication
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginConsts
@@ -517,5 +518,22 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
             default:
                 return true
         }
+    }
+
+    private APICompatibilityLevel customAPI
+
+    @Override
+    APICompatibilityLevel getCompatibilityLevel() {
+        if(customAPI) {
+            return customAPI
+        }
+
+
+        return null
+    }
+
+    @Override
+    void setCompatibilityLevel(APICompatibilityLevel level) {
+
     }
 }
