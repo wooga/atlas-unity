@@ -38,6 +38,7 @@ import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
+import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
 import wooga.gradle.unity.tasks.UnityPackageArtifact
@@ -208,51 +209,26 @@ class UnityPlugin implements Plugin<Project> {
 
     private static void addSetAPICompatibilityLevelTasks(final Project project, final UnityPluginExtension extension) {
 
-        def apiCompatibilityLevelPropertyKey = APICompatibilityLevel.unityProjectSettingsPropertyKey
-        def apiCompatibilityLevelPropertyPattern = "^${apiCompatibilityLevelPropertyKey}:.*"
-
-        def composeAPICompatibilityLevelReplacement = { APICompatibilityLevel level ->
-            return "^${apiCompatibilityLevelPropertyKey}: ${level.value}"
-        }
-
         // Read old value
         def projectSettings = new File(extension.getProjectPath(), "ProjectSettings/ProjectSettings.asset")
         def config = new GenericUnityAsset(projectSettings)
-        def previousAPICompatibilityLevel = APICompatibilityLevel.valueOfInt(config[apiCompatibilityLevelPropertyKey] as Integer)
+        def previousAPICompatibilityLevel = APICompatibilityLevel.valueOfInt(config[APICompatibilityLevel.unityProjectSettingsPropertyKey] as Integer)
 
-        // SET
-        AbstractUnityTask setTask = project.tasks.create(SET_API_COMPATIBILITY_LEVEL_TASK_NAME) {
-            doLast {
-                ant.replaceregexp(file: projectSettings.absolutePath,
-                        match: apiCompatibilityLevelPropertyPattern,
-                        replace: composeAPICompatibilityLevelReplacement(extension.getApiCompatibilityLevel()),
-                        byline: true)
-            }
-        }
-
-        // UNSET
-        AbstractUnityTask unsetTask = project.tasks.create(UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME) {
-            doLast {
-                ant.replaceregexp(file: projectSettings.absolutePath,
-                        match: apiCompatibilityLevelPropertyPattern,
-                        replace: composeAPICompatibilityLevelReplacement(previousAPICompatibilityLevel),
-                        byline: true)
-            }
-        }
-
-        def predicate =
-        {
-            //read current value
-            //compare with configured
+        def predicate = {
             previousAPICompatibilityLevel != extension.getApiCompatibilityLevel()
         }
 
-        setTask.onlyIf {
-            predicate()
-        }
-        unsetTask.onlyIf {
-            predicate()
-        }
+        // SET
+        Task setTask = project.tasks.create(SET_API_COMPATIBILITY_LEVEL_TASK_NAME, SetAPICompatibilityLevel.class)
+        setTask.settingsFile = { projectSettings }
+        setTask.apiCompatibilityLevel = { extension.getApiCompatibilityLevel() }
+        setTask.onlyIf { predicate() }
+
+        // UNSET
+        Task unsetTask = project.tasks.create(UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME, SetAPICompatibilityLevel.class)
+        unsetTask.settingsFile = { projectSettings }
+        unsetTask.apiCompatibilityLevel = previousAPICompatibilityLevel
+        unsetTask.onlyIf { predicate() }
     }
 
     private static void addPackageTask(final Project project) {

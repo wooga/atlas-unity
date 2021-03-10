@@ -11,21 +11,37 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
     }
 
-    def "sets the api level onto the project settings file"() {
-        given: "a build script with fake test unity location"
+    def "sets the api level onto the project settings file, then unsets it"() {
+        given: "a valid api compatibility level to set"
         buildFile << """
             unity {
-               setAPICompatibilityLevel(//sdfsdfsdf) 
+               setApiCompatibilityLevel("${expectedAPICompatibilityLevel.toString()}") 
             }
             
         """.stripIndent()
 
+        and: "ensure that the api compatibility level isn't the default"
+        assert settings.text.contains("apiCompatibilityLevel: ${defaultAPICompatibilityLevel.value}")
+
         when:
         def result = runTasksSuccessfully("test")
+        //def result = runTasksSuccessfully("test", "-x", "unsetAPICompatibilityLevel")
 
         then:
         !result.wasSkipped("test")
         result.wasExecuted("setAPICompatibilityLevel")
+        result.wasExecuted("unsetAPICompatibilityLevel")
+        !settings.text.contains("apiCompatibilityLevel: ${expectedAPICompatibilityLevel.value}")
+        result.standardOutput.contains("Setting API compatibility level to ${expectedAPICompatibilityLevel}")
+        result.standardOutput.contains("Setting API compatibility level to ${defaultAPICompatibilityLevel}")
+
+        where:
+        expectedAPICompatibilityLevel = APICompatibilityLevel.net4_6
+        defaultAPICompatibilityLevel = APICompatibilityLevel.net2_0_subset
+    }
+
+    def "writes correct api level to project settings file correctly"() {
+
     }
 
     def "return license runs always even when build fails"() {
