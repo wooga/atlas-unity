@@ -49,12 +49,13 @@ class SetAPICompatibilityLevel extends ConventionTask {
     }
     Object apiCompatibilityLevel
 
-    private final static String apiCompatibilityLevelPropertyPattern = "^${APICompatibilityLevel.unityProjectSettingsPropertyKey}:.*"
+    private final static String apiCompatibilityLevelPropertyPattern = /^\s+${APICompatibilityLevel.unityProjectSettingsPropertyKey}:.*$/
 
     SetAPICompatibilityLevel() {
         onlyIf(new Spec<SetAPICompatibilityLevel>() {
             @Override
             boolean isSatisfiedBy(SetAPICompatibilityLevel t) {
+                t.settingsFile != null
                 t.apiCompatibilityLevel != null
             }
         })
@@ -62,12 +63,12 @@ class SetAPICompatibilityLevel extends ConventionTask {
 
     @TaskAction
     protected void onExecute() {
-        APICompatibilityLevel value = getApiCompatibilityLevel()
-        logger.info("Setting API compatibility level to ${value}")
+        APICompatibilityLevel apiLevel = getApiCompatibilityLevel()
         ant.replaceregexp(file: getSettingsFile().absolutePath,
                 match: apiCompatibilityLevelPropertyPattern,
-                replace: "^${APICompatibilityLevel.unityProjectSettingsPropertyKey}: ${value}",
+                replace: "${APICompatibilityLevel.unityProjectSettingsPropertyKey}: ${apiLevel.value}",
                 byline: true)
+        logger.info("Setting API compatibility level to ${apiLevel} (${apiLevel.value})")
     }
 
 }

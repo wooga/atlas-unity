@@ -30,4 +30,5 @@ enum APICompatibilityLevel {
     }
 
     static final String unityProjectSettingsPropertyKey = "apiCompatibilityLevel"
+    static final APICompatibilityLevel defaultLevel = APICompatibilityLevel.net2_0_subset
 }
