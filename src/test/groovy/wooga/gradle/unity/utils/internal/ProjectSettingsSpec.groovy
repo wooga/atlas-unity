@@ -18,6 +18,7 @@
 package wooga.gradle.unity.utils.internal
 
 import spock.lang.Unroll
+import wooga.gradle.unity.APICompatibilityLevel
 
 class ProjectSettingsSpec extends UnityAssetFileSpec {
 
@@ -34,6 +35,7 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
         wiiUDrcBufferDisabled: 0
         wiiUProfilerLibPath: 
         playModeTestRunnerEnabled: 0
+        apiCompatibilityLevel: ${APICompatibilityLevel.net2_0_subset.value}
         actionOnDotNetUnhandledException: 1
     
     """.stripIndent()

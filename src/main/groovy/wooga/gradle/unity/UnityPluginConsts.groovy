@@ -66,6 +66,7 @@ class UnityPluginConsts {
      */
     static final String UNITY_PATH_OPTION = "unity.path"
 
+
     /**
      * Environment variable name to set the default value for {@code unityPath}.
      * @value "UNITY_PATH"
@@ -170,5 +171,8 @@ class UnityPluginConsts {
      * @see UnityAuthentication#serial
      */
     static final String UNITY_SERIAL_ENV = "UNITY_SERIAL"
+
+    static final String UNITY_API_COMPATIBILITY_LEVEL_OPTION = "unity.apiCompatibilityLevel"
+    static final String UNITY_API_COMPATIBILITY_LEVEL_ENV_VAR = "UNITY_API_COMPATIBILITY_LEVEL"
 
 }

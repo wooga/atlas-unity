@@ -38,12 +38,14 @@ import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.ReturnLicense
+import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.UnityPackage
 import wooga.gradle.unity.tasks.UnityPackageArtifact
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
+import wooga.gradle.unity.utils.GenericUnityAsset
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -99,6 +101,8 @@ class UnityPlugin implements Plugin<Project> {
     static String ACTIVATE_TASK_NAME = "activateUnity"
     static String RETURN_LICENSE_TASK_NAME = "returnUnityLicense"
     static String EXPORT_PACKAGE_TASK_NAME = "exportUnityPackage"
+    static String SET_API_COMPATIBILITY_LEVEL_TASK_NAME = "setAPICompatibilityLevel"
+    static String UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME = "unsetAPICompatibilityLevel"
     static String EXTENSION_NAME = "unity"
     static String UNITY_PACKAGE_CONFIGURATION_NAME = "unitypackage"
     static String GROUP = "unity"
@@ -127,6 +131,8 @@ class UnityPlugin implements Plugin<Project> {
         configureUnityTasks(project, unityExtension)
         addTestTasks(project, unityExtension)
         addPackageTask(project)
+        addSetAPICompatibilityLevelTasks(project, unityExtension)
+        configureSetAPICompatibilityLevelTasks(project)
         addActivateAndReturnLicenseTasks(project, unityExtension)
         addDefaultReportTasks(project, unityExtension)
         configureArchiveDefaults(project, basePluginConvention)
@@ -175,7 +181,7 @@ class UnityPlugin implements Plugin<Project> {
         project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
             @Override
             void execute(AbstractUnityProjectTask task) {
-                if(!AbstractUnityActivationTask.isInstance(task)) {
+                if (!AbstractUnityActivationTask.isInstance(task)) {
                     if (extension.autoActivateUnity) {
                         task.dependsOn activationTask
                     }
@@ -185,6 +191,20 @@ class UnityPlugin implements Plugin<Project> {
                         activationTask.finalizedBy returnLicenseTask
                     }
                 }
+            }
+        })
+    }
+
+    private static void configureSetAPICompatibilityLevelTasks(final Project project) {
+        Task setAPICompLevel = project.tasks[SET_API_COMPATIBILITY_LEVEL_TASK_NAME]
+        Task unsetAPICompLevel = project.tasks[UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME]
+
+        project.getTasks().withType(AbstractUnityProjectTask, new Action<AbstractUnityProjectTask>() {
+            @Override
+            void execute(AbstractUnityProjectTask task) {
+                task.dependsOn setAPICompLevel
+                unsetAPICompLevel.mustRunAfter task
+                setAPICompLevel.finalizedBy unsetAPICompLevel
             }
         })
     }
@@ -203,6 +223,22 @@ class UnityPlugin implements Plugin<Project> {
                 return cliReturnLicense || (activateDidWork && didRunUnityTasks)
             }
         })
+    }
+
+    private static void addSetAPICompatibilityLevelTasks(final Project project, final UnityPluginExtension extension) {
+
+        // Read old value
+        def projectSettings = new File(extension.getProjectPath(), "ProjectSettings/ProjectSettings.asset")
+
+        // SET
+        Task setTask = project.tasks.create(SET_API_COMPATIBILITY_LEVEL_TASK_NAME, SetAPICompatibilityLevel.class)
+        setTask.settingsFile = { projectSettings }
+        setTask.apiCompatibilityLevel = { extension.getApiCompatibilityLevel() }
+
+        // UNSET
+        Task unsetTask = project.tasks.create(UNSET_API_COMPATIBILITY_LEVEL_TASK_NAME, SetAPICompatibilityLevel.class)
+        unsetTask.settingsFile = { projectSettings }
+        unsetTask.apiCompatibilityLevel = { setTask.previousAPICompatibilityLevel }
     }
 
     private static void addPackageTask(final Project project) {
