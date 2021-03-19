@@ -86,10 +86,10 @@ abstract class UnityAssetFileSpec extends Specification {
         """.stripIndent()
 
         when:
-        def result = UnityAssetFile.stripUnityInstructions(content)
+        def result = UnityAssetFile.strip(content)
 
         then:
-        result.readLines().every { !it.matches(/%TAG !u! tag:unity3d.com,.*:/) }
-        result.readLines().every { !it.matches(/(--- )!u!\d+( &\d+)/) }
+        result.stripped.readLines().every { !it.matches(/%TAG !u! tag:unity3d.com,.*:/) }
+        result.stripped.readLines().every { !it.matches(/(--- )!u!\d+( &\d+)/) }
     }
 }

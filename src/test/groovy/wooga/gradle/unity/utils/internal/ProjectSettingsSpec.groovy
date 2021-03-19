@@ -17,8 +17,10 @@
 
 package wooga.gradle.unity.utils.internal
 
+
 import spock.lang.Unroll
 import wooga.gradle.unity.APICompatibilityLevel
+import wooga.gradle.unity.SupportedBuildTargetGroup
 
 class ProjectSettingsSpec extends UnityAssetFileSpec {
 
@@ -32,11 +34,14 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
     %TAG !u! tag:unity3d.com,2011:
     --- !u!129 &1
     PlayerSettings:
-        wiiUDrcBufferDisabled: 0
-        wiiUProfilerLibPath: 
-        playModeTestRunnerEnabled: 0
-        apiCompatibilityLevel: ${APICompatibilityLevel.net2_0_subset.value}
-        actionOnDotNetUnhandledException: 1
+      wiiUDrcBufferDisabled: 0
+      wiiUProfilerLibPath: 
+      playModeTestRunnerEnabled: 0
+      ${APICompatibilityLevel.unityProjectSettingsPropertyKey}: 
+        Standalone: 6
+        iPhone: 6
+        Android: 6
+      actionOnDotNetUnhandledException: 1
     
     """.stripIndent()
 
@@ -45,11 +50,49 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
     %TAG !u! tag:unity3d.com,2011:
     --- !u!129 &1
     PlayerSettings:
-        wiiUDrcBufferDisabled: 0
-        wiiUProfilerLibPath: 
-        playModeTestRunnerEnabled: 1
-        actionOnDotNetUnhandledException: 1
+      wiiUDrcBufferDisabled: 0
+      wiiUProfilerLibPath: 
+      playModeTestRunnerEnabled: 1
+      actionOnDotNetUnhandledException: 1
     
+    """.stripIndent()
+
+    static String TEMPLATE_CONTENT_FULL = """
+    %YAML 1.1
+    %TAG !u! tag:unity3d.com,2011:
+    --- !u!129 &1
+    PlayerSettings:
+      m_ObjectHideFlags: 0
+      serializedVersion: 15
+      productGUID: 8da4962602f6644a0ba02ecd2fc41073
+      AndroidProfiler: 0
+      AndroidFilterTouchesWhenObscured: 0
+      AndroidEnableSustainedPerformanceMode: 0
+      defaultScreenOrientation: 0
+      targetDevice: 2
+      useOnDemandResources: 0
+      accelerometerFrequency: 60
+      companyName: Wooga GmbH
+      productName: Tropicats D
+      defaultCursor: {fileID: 0}
+      cursorHotspot: {x: 0, y: 0}
+      m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
+      m_ShowUnitySplashScreen: 0
+      m_ShowUnitySplashLogo: 1
+      m_SplashScreenOverlayOpacity: 1
+      m_SplashScreenAnimation: 1
+      m_SplashScreenLogoStyle: 1
+      m_SplashScreenDrawMode: 0
+      m_SplashScreenBackgroundAnimationZoom: 1
+      m_SplashScreenLogoAnimationZoom: 1
+      m_SplashScreenBackgroundLandscapeAspect: 1
+      m_SplashScreenBackgroundPortraitAspect: 1
+      m_SplashScreenBackgroundLandscapeUvs:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
     """.stripIndent()
 
     @Unroll
@@ -89,5 +132,83 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
 
         where:
         content << [INVALID_CONTENT]
+    }
+
+    @Unroll
+    def "serializes file correctly"() {
+        given: "a valid project settings file serialization"
+        def settings = new ProjectSettings(file)
+
+        and:
+        assert settings.isValid()
+        assert settings.isSerialized()
+
+        when:
+        settings.write()
+
+        then:
+        def updatedSettings = new ProjectSettings(file)
+        assert updatedSettings.isValid()
+        assert updatedSettings.isSerialized()
+        assert settings ==  updatedSettings
+
+        where:
+        objectType | file
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT_FULL
+    }
+
+    @Unroll
+    def "sets api compatibility level #level"() {
+        given:
+        def settings = new ProjectSettings(content)
+
+        and:
+        assert settings.isValid()
+
+        when:
+        settings.setAPICompatibilityLevelForSupportedPlatforms(level)
+
+        then:
+        def apiCompLevel = settings.getAPICompatibilityLevelPerPlatform()
+        assert apiCompLevel != null
+        !apiCompLevel.isEmpty()
+        assert apiCompLevel.size() == SupportedBuildTargetGroup.values().size()
+        for(target in apiCompLevel.keySet()){
+            assert apiCompLevel[target] == level
+        }
+
+        where:
+        objectType | content | level
+        "String"   | TEMPLATE_CONTENT | APICompatibilityLevel.net4_6
+        "String"   | TEMPLATE_CONTENT | APICompatibilityLevel.net_standard_2_0
+    }
+
+    @Unroll
+    def "writes api compatibility level '#level' to file"() {
+        given:
+        def settings = new ProjectSettings(file)
+
+        and:
+        assert settings.isValid()
+        assert settings.isSerialized()
+
+        when:
+        settings.setAPICompatibilityLevelForSupportedPlatforms(level)
+
+        then:
+        def apiCompLevel = settings.getAPICompatibilityLevelPerPlatform()
+        !apiCompLevel.isEmpty()
+        for(target in apiCompLevel.keySet()) {
+            assert apiCompLevel[target] == level
+        }
+        settings.write()
+
+        def updatedSettings = new ProjectSettings(file)
+        assert settings == updatedSettings
+
+        where:
+        objectType | file | level
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT | APICompatibilityLevel.net_standard_2_0
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT | APICompatibilityLevel.net4_6
     }
 }

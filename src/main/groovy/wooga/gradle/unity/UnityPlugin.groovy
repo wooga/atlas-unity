@@ -45,7 +45,6 @@ import wooga.gradle.unity.tasks.UnityPackageArtifact
 import wooga.gradle.unity.tasks.internal.AbstractUnityActivationTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
 import wooga.gradle.unity.tasks.internal.AbstractUnityTask
-import wooga.gradle.unity.utils.GenericUnityAsset
 
 import javax.inject.Inject
 import java.util.concurrent.Callable

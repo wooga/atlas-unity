@@ -1,7 +1,7 @@
 package wooga.gradle.unity
 
 import spock.lang.Unroll
-import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
+import wooga.gradle.unity.utils.internal.ProjectSettings
 
 class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
 
@@ -29,8 +29,8 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         !result.wasSkipped("test")
         result.wasExecuted("setAPICompatibilityLevel")
         !result.wasExecuted("unsetAPICompatibilityLevel")
-        settings.text.contains("apiCompatibilityLevel: ${expectedAPICompatibilityLevel.value}")
-        result.standardOutput.contains("Setting API compatibility level to ${expectedAPICompatibilityLevel}")
+        def expectedValueMap = APICompatibilityLevel.toMap(expectedAPICompatibilityLevel)
+        result.standardOutput.contains("Setting API compatibility level to ${expectedValueMap}")
 
         where:
 
@@ -64,33 +64,6 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         testValue = (expectedValue == _) ? rawValue : expectedValue
         escapedValue = (value instanceof String) ? escapedPath(value) : value
         invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
-
-    }
-
-    def "writes api level to project settings file correctly #expectedAPICompatibilityLevel"() {
-        given: "a valid api compatibility level to set"
-        buildFile << """
-            unity {
-               setApiCompatibilityLevel("${expectedAPICompatibilityLevel.toString()}") 
-            }
-            
-        """.stripIndent()
-
-        when:
-        def result = runTasksSuccessfully("test", "-x", "unsetAPICompatibilityLevel")
-
-        then:
-        !result.wasSkipped("test")
-        result.wasExecuted("setAPICompatibilityLevel")
-        !result.wasExecuted("unsetAPICompatibilityLevel")
-        settings.text.contains("apiCompatibilityLevel: ${expectedAPICompatibilityLevel.value}")
-        result.standardOutput.contains("Setting API compatibility level to ${expectedAPICompatibilityLevel}")
-
-        where:
-        defaultAPICompatibilityLevel = APICompatibilityLevel.net2_0_subset
-        expectedAPICompatibilityLevel << [APICompatibilityLevel.net4_6,
-                                          APICompatibilityLevel.net_micro,
-                                          APICompatibilityLevel.net_web]
     }
 
     def "sets the api level onto the project settings file, then unsets it"() {
@@ -103,7 +76,9 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         and: "ensure that the api compatibility level isn't the default"
-        assert settings.text.contains("apiCompatibilityLevel: ${defaultAPICompatibilityLevel.value}")
+        def projectSettings = new ProjectSettings(settings)
+        def previousAPICompLevelMap = projectSettings.getAPICompatibilityLevelPerPlatform()
+        assert previousAPICompLevelMap != null
 
         when:
         def result = runTasksSuccessfully("test")
@@ -112,9 +87,14 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         !result.wasSkipped("test")
         result.wasExecuted("setAPICompatibilityLevel")
         result.wasExecuted("unsetAPICompatibilityLevel")
-        !settings.text.contains("apiCompatibilityLevel: ${expectedAPICompatibilityLevel.value}")
-        result.standardOutput.contains("Setting API compatibility level to ${expectedAPICompatibilityLevel}")
-        result.standardOutput.contains("Setting API compatibility level to ${defaultAPICompatibilityLevel}")
+
+        def expectedValueMap = APICompatibilityLevel.toMap(expectedAPICompatibilityLevel)
+        result.standardOutput.contains("Setting API compatibility level to ${expectedValueMap}")
+        result.standardOutput.contains("Setting API compatibility level to ${previousAPICompLevelMap}")
+
+        def updatedProjectSettings = new ProjectSettings(settings)
+        def currentAPICompLevelMap = updatedProjectSettings.getAPICompatibilityLevelPerPlatform()
+        assert previousAPICompLevelMap == currentAPICompLevelMap
 
         where:
         expectedAPICompatibilityLevel = APICompatibilityLevel.net4_6
@@ -130,6 +110,14 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
             
         """.stripIndent()
 
+        and:
+        def projectSettings = new ProjectSettings(settings)
+        def previousAPICompLevelMap = projectSettings.getAPICompatibilityLevelPerPlatform()
+        assert previousAPICompLevelMap != null
+        def apiCompLevelMap = APICompatibilityLevel.toMap(expectedAPICompatibilityLevel)
+
+        assert previousAPICompLevelMap == apiCompLevelMap
+
         when:
         def result = runTasksSuccessfully("test")
 
@@ -137,12 +125,8 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         !result.wasSkipped("test")
         result.wasSkipped("setAPICompatibilityLevel")
         result.wasSkipped("unsetAPICompatibilityLevel")
-        settings.text.contains("apiCompatibilityLevel: ${defaultAPICompatibilityLevel.value}")
-        !result.standardOutput.contains("Setting API compatibility level to ${expectedAPICompatibilityLevel}")
-        !result.standardOutput.contains("Setting API compatibility level to ${defaultAPICompatibilityLevel}")
 
         where:
-        defaultAPICompatibilityLevel = APICompatibilityLevel.net2_0_subset
-        expectedAPICompatibilityLevel = defaultAPICompatibilityLevel
+        expectedAPICompatibilityLevel = APICompatibilityLevel.defaultLevel
     }
 }

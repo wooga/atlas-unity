@@ -18,6 +18,8 @@
 package wooga.gradle.unity.utils
 
 import groovy.transform.InheritConstructors
+import org.gradle.internal.impldep.org.hamcrest.core.IsEqual
+import sun.net.www.content.text.Generic
 import wooga.gradle.unity.utils.internal.UnityAssetFile
 
 /**
