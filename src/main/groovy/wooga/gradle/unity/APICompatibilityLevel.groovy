@@ -47,9 +47,9 @@ import java.security.InvalidKeyException
 **/
 enum APICompatibilityLevel {
 
-    net2_0(1),
-    net2_0_subset(2),
-    net4_6(3),
+    net_2_0(1),
+    net_2_0_subset(2),
+    net_4_6(3),
     net_web(4),
     net_micro(5),
     net_standard_2_0(6) // DEFAULT
@@ -67,12 +67,17 @@ enum APICompatibilityLevel {
      */
     static final APICompatibilityLevel defaultLevel = net_standard_2_0
 
-    private static Map map = new HashMap<>();
+    private static Map intToValue = new HashMap<>();
+    private static Map fallbacks = new HashMap<>()
 
     static {
         for (APICompatibilityLevel apiLevel : values()) {
-            map.put(apiLevel.value, apiLevel);
+            intToValue.put(apiLevel.value, apiLevel);
         }
+
+        fallbacks.put("net2_0", APICompatibilityLevel.net_2_0)
+        fallbacks.put("net2_0_subset", APICompatibilityLevel.net_2_0_subset)
+        fallbacks.put("net4_6", APICompatibilityLevel.net_4_6)
     }
 
     APICompatibilityLevel(Integer value) {
@@ -85,10 +90,10 @@ enum APICompatibilityLevel {
     }
 
     static APICompatibilityLevel valueOfInt(Integer value) {
-        if (!map.containsKey(value)) {
+        if (!intToValue.containsKey(value)) {
             throw new InvalidKeyException("There is no  API compatibility level for the value ${value}")
         }
-        return (APICompatibilityLevel) map.get(value);
+        return (APICompatibilityLevel) intToValue.get(value);
     }
 
     static Map<String, APICompatibilityLevel> toMap(APICompatibilityLevel level) {
@@ -97,6 +102,13 @@ enum APICompatibilityLevel {
             map.put(group.toString(), level)
         }
         return map
+    }
+
+    static APICompatibilityLevel parse(String value) {
+        if (fallbacks.containsKey(value)) {
+            return fallbacks[value]
+        }
+        return value as APICompatibilityLevel
     }
 
 }

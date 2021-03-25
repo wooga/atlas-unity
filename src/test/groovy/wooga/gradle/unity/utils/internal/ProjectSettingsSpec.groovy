@@ -179,7 +179,7 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
 
         where:
         objectType | content | level
-        "String"   | TEMPLATE_CONTENT | APICompatibilityLevel.net4_6
+        "String"   | TEMPLATE_CONTENT | APICompatibilityLevel.net_4_6
         "String"   | TEMPLATE_CONTENT | APICompatibilityLevel.net_standard_2_0
     }
 
@@ -209,6 +209,6 @@ class ProjectSettingsSpec extends UnityAssetFileSpec {
         where:
         objectType | file | level
         "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT | APICompatibilityLevel.net_standard_2_0
-        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT | APICompatibilityLevel.net4_6
+        "File"     | File.createTempFile("ProjectSettings", ".asset") << TEMPLATE_CONTENT | APICompatibilityLevel.net_4_6
     }
 }

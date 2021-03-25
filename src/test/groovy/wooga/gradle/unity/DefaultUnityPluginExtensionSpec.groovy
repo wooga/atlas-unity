@@ -331,7 +331,7 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
     def "set api compatibility level with properties"() {
         given: "valid api compatibility level"
-        def testCompatibilityLevel = APICompatibilityLevel.net4_6
+        def testCompatibilityLevel = APICompatibilityLevel.net_4_6
 
         and:
         projectProperties[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION] = testCompatibilityLevel.toString()
@@ -358,7 +358,7 @@ class DefaultUnityPluginExtensionSpec extends Specification {
 
     def "get api compatibility level from env returns property value over env"() {
         given: "api compatibility level set in properties"
-        def level = APICompatibilityLevel.net4_6
+        def level = APICompatibilityLevel.net_4_6
         def props = [(UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION): level.toString()]
 
         and: "unity path in environment"
