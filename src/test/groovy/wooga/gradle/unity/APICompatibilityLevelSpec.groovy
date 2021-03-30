@@ -16,7 +16,7 @@
 
 package wooga.gradle.unity
 
-import org.gradle.internal.impldep.org.apache.commons.lang.NullArgumentException
+
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -34,9 +34,9 @@ class APICompatibilityLevelSpec extends Specification {
 
         where:
         value | expectedAPICompatLevel
-        "net2_0" | APICompatibilityLevel.net2_0
-        "net2_0_subset" | APICompatibilityLevel.net2_0_subset
-        "net4_6" | APICompatibilityLevel.net4_6
+        "net_2_0" | APICompatibilityLevel.net_2_0
+        "net_2_0_subset" | APICompatibilityLevel.net_2_0_subset
+        "net_4_6" | APICompatibilityLevel.net_4_6
         "net_web" | APICompatibilityLevel.net_web
         "net_micro" | APICompatibilityLevel.net_micro
         "net_standard_2_0" | APICompatibilityLevel.net_standard_2_0
@@ -51,9 +51,9 @@ class APICompatibilityLevelSpec extends Specification {
 
         where:
         value | expectedAPICompatLevel
-        1 | APICompatibilityLevel.net2_0
-        2 | APICompatibilityLevel.net2_0_subset
-        3 | APICompatibilityLevel.net4_6
+        1 | APICompatibilityLevel.net_2_0
+        2 | APICompatibilityLevel.net_2_0_subset
+        3 | APICompatibilityLevel.net_4_6
         4 | APICompatibilityLevel.net_web
         5 | APICompatibilityLevel.net_micro
         6 | APICompatibilityLevel.net_standard_2_0

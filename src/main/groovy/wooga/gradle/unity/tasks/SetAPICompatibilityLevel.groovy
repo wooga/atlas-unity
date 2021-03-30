@@ -66,7 +66,7 @@ class SetAPICompatibilityLevel extends ConventionTask {
         }
         else {
             try {
-                value = value.toString() as APICompatibilityLevel
+                value = APICompatibilityLevel.parse(value.toString())
             }
             catch (Exception e) {
                 throw new Exception(parseFailureMessage)

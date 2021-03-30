@@ -50,20 +50,23 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
 
         where:
 
-        property                | method                     | rawValue                                | expectedValue                | type
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6            | _                            | "APICompatibilityLevel"
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6            | _                            | "Closure<APICompatibilityLevel>"
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6.toString() | APICompatibilityLevel.net4_6 | "String"
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6.toString() | APICompatibilityLevel.net4_6 | "Closure<String>"
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6.value      | APICompatibilityLevel.net4_6 | "Integer"
-        'apiCompatibilityLevel' | _                          | APICompatibilityLevel.net4_6.value      | APICompatibilityLevel.net4_6 | "Closure<Integer>"
+        property                | method                  | rawValue                                 | expectedValue                        | type
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6            | _                                    | "APICompatibilityLevel"
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6            | _                                    | "Closure<APICompatibilityLevel>"
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6.toString() | APICompatibilityLevel.net_4_6        | "String"
+        'apiCompatibilityLevel' | _                       | "net2_0"                                 | APICompatibilityLevel.net_2_0        | "String"
+        'apiCompatibilityLevel' | _                       | "net4_6"                                 | APICompatibilityLevel.net_4_6        | "String"
+        'apiCompatibilityLevel' | _                       | "net2_0_subset"                          | APICompatibilityLevel.net_2_0_subset | "String"
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6.toString() | APICompatibilityLevel.net_4_6        | "Closure<String>"
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6.value      | APICompatibilityLevel.net_4_6        | "Integer"
+        'apiCompatibilityLevel' | _                       | APICompatibilityLevel.net_4_6.value      | APICompatibilityLevel.net_4_6        | "Closure<Integer>"
 
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6            | _                            | "APICompatibilityLevel"
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6            | _                            | "Closure<APICompatibilityLevel>"
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6.toString() | APICompatibilityLevel.net4_6 | "String"
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6.toString() | APICompatibilityLevel.net4_6 | "Closure<String>"
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6.value      | APICompatibilityLevel.net4_6 | "Integer"
-        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net4_6.value      | APICompatibilityLevel.net4_6 | "Closure<Integer>"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6            | _                                    | "APICompatibilityLevel"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6            | _                                    | "Closure<APICompatibilityLevel>"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6.toString() | APICompatibilityLevel.net_4_6        | "String"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6.toString() | APICompatibilityLevel.net_4_6        | "Closure<String>"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6.value      | APICompatibilityLevel.net_4_6        | "Integer"
+        'apiCompatibilityLevel' | "apiCompatibilityLevel" | APICompatibilityLevel.net_4_6.value      | APICompatibilityLevel.net_4_6        | "Closure<Integer>"
 
         taskName = "setAPICompatibilityLevel"
         value = (type != _) ? wrapValueBasedOnType(rawValue, type.toString(), { String type ->
@@ -76,7 +79,7 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
             }
         }) : rawValue
         expectedAPICompatibilityLevel = (expectedValue != _) ? expectedValue : rawValue
-        defaultAPICompatibilityLevel = APICompatibilityLevel.net2_0_subset
+        defaultAPICompatibilityLevel = APICompatibilityLevel.defaultLevel
         testValue = (expectedValue == _) ? rawValue : expectedValue
         escapedValue = (value instanceof String) ? escapedPath(value) : value
         invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
@@ -113,8 +116,8 @@ class SetAPICompLevelIntegrationSpec extends UnityIntegrationSpec {
         assert previousAPICompLevelMap == currentAPICompLevelMap
 
         where:
-        expectedAPICompatibilityLevel = APICompatibilityLevel.net4_6
-        defaultAPICompatibilityLevel = APICompatibilityLevel.net2_0_subset
+        expectedAPICompatibilityLevel = APICompatibilityLevel.net_4_6
+        defaultAPICompatibilityLevel = APICompatibilityLevel.net_2_0_subset
     }
 
     def "skips if the api level is the same as the default"() {
