@@ -91,7 +91,7 @@ enum APICompatibilityLevel {
 
     static APICompatibilityLevel valueOfInt(Integer value) {
         if (!intToValue.containsKey(value)) {
-            throw new InvalidKeyException("There is no  API compatibility level for the value ${value}")
+            throw new InvalidKeyException("There is no API compatibility level for the value ${value}")
         }
         return (APICompatibilityLevel) intToValue.get(value);
     }
