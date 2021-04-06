@@ -90,6 +90,27 @@ abstract class AbstractUnityProjectTask<T extends AbstractUnityProjectTask> exte
         batchModeAction.noGraphics
     }
 
+    @Optional
+    @Input
+    @Override
+    Boolean getDisableAssemblyUpdater() {
+        batchModeAction.disableAssemblyUpdater
+    }
+
+    @Optional
+    @Input
+    @Override
+    Boolean getDeepProfiling() {
+        batchModeAction.deepProfiling
+    }
+
+    @Optional
+    @Input
+    @Override
+    Boolean getEnableCodeCoverage() {
+        batchModeAction.enableCodeCoverage
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -135,4 +135,16 @@ interface BatchModeSpec extends BaseBatchModeSpec ,BaseExecSpec {
      * @see wooga.gradle.unity.batchMode.BatchModeFlags#NO_GRAPHICS
      */
     BatchModeSpec noGraphics(Boolean value)
+
+    Boolean getDisableAssemblyUpdater()
+    void setDisableAssemblyUpdater(Boolean value)
+    BatchModeSpec disableAssemblyUpdater(Boolean value)
+
+    Boolean getDeepProfiling()
+    void setDeepProfiling(Boolean value)
+    BatchModeSpec deepProfiling(Boolean value)
+
+    Boolean getEnableCodeCoverage()
+    void setEnableCodeCoverage(Boolean value)
+    BatchModeSpec enableCodeCoverage(Boolean value)
 }

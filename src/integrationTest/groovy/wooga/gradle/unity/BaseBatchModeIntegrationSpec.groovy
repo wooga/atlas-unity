@@ -22,6 +22,7 @@ import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
+import wooga.gradle.unity.batchMode.UnityCommandLineOption
 import wooga.gradle.unity.tasks.*
 
 class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
@@ -77,50 +78,113 @@ class BaseBatchModeIntegrationSpec extends UnityIntegrationSpec {
         }
 
         where:
-        property      | taskType      | useSetter | value                 | expectedCommandlineSwitch | checkForFileInCommandline
-        "unityPath"   | Activate      | false     | 'file("test/file")'   | ""                        | true
-        "unityPath"   | Activate      | true      | 'file("test/file")'   | ""                        | true
-        "unityPath"   | ReturnLicense | false     | 'file("test/file")'   | ""                        | true
-        "unityPath"   | ReturnLicense | true      | 'file("test/file")'   | ""                        | true
-        "unityPath"   | Test          | false     | 'file("test/file")'   | ""                        | true
-        "unityPath"   | Test          | true      | 'file("test/file")'   | ""                        | true
-        "unityPath"   | Unity         | false     | 'file("test/file")'   | ""                        | true
-        "unityPath"   | Unity         | true      | 'file("test/file")'   | ""                        | true
-        "unityPath"   | UnityPackage  | false     | 'file("test/file")'   | ""                        | true
-        "unityPath"   | UnityPackage  | true      | 'file("test/file")'   | ""                        | true
+        property                 | taskType      | useSetter | value                 | expectedCommandlineSwitch   | checkForFileInCommandline
+        "unityPath"              | Activate      | false     | 'file("test/file")'   | ""                          | true
+        "unityPath"              | Activate      | true      | 'file("test/file")'   | ""                          | true
+        "unityPath"              | ReturnLicense | false     | 'file("test/file")'   | ""                          | true
+        "unityPath"              | ReturnLicense | true      | 'file("test/file")'   | ""                          | true
+        "unityPath"              | Test          | false     | 'file("test/file")'   | ""                          | true
+        "unityPath"              | Test          | true      | 'file("test/file")'   | ""                          | true
+        "unityPath"              | Unity         | false     | 'file("test/file")'   | ""                          | true
+        "unityPath"              | Unity         | true      | 'file("test/file")'   | ""                          | true
+        "unityPath"              | UnityPackage  | false     | 'file("test/file")'   | ""                          | true
+        "unityPath"              | UnityPackage  | true      | 'file("test/file")'   | ""                          | true
 
-        "projectPath" | Activate      | false     | 'file("test/file")'   | ""                        | false
-        "projectPath" | Activate      | true      | 'file("test/file")'   | ""                        | false
-        "projectPath" | ReturnLicense | false     | 'file("test/file")'   | ""                        | false
-        "projectPath" | ReturnLicense | true      | 'file("test/file")'   | ""                        | false
-        "projectPath" | Test          | false     | 'file("test/file")'   | "-projectPath"            | true
-        "projectPath" | Test          | true      | 'file("test/file")'   | "-projectPath"            | true
-        "projectPath" | Unity         | false     | 'file("test/file")'   | "-projectPath"            | true
-        "projectPath" | Unity         | true      | 'file("test/file")'   | "-projectPath"            | true
-        "projectPath" | UnityPackage  | false     | 'file("test/file")'   | "-projectPath"            | true
-        "projectPath" | UnityPackage  | true      | 'file("test/file")'   | "-projectPath"            | true
+        "projectPath"            | Activate      | false     | 'file("test/file")'   | ""                          | false
+        "projectPath"            | Activate      | true      | 'file("test/file")'   | ""                          | false
+        "projectPath"            | ReturnLicense | false     | 'file("test/file")'   | ""                          | false
+        "projectPath"            | ReturnLicense | true      | 'file("test/file")'   | ""                          | false
+        "projectPath"            | Test          | false     | 'file("test/file")'   | "-projectPath"              | true
+        "projectPath"            | Test          | true      | 'file("test/file")'   | "-projectPath"              | true
+        "projectPath"            | Unity         | false     | 'file("test/file")'   | "-projectPath"              | true
+        "projectPath"            | Unity         | true      | 'file("test/file")'   | "-projectPath"              | true
+        "projectPath"            | UnityPackage  | false     | 'file("test/file")'   | "-projectPath"              | true
+        "projectPath"            | UnityPackage  | true      | 'file("test/file")'   | "-projectPath"              | true
 
-        "logFile"     | Activate      | false     | 'file("test/file")'   | ""                        | false
-        "logFile"     | Activate      | false     | '{file("test/file")}' | ""                        | false
-        "logFile"     | Activate      | true      | 'file("test/file")'   | ""                        | false
-        "logFile"     | Activate      | true      | '{file("test/file")}' | ""                        | false
-        "logFile"     | ReturnLicense | false     | 'file("test/file")'   | ""                        | false
-        "logFile"     | ReturnLicense | false     | '{file("test/file")}' | ""                        | false
-        "logFile"     | ReturnLicense | true      | 'file("test/file")'   | ""                        | false
-        "logFile"     | ReturnLicense | true      | '{file("test/file")}' | ""                        | false
-        "logFile"     | Test          | false     | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | Test          | false     | '{file("test/file")}' | "-logFile"                | true
-        "logFile"     | Test          | true      | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | Test          | true      | '{file("test/file")}' | "-logFile"                | true
-        "logFile"     | Unity         | false     | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | Unity         | false     | '{file("test/file")}' | "-logFile"                | true
-        "logFile"     | Unity         | true      | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | Unity         | true      | '{file("test/file")}' | "-logFile"                | true
-        "logFile"     | UnityPackage  | false     | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | UnityPackage  | false     | '{file("test/file")}' | "-logFile"                | true
-        "logFile"     | UnityPackage  | true      | 'file("test/file")'   | "-logFile"                | true
-        "logFile"     | UnityPackage  | true      | '{file("test/file")}' | "-logFile"                | true
+        "logFile"                | Activate      | false     | 'file("test/file")'   | ""                          | false
+        "logFile"                | Activate      | false     | '{file("test/file")}' | ""                          | false
+        "logFile"                | Activate      | true      | 'file("test/file")'   | ""                          | false
+        "logFile"                | Activate      | true      | '{file("test/file")}' | ""                          | false
+        "logFile"                | ReturnLicense | false     | 'file("test/file")'   | ""                          | false
+        "logFile"                | ReturnLicense | false     | '{file("test/file")}' | ""                          | false
+        "logFile"                | ReturnLicense | true      | 'file("test/file")'   | ""                          | false
+        "logFile"                | ReturnLicense | true      | '{file("test/file")}' | ""                          | false
+        "logFile"                | Test          | false     | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | Test          | false     | '{file("test/file")}' | "-logFile"                  | true
+        "logFile"                | Test          | true      | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | Test          | true      | '{file("test/file")}' | "-logFile"                  | true
+        "logFile"                | Unity         | false     | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | Unity         | false     | '{file("test/file")}' | "-logFile"                  | true
+        "logFile"                | Unity         | true      | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | Unity         | true      | '{file("test/file")}' | "-logFile"                  | true
+        "logFile"                | UnityPackage  | false     | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | UnityPackage  | false     | '{file("test/file")}' | "-logFile"                  | true
+        "logFile"                | UnityPackage  | true      | 'file("test/file")'   | "-logFile"                  | true
+        "logFile"                | UnityPackage  | true      | '{file("test/file")}' | "-logFile"                  | true
 
+        "disableAssemblyUpdater" | Unity         | true      | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | Unity         | true      | false                 | ""                          | true
+        "disableAssemblyUpdater" | Unity         | false     | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | Unity         | false     | false                 | ""                          | true
+        "disableAssemblyUpdater" | Test          | true      | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | Test          | true      | false                 | ""                          | true
+        "disableAssemblyUpdater" | Test          | false     | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | Test          | false     | false                 | ""                          | true
+        "disableAssemblyUpdater" | UnityPackage  | true      | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | UnityPackage  | true      | false                 | ""                          | true
+        "disableAssemblyUpdater" | UnityPackage  | false     | true                  | "-disable-assembly-updater" | true
+        "disableAssemblyUpdater" | UnityPackage  | false     | false                 | ""                          | true
+
+        method = (useSetter) ? "set${property.capitalize()}" : property
+    }
+
+    @Unroll
+    def "can set boolean flag #property (#value) for type #taskType with #method"() {
+        given: "a custom build task"
+        buildFile << """
+            task (mUnity, type: ${taskType.name}) {
+                onlyIf = {true}
+                $method($value)
+            }
+        """.stripIndent()
+
+        and: "custom setting based on type"
+        if (taskType == UnityPackage) {
+            createFile("path/to/some/files")
+            buildFile << """
+            mUnity.inputFiles "path/to/some/files"
+            """
+        }
+
+        if (taskType == ReturnLicense) {
+            buildFile << """
+            mUnity.licenseDirectory = projectDir
+            """
+        }
+
+        and: "make sure the test file exists"
+        def testFile = createFile("test/file")
+
+        when:
+        def result = runTasks("mUnity")
+
+        then:
+        result.wasExecuted("mUnity")
+        result.standardOutput.contains("Starting process 'command '")
+        value == result.standardOutput.contains(" $expectedCommandlineSwitch ")
+
+        where:
+        [testCase, taskType, useSetter, value] <<
+                [
+                        UnityCommandLineOption.values().collect(
+                                {it -> ["${it}", it.value]}),
+                        [Unity, Test, UnityPackage],
+                        [true, false],
+                        [true, false]
+                ].combinations()
+
+        property = testCase[0]
+        expectedCommandlineSwitch = testCase[1]
         method = (useSetter) ? "set${property.capitalize()}" : property
     }
 

@@ -18,6 +18,55 @@
 package wooga.gradle.unity.batchMode
 
 /**
+ * You can run the Unity Editor and build Unity applications with additional commands and information on startup.
+ * These are some of the command line options available.
+ */
+enum UnityCommandLineOption {
+
+    /**
+     * Specify a space-separated list of assembly names as parameters for Unity to ignore on automatic updates.
+     The space-separated list of assembly names is optional: pass the command line options without any assembly names
+     to ignore all assemblies.
+     <p>Example 1
+     unity.exe -disable-assembly-updater
+     <p>Example 2
+     unity.exe -disable-assembly-updater A1.dll subfolder/A2.dll
+     <p>(Example 2 has two assembly names, one with a pathname. Example 2 ignores A1.dll, no matter what folder it is stored
+     in, and ignores A2.dll only if it is stored under subfolder folder)
+
+     <p>If you list an assembly in the -disable-assembly-updater command line parameter (or if you don’t specify assemblies),
+     Unity logs the following message to Editor.log:
+     [Assembly Updater] warning: Ignoring assembly [assembly_path] as requested by command line parameter.”).
+
+     <p>Use this to avoid unnecessary API Updater overheads when importing assemblies.
+     It is useful for importing assemblies which access a Unity API when you know the Unity API doesn’t need updating.
+     It is also useful when importing assemblies which do not access Unity APIs at all (for example, if you have built
+     your source code, or some of it, outside of Unity, and you want to import the resulting assemblies into your Unity project).
+
+     <p>Note: If you disable the update of any assembly that does need updating, you may get errors at compile time,
+     run time, or both, that are hard to track.
+     */
+    disableAssemblyUpdater("-disable-assembly-updater"),
+    /**
+     * Enable Deep Profiling option for the CPU profiler.
+     */
+    deepProfiling("-deepprofiling"),
+    /**
+     * Enables code coverage and allows access to the Coverage API.
+     */
+    enableCodeCoverage("-enableCodeCoverage")
+
+    private final String value
+    String getValue() {
+        value
+    }
+
+    UnityCommandLineOption(String value) {
+        this.value = value
+    }
+}
+
+/**
  * Constant class with Unity commandline switches.
  */
 class BatchModeFlags {

@@ -36,7 +36,9 @@ import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityPluginExtension
 import wooga.gradle.unity.batchMode.BatchModeAction
 import wooga.gradle.unity.batchMode.BatchModeFlags
+import wooga.gradle.unity.batchMode.BatchModeSpec
 import wooga.gradle.unity.batchMode.BuildTarget
+import wooga.gradle.unity.batchMode.UnityCommandLineOption
 import wooga.gradle.unity.utils.internal.FileUtils
 import wooga.gradle.unity.utils.internal.ForkTextStream
 import wooga.gradle.unity.utils.internal.UnityVersionManager
@@ -154,6 +156,7 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
     Boolean quit = true
     Boolean batchMode = true
     Boolean noGraphics = false
+    Map<UnityCommandLineOption, Boolean> commandLineOptions
 
     DefaultBatchModeAction(Project project, FileResolver fileResolver) {
         this.project = project
@@ -162,6 +165,38 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
         this.conventionMapping = new ConventionAwareHelper(this, project.getConvention())
         def execFactory = new DefaultExecActionFactory(fileResolver)
         this.execHandleBuilder = execFactory.newExec()
+        this.commandLineOptions = UnityCommandLineOption.values().collectEntries(
+                {[it, it.value] }
+        )
+    }
+
+    @Override
+    DefaultBatchModeAction args(Object... args) {
+        execHandleBuilder.args(args)
+        this
+    }
+
+    @Override
+    DefaultBatchModeAction args(Iterable<?> args) {
+        execHandleBuilder.args(args)
+        return this
+    }
+
+    @Override
+    DefaultBatchModeAction setArgs(List<String> arguments) {
+        execHandleBuilder.setArgs(arguments)
+        return this
+    }
+
+    @Override
+    DefaultBatchModeAction setArgs(Iterable<?> arguments) {
+        execHandleBuilder.setArgs(arguments)
+        return this
+    }
+
+    @Override
+    ConventionMapping getConventionMapping() {
+        return conventionMapping
     }
 
     ExecResult execute() {
@@ -192,6 +227,13 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
 
         if (noGraphics) {
             batchModeArgs << BatchModeFlags.NO_GRAPHICS
+        }
+
+        // Set additional flags here
+        for(option in commandLineOptions){
+            if (option.value == true){
+                batchModeArgs << option.key.value
+            }
         }
 
         setupLogFile(batchModeArgs)
@@ -303,32 +345,62 @@ class DefaultBatchModeAction implements BatchModeAction, IConventionAware {
         this
     }
 
+    /*
+        UnityCommandLineOption.disableAssemblyUpdater
+     */
     @Override
-    DefaultBatchModeAction args(Object... args) {
-        execHandleBuilder.args(args)
+    Boolean getDisableAssemblyUpdater() {
+        commandLineOptions[UnityCommandLineOption.disableAssemblyUpdater]
+    }
+
+    @Override
+    void setDisableAssemblyUpdater(Boolean value) {
+        commandLineOptions[UnityCommandLineOption.disableAssemblyUpdater] = value
+    }
+
+    @Override
+    DefaultBatchModeAction disableAssemblyUpdater(Boolean value) {
+        this.disableAssemblyUpdater = value
         this
     }
 
+    /*
+        UnityCommandLineOption.deepProfiling
+     */
     @Override
-    DefaultBatchModeAction args(Iterable<?> args) {
-        execHandleBuilder.args(args)
-        return this
+    Boolean getDeepProfiling() {
+        commandLineOptions[UnityCommandLineOption.deepProfiling]
     }
 
     @Override
-    DefaultBatchModeAction setArgs(List<String> arguments) {
-        execHandleBuilder.setArgs(arguments)
-        return this
+    void setDeepProfiling(Boolean value) {
+        commandLineOptions[UnityCommandLineOption.deepProfiling] = value
     }
 
     @Override
-    DefaultBatchModeAction setArgs(Iterable<?> arguments) {
-        execHandleBuilder.setArgs(arguments)
-        return this
+    DefaultBatchModeAction deepProfiling(Boolean value) {
+        this.deepProfiling = value
+        this
+    }
+
+    /*
+        UnityCommandLineOption.enableCodeCoverage
+     */
+    @Override
+    Boolean getEnableCodeCoverage() {
+        commandLineOptions[UnityCommandLineOption.enableCodeCoverage]
     }
 
     @Override
-    ConventionMapping getConventionMapping() {
-        return conventionMapping
+    void setEnableCodeCoverage(Boolean value) {
+        commandLineOptions[UnityCommandLineOption.enableCodeCoverage] = value
     }
+
+    @Override
+    DefaultBatchModeAction enableCodeCoverage(Boolean value) {
+        this.enableCodeCoverage = value
+        this
+    }
+
+
 }
