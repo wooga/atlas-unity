@@ -25,6 +25,7 @@ import org.yaml.snakeyaml.Yaml
 
 /**
  * Manages the parsing and serialization of an Unity YAML asset file
+ * https://docs.unity3d.com/Manual/UnityYAML.html
  */
 abstract class UnityAssetFile {
 
@@ -51,8 +52,9 @@ abstract class UnityAssetFile {
             isValid = true
 
         }
-        catch (Exception ignored) {
-            logger.warn("UnityAssetFile content not parsable. Please make sure it's not set to binary.")
+        catch (Exception e) {
+            logger.warn("UnityAssetFile content not parsable (Was it set to binary?):")
+            logger.warn(e.toString())
         }
         validObject = isValid
     }

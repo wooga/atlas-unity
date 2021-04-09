@@ -535,7 +535,7 @@ class DefaultUnityPluginExtension implements UnityPluginExtension, UnityPluginAc
     static APICompatibilityLevel getApiCompatibilityLevelFromEnv(Map<String, ?> properties, Map<String, String> env) {
         String rawValue = (properties[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_OPTION] ?: env[UnityPluginConsts.UNITY_API_COMPATIBILITY_LEVEL_ENV_VAR])
         if (rawValue) {
-            return APICompatibilityLevel.valueOf(rawValue)
+            return APICompatibilityLevel.parse(rawValue)
         }
         null
     }
