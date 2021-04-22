@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Wooga GmbH
+ * Copyright 2018 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,20 @@
  *
  */
 
-package wooga.gradle.unity.internal
+package wooga.gradle.unity.utils
 
+import org.gradle.api.reporting.Report
+import org.gradle.api.reporting.ReportContainer
+import org.gradle.api.reporting.SingleFileReport
 
-import wooga.gradle.unity.UnityPluginExtension
+/**
+ * Container type for Unity test task result reports.
+ */
+interface UnityTestTaskReport extends ReportContainer<Report>{
 
-class DefaultUnityPluginExtension implements UnityPluginExtension {
+    /**
+     * Returns a {@link org.gradle.api.reporting.SingleFileReport} object.
+     * @return the xml report object.
+     */
+    SingleFileReport getXml()
 }

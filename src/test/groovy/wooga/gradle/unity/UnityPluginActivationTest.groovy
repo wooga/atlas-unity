@@ -15,10 +15,11 @@
  *
  */
 
-package wooga.gradle.unity.internal
+package wooga.gradle.unity
 
+import nebula.test.PluginProjectSpec
 
-import wooga.gradle.unity.UnityPluginExtension
-
-class DefaultUnityPluginExtension implements UnityPluginExtension {
+class UnityPluginActivationTest extends PluginProjectSpec {
+    @Override
+    String getPluginName() {  UnityPluginTest.PLUGIN_NAME }
 }

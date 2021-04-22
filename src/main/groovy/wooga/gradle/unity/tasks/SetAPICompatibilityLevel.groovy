@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Wooga GmbH
+ * Copyright 2021 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,81 +16,33 @@
 
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.internal.ConventionTask
+import org.gradle.api.DefaultTask
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.specs.Spec
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import wooga.gradle.unity.APICompatibilityLevel
-import wooga.gradle.unity.utils.internal.ProjectSettings
+import wooga.gradle.unity.models.APICompatibilityLevel
+import wooga.gradle.unity.traits.APICompatibilityLevelSpec
+import wooga.gradle.unity.utils.ProjectSettingsFile
 
-class SetAPICompatibilityLevel extends ConventionTask {
+import javax.inject.Inject
 
-    @InputFile
-    File getSettingsFile() {
-        project.file(settingsFile)
+class SetAPICompatibilityLevel extends DefaultTask implements APICompatibilityLevelSpec {
+
+    private MapProperty<String, APICompatibilityLevel> previousAPICompatibilityLevel
+
+    MapProperty<String, APICompatibilityLevel> getPreviousAPICompatibilityLevel(){
+        previousAPICompatibilityLevel
     }
-
-    void setSettingsFile(Object value) {
-        this.settingsFile = value
-    }
-    private Object settingsFile;
-
-    @Input
-    @Optional
-    Map<String, APICompatibilityLevel> getApiCompatibilityLevel() {
-        def value = apiCompatibilityLevel
-
-        if (!value) {
-            return null
-        }
-
-        if (value instanceof Closure) {
-            value = value.call()
-        }
-
-        if (!value) {
-            return null
-        }
-
-        if (value instanceof Map<String, APICompatibilityLevel>){
-            return value
-        }
-
-        if (value instanceof APICompatibilityLevel) {
-            value = value as APICompatibilityLevel
-        }
-        else if (value instanceof Integer) {
-            value = APICompatibilityLevel.valueOfInt((value))
-        }
-        else {
-            try {
-                value = APICompatibilityLevel.parse(value.toString())
-            }
-            catch (Exception e) {
-                throw new Exception(parseFailureMessage)
-            }
-        }
-
-        value = APICompatibilityLevel.toMap(value)
-        return value
-    }
-
-    void setApiCompatibilityLevel(Object value) {
-        this.apiCompatibilityLevel = value
-    }
-
-    void apiCompatibilityLevel(Object value) {
-        setApiCompatibilityLevel(value)
-    }
-
-    Object apiCompatibilityLevel
-    Map<String, APICompatibilityLevel> previousAPICompatibilityLevel
 
     final static String parseFailureMessage = "Failed to parse API compatibility level"
 
+    @Inject
     SetAPICompatibilityLevel() {
+
+        previousAPICompatibilityLevel = project.objects.mapProperty(String, APICompatibilityLevel)
+        wooga_gradle_unity_traits_APICompatibilityLevelSpec__apiCompatibilityLevel = project.objects.mapProperty(String, APICompatibilityLevel)
+        wooga_gradle_unity_traits_APICompatibilityLevelSpec__settingsFile = project.objects.fileProperty()
+
         onlyIf(new Spec<SetAPICompatibilityLevel>() {
             @Override
             boolean isSatisfiedBy(SetAPICompatibilityLevel t) {
@@ -101,13 +53,17 @@ class SetAPICompatibilityLevel extends ConventionTask {
         onlyIf(new Spec<SetAPICompatibilityLevel>() {
             @Override
             boolean isSatisfiedBy(SetAPICompatibilityLevel t) {
-                def file = getSettingsFile()
-                def projectSettings = new ProjectSettings(file)
+                def file = settingsFile.get().asFile
+                def projectSettings = new ProjectSettingsFile(file)
 
-                def currentAPICompLevel = projectSettings.getAPICompatibilityLevelPerPlatform()
-                def newAPICompLevel = getApiCompatibilityLevel()
+                Map<String, APICompatibilityLevel> currentAPICompLevel = projectSettings.getAPICompatibilityLevelPerPlatform()
+                Map<String, APICompatibilityLevel> targetAPICompLevel = getApiCompatibilityLevel().get()
 
-                return currentAPICompLevel != newAPICompLevel
+                if (targetAPICompLevel.size() == 0){
+                    return false
+                }
+
+                return currentAPICompLevel != targetAPICompLevel
             }
         })
     }
@@ -115,18 +71,17 @@ class SetAPICompatibilityLevel extends ConventionTask {
     @TaskAction
     protected void onExecute() {
 
-        def file = getSettingsFile()
-        def projectSettings = new ProjectSettings(file)
+        def file = settingsFile.get().asFile
+        def projectSettings = new ProjectSettingsFile(file)
 
-        previousAPICompatibilityLevel = projectSettings.getAPICompatibilityLevelPerPlatform()
+        previousAPICompatibilityLevel.set(projectSettings.getAPICompatibilityLevelPerPlatform())
         if (previousAPICompatibilityLevel == null) {
             logger.warn("No previous API compatibility level was set")
         }
 
-        Map<String, APICompatibilityLevel> apiLevel = getApiCompatibilityLevel()
+        def apiLevel = getApiCompatibilityLevel().get()
         logger.info("Setting API compatibility level to ${apiLevel}")
         projectSettings.setAPICompatibilityLevelForSupportedPlatforms(apiLevel)
         projectSettings.write(file)
     }
-
 }

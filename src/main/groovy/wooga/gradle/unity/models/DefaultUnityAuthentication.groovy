@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Wooga GmbH
+ * Copyright 2018 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,15 @@
  *
  */
 
-package wooga.gradle.unity.internal
+package wooga.gradle.unity.models
 
+import org.gradle.api.model.ObjectFactory
 
-import wooga.gradle.unity.UnityPluginExtension
+class DefaultUnityAuthentication implements UnityAuthentication {
 
-class DefaultUnityPluginExtension implements UnityPluginExtension {
+    DefaultUnityAuthentication(ObjectFactory objects) {
+        wooga_gradle_unity_models_UnityAuthentication__username = objects.property(String)
+        wooga_gradle_unity_models_UnityAuthentication__password = objects.property(String)
+        wooga_gradle_unity_models_UnityAuthentication__serial = objects.property(String)
+    }
 }
