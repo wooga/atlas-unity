@@ -17,8 +17,9 @@
 
 package wooga.gradle.unity.utils.internal
 
-import org.gradle.api.Nullable
 import org.gradle.internal.io.TextStream
+
+import javax.annotation.Nullable
 
 class ForkTextStream implements TextStream {
 

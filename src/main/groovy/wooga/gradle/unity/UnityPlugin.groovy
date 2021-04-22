@@ -123,7 +123,8 @@ class UnityPlugin implements Plugin<Project> {
         project.pluginManager.apply(ReportingBasePlugin.class)
 
         final UnityPluginExtension unityExtension = project.extensions.create(EXTENSION_NAME, DefaultUnityPluginExtension, project, fileResolver, instantiator)
-        final BasePluginConvention basePluginConvention = new BasePluginConvention(project)
+        final BasePluginConvention basePluginConvention = project.getConvention()
+                //new BasePluginConvention(project)
 
         configureUnityExtensionConvention(project, unityExtension)
         createUnityPackageConfiguration(project)

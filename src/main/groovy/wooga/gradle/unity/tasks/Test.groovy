@@ -20,7 +20,6 @@ package wooga.gradle.unity.tasks
 import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.gradle.api.Action
-import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.reporting.Reporting
@@ -29,6 +28,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
+import org.gradle.util.ClosureBackedAction
 import wooga.gradle.unity.batchMode.BatchModeFlags
 import wooga.gradle.unity.batchMode.TestPlatform
 import wooga.gradle.unity.tasks.internal.AbstractUnityProjectTask
@@ -38,6 +38,7 @@ import wooga.gradle.unity.utils.internal.NUnitReportNormalizer
 import wooga.gradle.unity.utils.internal.ProjectSettings
 import wooga.gradle.unity.utils.internal.UnityVersionManager
 
+import javax.annotation.Nullable
 import javax.inject.Inject
 
 /**

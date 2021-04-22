@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '1.5.0'
+    id 'net.wooga.plugins' version '2.0.0'
 }
 
 group 'net.wooga.gradle'
@@ -41,17 +41,17 @@ github {
 }
 
 dependencies {
-    testCompile('org.jfrog.artifactory.client:artifactory-java-client-services:+') {
+    testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:+') {
         exclude module: 'logback-classic'
     }
 
-    testCompile("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.1.0") {
+    testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.1.0") {
         exclude module: 'groovy-all'
     }
 
-    testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
+    testImplementation 'com.github.stefanbirkner:system-rules:1.18.0'
 
-    compile 'org.apache.maven:maven-artifact:3.6.3'
-    compile "org.yaml:snakeyaml:1.28"
-    compile 'net.wooga:unity-version-manager-jni:1.+'
+    implementation 'org.apache.maven:maven-artifact:3.6.3'
+    implementation "org.yaml:snakeyaml:1.28"
+    implementation 'net.wooga:unity-version-manager-jni:1.+'
 }

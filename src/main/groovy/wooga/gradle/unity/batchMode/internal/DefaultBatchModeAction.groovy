@@ -20,11 +20,11 @@ package wooga.gradle.unity.batchMode.internal
 import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionAwareHelper
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.Factory
+import org.gradle.internal.extensibility.ConventionAwareHelper
 import org.gradle.internal.io.LineBufferingOutputStream
 import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
