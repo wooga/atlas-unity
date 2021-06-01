@@ -1,14 +1,12 @@
 package wooga.gradle.unity.tasks
 
 
-import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import wooga.gradle.unity.UnityTask
 import wooga.gradle.unity.models.TestPlatform
-import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.traits.UnityTestSpec
 import wooga.gradle.unity.utils.NUnitReportNormalizer
 import wooga.gradle.unity.utils.UnityTestTaskReport
@@ -22,21 +20,22 @@ abstract class Test extends UnityTask implements UnityTestSpec {
         throw new UnsupportedOperationException()
     }
 
-    // Failed to use Property<>
-    private Provider<UnityTestTaskReport> reports
+    private UnityTestTaskReport reports
 
-    @Internal
-    Provider<UnityTestTaskReport> getReports() {
+    @Nested
+    UnityTestTaskReport getReports() {
         reports
     }
 
-    void setReports(Provider<UnityTestTaskReport> value) {
+    void setReports(UnityTestTaskReport value) {
         reports = value
     }
 
     @Inject
     Test() {
         description = "Executes Unity in batch mode and executes specified method"
+        reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
+        reports.xml.enabled = true
     }
 
     Test(TestPlatform testPlatform) {
@@ -54,7 +53,6 @@ abstract class Test extends UnityTask implements UnityTestSpec {
     @Override
     protected void preExecute() {
         super.preExecute()
-
         if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
                 || unityVersion.majorVersion <= 2020) {
 
@@ -63,8 +61,8 @@ abstract class Test extends UnityTask implements UnityTestSpec {
                 batchMode.convention(false)
             }
 
-            if (this.reports != null && reports.get().xml.enabled){
-                getCommandLineOption(UnityCommandLineOption.testResults).arguments.convention(reports.get().xml.destination.path)
+            if (this.reports != null && reports.xml.enabled) {
+                testResults.convention(project.provider({reports.xml.outputLocation.get().asFile.path}))
             }
 
             if (testPlatform.getOrNull() == TestPlatform.playmode.toString() &&
@@ -84,8 +82,7 @@ abstract class Test extends UnityTask implements UnityTestSpec {
 
     //https://issues.jenkins-ci.org/browse/JENKINS-44072
     protected void normalizeTestResult() {
-        if (this.reports != null){
-            def reports = reports.get()
+        if (this.reports != null) {
             File report = reports.xml.destination
             if (report != null && report.exists()) {
                 def result = NUnitReportNormalizer.normalize(report)

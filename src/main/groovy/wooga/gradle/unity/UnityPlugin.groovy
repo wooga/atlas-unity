@@ -198,7 +198,7 @@ class UnityPlugin implements Plugin<Project> {
         }
 
         // Override the batchmode property for edit/playmode test tasks by that of the extension
-        project.tasks.withType(Test.class).configureEach({ t ->
+        project.tasks.withType(Test.class).configureEach({ Test t ->
 
             Provider<Boolean> testBatchModeProvider = project.provider {
                 def tp = t.testPlatform.getOrNull()
@@ -218,15 +218,7 @@ class UnityPlugin implements Plugin<Project> {
                 true
             }
             t.batchMode.set(testBatchModeProvider)
-            t.setReports(project.provider({
-                UnityTestTaskReport reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, t) as UnityTestTaskReport
-                reports.xml.enabled = true
-                reports.configureEach({ r ->
-                    r.destination = project.file(extension.reportsDir.file(t.name + "/" + t.name + "." + r.name))
-                })
-                reports
-            }))
-
+            t.reports.xml.outputLocation.convention(extension.reportsDir.file(t.name + "/" + t.name + "." + reports.xml.name))
         })
 
         // Make sure the lifecycle check task depends on our test task

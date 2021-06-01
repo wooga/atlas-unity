@@ -227,6 +227,11 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.runTests, value)
     }
 
+    @Internal
+    Property<String> getTestResults() {
+        return getCommandLineOption(UnityCommandLineOption.testResults).arguments
+    }
+
     void setTestResults(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.testResults, value)
     }
