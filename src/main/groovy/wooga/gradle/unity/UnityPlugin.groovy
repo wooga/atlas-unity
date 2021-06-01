@@ -154,9 +154,8 @@ class UnityPlugin implements Plugin<Project> {
             t.logCategory.convention(extension.logCategory)
 
             t.unityLogFile.convention(extension.logsDir.file(project.provider {
-                "${t.logCategory.get()}/${t.name}.log"
-            }
-            ))
+                t.logCategory.get().isEmpty() ? "${t.name}.log" : "${t.logCategory.get()}/${t.name}.log"
+            }))
         }
     }
 
