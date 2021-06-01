@@ -23,22 +23,20 @@ abstract class Test extends UnityTask implements UnityTestSpec {
     }
 
     // Failed to use Property<>
-    private UnityTestTaskReport reports
+    private Provider<UnityTestTaskReport> reports
 
     @Internal
-    UnityTestTaskReport getReports() {
+    Provider<UnityTestTaskReport> getReports() {
         reports
     }
 
     void setReports(Provider<UnityTestTaskReport> value) {
-        reports = value.get()
+        reports = value
     }
 
     @Inject
     Test() {
         description = "Executes Unity in batch mode and executes specified method"
-        reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
-        reports.xml.enabled = true
     }
 
     Test(TestPlatform testPlatform) {
@@ -65,9 +63,8 @@ abstract class Test extends UnityTask implements UnityTestSpec {
                 batchMode.convention(false)
             }
 
-            if (reports.xml.enabled) {
-                getCommandLineOption(UnityCommandLineOption.testResults).arguments.convention(reports.xml.destination.path)
-                //setTestResults(reports.xml.destination.path)
+            if (this.reports != null && reports.get().xml.enabled){
+                getCommandLineOption(UnityCommandLineOption.testResults).arguments.convention(reports.get().xml.destination.path)
             }
 
             if (testPlatform.getOrNull() == TestPlatform.playmode.toString() &&
@@ -87,10 +84,13 @@ abstract class Test extends UnityTask implements UnityTestSpec {
 
     //https://issues.jenkins-ci.org/browse/JENKINS-44072
     protected void normalizeTestResult() {
-        File report = this.reports.xml.destination
-        if (report != null && report.exists()) {
-            def result = NUnitReportNormalizer.normalize(report)
-            logger.info("NUnitReportNormalizer result ${result}")
+        if (this.reports != null){
+            def reports = reports.get()
+            File report = reports.xml.destination
+            if (report != null && report.exists()) {
+                def result = NUnitReportNormalizer.normalize(report)
+                logger.info("NUnitReportNormalizer result ${result}")
+            }
         }
     }
 }

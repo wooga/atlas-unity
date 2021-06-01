@@ -230,33 +230,6 @@ class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
 //
 
 
-//
-////TODO create a base test case for all tasks and run them against it. It is quite complicated to setup a generic test.
-//class BatchModeIntegrationSpec extends IntegrationSpec {
-//
-//    def setup() {
-//        buildFile << """
-//            group = 'test'
-//            ${applyPlugin(UnityPlugin)}
-//
-//            unity.projectPath = null
-//
-//            task (unitySetup, type: ${Unity.name}) {
-//                args "-createProject ${escapedPath(projectDir.path)}"
-//                redirectStdOut = false
-//            }
-//
-//        """.stripIndent()
-//    }
-//
-//    def escapedPath(String path) {
-//        String osName = System.getProperty("os.name").toLowerCase()
-//        if (osName.contains("windows")) {
-//            return StringEscapeUtils.escapeJava(path)
-//        }
-//        path
-//    }
-//
 //    @Unroll
 //    @Ignore("test occasionally fails on jenkins")
 //    //test occasionally fails on jenkins

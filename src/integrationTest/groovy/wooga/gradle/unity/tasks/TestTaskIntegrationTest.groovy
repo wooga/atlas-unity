@@ -34,6 +34,7 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
         !result.wasSkipped("test")
     }
 
+    // @TODO This fails after Test.reports became a Provider
     def "can set reports location via reports extension in task"() {
         given: "destination path"
         def destination = "out/reports/test.xml"

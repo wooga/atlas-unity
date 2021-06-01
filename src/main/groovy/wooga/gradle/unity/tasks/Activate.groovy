@@ -22,6 +22,7 @@ import wooga.gradle.unity.traits.UnityAuthenticationSpec
 class Activate extends UnityTask implements UnityAuthenticationSpec {
 
     Activate() {
+        description = " Activates a Unity installation with unity account and a serial number"
         authentication = new DefaultUnityAuthentication(project.objects)
         onlyIf({
 

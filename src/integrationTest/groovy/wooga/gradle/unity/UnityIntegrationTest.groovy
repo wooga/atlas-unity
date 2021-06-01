@@ -86,6 +86,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         }
 
         setProjectSettingsFile()
+        setLicenseDirectory()
 
         if (options.addPluginTestDefaults()) {
             buildFile << """
@@ -157,6 +158,17 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
             """.stripIndent()
         }
         addUnityPathToExtension(mockUnityFile.path)
+    }
+
+    void setLicenseDirectory() {
+        // Setup fake license dir so we don't delete actual licenses
+        def licenseDir = File.createTempDir("unity","testLicenseDir")
+        createFile("testLicense", licenseDir)
+        buildFile << """
+        unity {
+            licenseDirectory.set(new File("${escapedPath(licenseDir.path)}"))
+        }
+        """.stripIndent()
     }
 
     protected void addDefaultUnityPath() {

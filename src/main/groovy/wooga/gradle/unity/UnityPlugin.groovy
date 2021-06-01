@@ -39,6 +39,8 @@ import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.unity.utils.UnityTestTaskReport
+import wooga.gradle.unity.utils.UnityTestTaskReportsImpl
 
 /**
  * A {@link org.gradle.api.Plugin} which provides tasks to run unity batch-mode commands.
@@ -199,7 +201,7 @@ class UnityPlugin implements Plugin<Project> {
         // Override the batchmode property for edit/playmode test tasks by that of the extension
         project.tasks.withType(Test.class).configureEach({ t ->
 
-            Provider<Boolean> testBatchModeProvider =  project.provider {
+            Provider<Boolean> testBatchModeProvider = project.provider {
                 def tp = t.testPlatform.getOrNull()
                 try {
                     if (tp) {
@@ -217,17 +219,16 @@ class UnityPlugin implements Plugin<Project> {
                 true
             }
             t.batchMode.set(testBatchModeProvider)
-
-
-        })
-
-        project.afterEvaluate {
-            project.tasks.withType(Test.class).configureEach({ t ->
-                t.reports.configureEach({ r ->
+            t.setReports(project.provider({
+                UnityTestTaskReport reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, t) as UnityTestTaskReport
+                reports.xml.enabled = true
+                reports.configureEach({ r ->
                     r.destination = project.file(extension.reportsDir.file(t.name + "/" + t.name + "." + r.name))
                 })
-            })
-        }
+                reports
+            }))
+
+        })
 
         // Make sure the lifecycle check task depends on our test task
         project.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure({ t ->
