@@ -65,7 +65,6 @@ class ActivateTaskIntegrationTest extends UnityTaskIntegrationTest<Activate> {
         null  | "'b'"    | "'c'"
         null  | "'b'"    | null
         null  | null     | "'c'"
-        null  | null     | null
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false)
