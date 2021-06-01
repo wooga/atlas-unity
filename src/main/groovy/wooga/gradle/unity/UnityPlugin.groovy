@@ -218,10 +218,16 @@ class UnityPlugin implements Plugin<Project> {
             }
             t.batchMode.set(testBatchModeProvider)
 
-            t.reports.configureEach({ r ->
-                r.destination = new File(extension.reportsDir.get().asFile, t.name + "/" + t.name + "." + r.name)
-            })
+
         })
+
+        project.afterEvaluate {
+            project.tasks.withType(Test.class).configureEach({ t ->
+                t.reports.configureEach({ r ->
+                    r.destination = project.file(extension.reportsDir.file(t.name + "/" + t.name + "." + r.name))
+                })
+            })
+        }
 
         // Make sure the lifecycle check task depends on our test task
         project.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure({ t ->

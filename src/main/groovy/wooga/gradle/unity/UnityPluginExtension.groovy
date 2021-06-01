@@ -58,6 +58,11 @@ trait UnityPluginExtension implements UnitySpec,
         reportsDir.set(value)
     }
 
+    void setReportsDir(String value) {
+        def file = new File(value)
+        reportsDir.set(file)
+    }
+
     private final DirectoryProperty assetsDir = objects.directoryProperty()
 
     @Internal
