@@ -32,7 +32,9 @@ enum UnityPathResolution {
 enum UnityPluginOverrides {
     None,
     AddTestBuildTargets,
-    DisableAutoActivateAndLicense
+    DisableAutoActivateAndLicense,
+    AddMockLicense,
+
 
     static final EnumSet<UnityPluginOverrides> all = EnumSet.allOf(UnityPluginOverrides.class)
 }

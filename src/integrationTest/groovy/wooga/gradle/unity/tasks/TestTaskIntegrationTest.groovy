@@ -41,13 +41,13 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
 
         and: "a build script with fake test unity location"
         buildFile << """
-            ${testTaskName} {
+            ${mockTaskName} {
                 reports.xml.destination = file("$destination")
             }
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.standardOutput.contains(new File(destination).path)
@@ -117,24 +117,24 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.standardOutput.contains(UnityCommandLineOption.runTests.toString())
-        def expectedTestResultsPath = new File(destination + "/${testTaskName}/${testTaskName}.xml").path
+        def expectedTestResultsPath = new File(destination + "/${mockTaskName}/${mockTaskName}.xml").path
         result.standardOutput.contains(expectedTestResultsPath)
     }
 
     def "can disable reports via reports extension in task"() {
         given: "a build script with fake test unity location"
         buildFile << """
-             ${testTaskName} {
+             ${mockTaskName} {
                 reports.xml.enabled = false
             }
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.standardOutput.contains(UnityCommandLineOption.runTests.toString())
@@ -145,11 +145,11 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
         given: "a build script with fake test unity location"
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.standardOutput.contains(UnityCommandLineOption.runTests.toString())
-        result.standardOutput.contains(new File("reports/unity/${testTaskName}/${testTaskName}.xml").path)
+        result.standardOutput.contains(new File("reports/unity/${mockTaskName}/${mockTaskName}.xml").path)
     }
 //
 //    @IgnoreIf({ os.windows })
@@ -185,7 +185,7 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
 
         given: "a build script with fake test unity location"
         buildFile << """
-            ${testTaskName} {
+            ${mockTaskName} {
                 testPlatform = "playmode"
             }
         """.stripIndent()
@@ -196,7 +196,7 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
         and: "unity version > 5.5"
 
         when:
-        def result = runTasksSuccessfully(testTaskName, "-PdefaultUnityTestVersion=2017.1.1f3")
+        def result = runTasksSuccessfully(mockTaskName, "-PdefaultUnityTestVersion=2017.1.1f3")
 
         then:
         result.standardOutput.contains("PlayMode tests not activated")

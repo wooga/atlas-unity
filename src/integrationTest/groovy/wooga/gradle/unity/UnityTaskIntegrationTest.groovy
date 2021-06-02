@@ -48,7 +48,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     }
 
     @Override
-    String getTestTaskTypeName() {
+    String getMockTaskTypeName() {
         taskClass.getTypeName()
     }
 
@@ -61,10 +61,10 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
         def testFile = createFile("test/file")
 
         when:
-        def result = runTasks(testTaskName)
+        def result = runTasks(mockTaskName)
 
         then:
-        result.wasExecuted(testTaskName)
+        result.wasExecuted(mockTaskName)
         result.standardOutput.contains("Starting process 'command '")
         value == result.standardOutput.contains(" $expectedCommandlineSwitch")
 
@@ -86,7 +86,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     def "can set arguments option '#property' = '#value' by #method"() {
         given: "a custom build task"
         buildFile << """
-            ${testTaskName} {
+            ${mockTaskName} {
                 $method("$value")
             }
         """.stripIndent()
@@ -95,10 +95,10 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
         def testFile = createFile("test/file")
 
         when:
-        def result = runTasks(testTaskName)
+        def result = runTasks(mockTaskName)
 
         then:
-        result.wasExecuted(testTaskName)
+        result.wasExecuted(mockTaskName)
         result.standardOutput.contains("Starting process 'command '")
         def shouldContain = value != ""
         shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
@@ -121,7 +121,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     def "can configure arguments with #method #message"() {
         given: "a custom archive task"
         buildFile << """
-            ${testTaskName} {
+            ${mockTaskName} {
                 arguments(["--test", "value"])
             }
         """.stripIndent()
@@ -130,14 +130,14 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
         buildFile << """
             task("readValue") {
                 doLast {
-                    println("property: " + ${testTaskName}.${property}.get())
+                    println("property: " + ${mockTaskName}.${property}.get())
                 }
             }
         """.stripIndent()
 
         and: "a set property"
         buildFile << """
-            ${testTaskName}.${method}($value)
+            ${mockTaskName}.${method}($value)
         """.stripIndent()
 
         when:
@@ -171,7 +171,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
         Files.copy(mockUnityFile.toPath(), testUnity.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         if (isWindows) {
@@ -191,28 +191,28 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     def "set log category with #method to '#value'"() {
         given:
         buildFile << """
-            ${testTaskName}.$method(${value})
+            ${mockTaskName}.$method(${value})
             """.stripIndent()
-        addProviderQueryTask("custom", "${testTaskName}.unityLogFile", ".get().asFile.path")
+        addProviderQueryTask("custom", "${mockTaskName}.unityLogFile", ".get().asFile.path")
 
         when:
-        def result = runTasksSuccessfully(testTaskName, "custom")
+        def result = runTasksSuccessfully(mockTaskName, "custom")
 
         then:
-        result.wasExecuted(testTaskName)
+        result.wasExecuted(mockTaskName)
         def resultPath = new File(projectDir, "/build/logs/${path}").getPath()
         //result.standardOutput.contains("-logFile ${resultPath}")
-        result.standardOutput.contains("${testTaskName}.unityLogFile: ${resultPath}")
+        result.standardOutput.contains("${mockTaskName}.unityLogFile: ${resultPath}")
 
         where:
         rawValue     | useSetter | path
-        "helloworld" | true      | "helloworld/${testTaskName}.log"
-        "helloworld" | false     | "helloworld/${testTaskName}.log"
-        "foobar"     | true      | "foobar/${testTaskName}.log"
-        ""           | true      | "${testTaskName}.log"
-        ""           | false     | "${testTaskName}.log"
-        null         | true      | "unity/${testTaskName}.log"
-        null         | false     | "unity/${testTaskName}.log"
+        "helloworld" | true      | "helloworld/${mockTaskName}.log"
+        "helloworld" | false     | "helloworld/${mockTaskName}.log"
+        "foobar"     | true      | "foobar/${mockTaskName}.log"
+        ""           | true      | "${mockTaskName}.log"
+        ""           | false     | "${mockTaskName}.log"
+        null         | true      | "unity/${mockTaskName}.log"
+        null         | false     | "unity/${mockTaskName}.log"
 
         value = rawValue != null ? wrapValueBasedOnType(rawValue, String) : null
         method = (useSetter) ? "setLogCategory" : "logCategory.set"
@@ -223,7 +223,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
         logLevel = LogLevel.QUIET
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         !result.standardOutput.contains(mockUnityMessage)

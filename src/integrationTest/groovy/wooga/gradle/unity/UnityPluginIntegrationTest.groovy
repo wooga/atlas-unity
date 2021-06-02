@@ -200,7 +200,7 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
         appendToTestTask(taskConfig)
 
         when:
-        def result = runTasks(testTaskName)
+        def result = runTasks(mockTaskName)
 
         then:
         result.standardOutput.contains(expected)
@@ -287,7 +287,7 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.wasExecuted("activateUnity")
@@ -322,7 +322,7 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
     def "skips activateUnity and returnUnityLicense when authentication is not set"() {
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.wasSkipped("activateUnity")

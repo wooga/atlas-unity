@@ -43,7 +43,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         "unityIntegrationTest"
     }
 
-    String getTestTaskTypeName() {
+    String getMockTaskTypeName() {
         Unity.class.name
     }
 
@@ -188,7 +188,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
     }
 
     void addTestTask(Boolean force, Boolean clearActions, String... lines) {
-        addTask(testTaskName, testTaskTypeName, force, lines)
+        addTask(mockTaskName, mockTaskTypeName, force, lines)
         if (clearActions) {
             clearTestTaskActions()
         }
@@ -205,14 +205,14 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
 
     void appendToTestTask(String... lines) {
         buildFile << """
-        $testTaskName {
+        $mockTaskName {
             ${lines.join('\n')}
         }
         """.stripIndent()
     }
 
     def runTestTaskSuccessfully() {
-        runTasksSuccessfully(testTaskName)
+        runTasksSuccessfully(mockTaskName)
     }
 
     void addMockTask(String name, String typeName, Boolean force, String... lines) {

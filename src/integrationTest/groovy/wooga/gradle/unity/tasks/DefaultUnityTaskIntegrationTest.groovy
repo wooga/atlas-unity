@@ -36,7 +36,7 @@ class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
         appendToTestTask("createProject = \"${project_path}\"")
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.standardOutput.contains("Starting process 'command '${unityPath}'")
