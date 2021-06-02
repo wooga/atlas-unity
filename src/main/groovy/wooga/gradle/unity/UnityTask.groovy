@@ -136,13 +136,6 @@ abstract class UnityTask extends DefaultTask
         }
 
         if (unityLogFile.present) {
-            // On Windows before 2019, Unity will crash if the file is missing
-//            if (FileUtils.isWindows() && unityVersion.majorVersion < 2019) {
-//                FileUtils.ensureFile(unityLogFile)
-//                return unityLogFile.get().asFile.path
-//            }
-
-            // Otherwise, just assign the path
             FileUtils.ensureFile(unityLogFile)
             return unityLogFile.get().asFile.path
         }
@@ -177,7 +170,7 @@ abstract class UnityTask extends DefaultTask
     }
 
     private OutputStream getOutputStream() {
-        OutputStream outputStream = new ByteArrayOutputStream()
+        OutputStream outputStream
         if (logToStdout.get()) {
             TextStream handler = new ForkTextStream()
             outputStream = new LineBufferingOutputStream(handler)
@@ -186,6 +179,9 @@ abstract class UnityTask extends DefaultTask
                 handler.addWriter(unityLogFile.get().asFile.newPrintWriter())
             }
             handler.addWriter(System.out.newPrintWriter())
+        }
+        else{
+            outputStream = new ByteArrayOutputStream()
         }
         return outputStream
     }

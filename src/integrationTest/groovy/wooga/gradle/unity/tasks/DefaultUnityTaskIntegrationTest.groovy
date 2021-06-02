@@ -33,7 +33,9 @@ class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
         environmentVariables.set("UNITY_PATH", unityPath)
 
         and: "a build script"
-        appendToMockTask("createProject = \"${project_path}\"")
+        appendToMockTask("createProject = \"${project_path}\"",
+                // We need to select a valid build target before loading
+                "buildTarget = \"Android\"")
 
         when:
         def result = runTasksSuccessfully(mockTaskName)
