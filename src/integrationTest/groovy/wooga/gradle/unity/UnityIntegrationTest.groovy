@@ -33,14 +33,14 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
     File projectSettingsFile
 
     final String extensionName = UnityPlugin.getEXTENSION_NAME()
-    final String groupName = "IntegrationTest"
+    final String groupName = "integrationTest"
     final String unityPathOverrideEnvVariable = "UNITY_PATH_TEST"
 
     UnityPluginTestOptions options
     Boolean initialized = false
 
     String getTestTaskName() {
-        "UnityIntegrationTest"
+        "unityIntegrationTest"
     }
 
     String getTestTaskTypeName() {
@@ -48,7 +48,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
     }
 
     @Shared
-    @UnityInstallation(version = "2019.4")
+    @UnityInstallation(version = "2019.4.27f1", cleanup = false)
     Installation preInstalledUnity
 
     def setup() {

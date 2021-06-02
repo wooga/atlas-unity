@@ -94,6 +94,6 @@ class ReturnLicenseTaskIntegrationTest extends UnityTaskIntegrationTest<ReturnLi
         then:
         result.wasExecuted("activateUnity")
         result.wasExecuted("test")
-        !result.wasExecuted("returnUnityLicense")
+        result.wasSkipped("returnUnityLicense")
     }
 }

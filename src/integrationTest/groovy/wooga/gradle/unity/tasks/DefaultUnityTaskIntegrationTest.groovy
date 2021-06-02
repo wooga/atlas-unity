@@ -30,7 +30,7 @@ class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
 
         and: "a pre installed unity editor"
         def unityPath = getUnityPath()
-        //environmentVariables.set("UNITY_PATH", unityPath)
+        environmentVariables.set("UNITY_PATH", unityPath)
 
         and: "a build script"
         appendToTestTask("createProject = \"${project_path}\"")

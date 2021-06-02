@@ -44,7 +44,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
 
     @Override
     String getTestTaskName() {
-        "${taskClass.simpleName}Mock"
+        "${taskClass.simpleName.uncapitalize()}Mock"
     }
 
     @Override

@@ -128,10 +128,9 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
     }
 
     @UnityPluginTestOptions(unityPath = UnityPathResolution.None, addPluginTestDefaults = false,
-            disableAutoActivateAndLicense = true)
+            disableAutoActivateAndLicense = false)
     @Unroll()
     def "extension property :#property returns '#testValue' if #reason"() {
-
         given:
         setupUnityPlugin()
         addProviderQueryTask("custom", "${extensionName}.${property}")
@@ -263,16 +262,37 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
                 authentication.password = "testtesttest"
                 authentication.serial = "abcdefg"                
                 autoActivateUnity = false
-            }    
+            }
         """.stripIndent()
 
         when:
         def result = runTasksSuccessfully(testTaskName)
 
         then:
-        !result.wasExecuted("activateUnity")
-        result.wasExecuted("test")
-        !result.wasExecuted("returnUnityLicense")
+        result.wasSkipped("activateUnity")
+        result.wasExecuted(testTaskName)
+        result.wasSkipped("returnUnityLicense")
+    }
+
+    @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
+    def "skips returnUnityLicense when autoReturnLicense is false"() {
+        given: "a build script with fake test unity location"
+        buildFile << """
+            unity {
+                authentication.username = "test@test.test"
+                authentication.password = "testtesttest"
+                authentication.serial = "abcdefg"                
+                autoReturnLicense = false
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully(testTaskName)
+
+        then:
+        result.wasExecuted("activateUnity")
+        result.wasExecuted(testTaskName)
+        result.wasSkipped("returnUnityLicense")
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)

@@ -111,6 +111,8 @@ trait UnityPluginExtension implements UnitySpec,
         autoReturnLicense
     }
 
+    final Provider<Boolean> shouldReturnLicense = providerFactory.provider({getAutoActivateUnity().get() && getAutoReturnLicense().get()})
+
     void setAutoReturnLicense(Provider<Boolean> value) {
         autoReturnLicense.set(value)
     }

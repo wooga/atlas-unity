@@ -116,8 +116,8 @@ class UnityPlugin implements Plugin<Project> {
         extension.reportsDir.convention(project.layout.buildDirectory.dir(project.provider({ reportingExtension.file("unity").path })))
 
         extension.licenseDirectory.convention(project.layout.buildDirectory.dir(project.provider({ UnityPluginConventions.licenseDirectory.path })))
-        extension.autoReturnLicense.convention(true)
         extension.autoActivateUnity.convention(true)
+        extension.autoReturnLicense.convention(extension.autoActivateUnity)
 
         extension.unityPath.convention(UnityPluginConventions.unityPath.getFileValueProvider(project))
 
@@ -270,6 +270,15 @@ class UnityPlugin implements Plugin<Project> {
         def activateTask = project.tasks.register(Tasks.activateUnity.toString(), Activate)
                 { t ->
                     t.group = GROUP
+                    t.onlyIf(new Spec<Task>() {
+                        @Override
+                        boolean isSatisfiedBy(Task task) {
+                            def cliTasks = project.gradle.startParameter.taskNames
+                            Boolean cliActivateLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
+                            Boolean autoActivate = extension.autoActivateUnity.get()
+                            return cliActivateLicense || autoActivate
+                        }
+                    })
                 }
 
         def returnLicenseTask = project.tasks.register(Tasks.returnUnityLicense.toString(), ReturnLicense)
@@ -283,15 +292,16 @@ class UnityPlugin implements Plugin<Project> {
                             Boolean cliReturnLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
                             Boolean activateDidWork = activateTask.get().didWork
                             Boolean didRunUnityTasks = project.gradle.taskGraph.allTasks.any { UnityTask.isInstance(it) }
-                            return cliReturnLicense || (activateDidWork && didRunUnityTasks)
+                            Boolean autoReturn = extension.autoReturnLicense.get()
+                            return cliReturnLicense || (activateDidWork && didRunUnityTasks && autoReturn)
                         }
                     })
                 }
 
         activateTask.configure({ t ->
-            if (extension.autoReturnLicense.get()) {
+            //if (extension.autoReturnLicense.get()) {
                 t.finalizedBy(returnLicenseTask)
-            }
+            //}
         })
 
         // Assign authentication to ALL tasks of type Activate
@@ -301,19 +311,21 @@ class UnityPlugin implements Plugin<Project> {
 
         // Assign license to ALL tasks of type ReturnLicense
         project.tasks.withType(ReturnLicense).configureEach({ t ->
-            t.licenseDirectory.convention(extension.licenseDirectory)
+            t.onlyIf {extension.autoReturnLicense.get()}
         })
 
-        project.tasks.withType(UnityTask).configureEach({ t ->
-            if (!Activate.isInstance(t) && !ReturnLicense.isInstance(t)) {
-                if (extension.autoActivateUnity.get()) {
-                    t.dependsOn(activateTask)
-                }
+        //project.afterEvaluate {
+            project.tasks.withType(UnityTask).configureEach({ t ->
+                if (!Activate.isInstance(t) && !ReturnLicense.isInstance(t)) {
+                    //if (extension.autoActivateUnity.get()) {
+                        t.dependsOn(activateTask)
+                    //}
 
-                if (extension.autoReturnLicense.get()) {
-                    t.finalizedBy(returnLicenseTask)
+                    //if (extension.autoReturnLicense.get()) {
+                        t.finalizedBy(returnLicenseTask)
+                    //}
                 }
-            }
-        })
+            })
+        //}
     }
 }
