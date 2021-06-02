@@ -197,7 +197,7 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
     def "sets defaultBuildTarget for all tasks"() {
         given: "a build script"
         appendToPluginExtension("defaultBuildTarget = \"android\"")
-        appendToTestTask(taskConfig)
+        appendToMockTask(taskConfig)
 
         when:
         def result = runTasks(mockTaskName)
@@ -266,11 +266,11 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(testTaskName)
+        def result = runTasksSuccessfully(mockTaskName)
 
         then:
         result.wasSkipped("activateUnity")
-        result.wasExecuted(testTaskName)
+        result.wasExecuted(mockTaskName)
         result.wasSkipped("returnUnityLicense")
     }
 
@@ -291,7 +291,7 @@ class UnityPluginIntegrationTest extends UnityIntegrationTest {
 
         then:
         result.wasExecuted("activateUnity")
-        result.wasExecuted(testTaskName)
+        result.wasExecuted(mockTaskName)
         result.wasSkipped("returnUnityLicense")
     }
 

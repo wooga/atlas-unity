@@ -43,7 +43,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     private Class<T> _taskClass
 
     @Override
-    String getTestTaskName() {
+    String getMockTaskName() {
         "${taskClass.simpleName.uncapitalize()}Mock"
     }
 
@@ -55,7 +55,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "can set option '#property' (#value) with #method"() {
         given: "a custom build task"
-        appendToTestTask("$method($value)")
+        appendToMockTask("$method($value)")
 
         and: "make sure the test file exists"
         def testFile = createFile("test/file")
@@ -164,7 +164,7 @@ abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "can set unityPath with #method"() {
         given: "a build file with custom test task"
-        appendToTestTask("$method(file('$value'))")
+        appendToMockTask("$method(file('$value'))")
 
         and:
         def testUnity = createFile(value)

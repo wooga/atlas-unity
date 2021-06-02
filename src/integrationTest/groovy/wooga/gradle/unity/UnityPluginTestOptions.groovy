@@ -34,8 +34,6 @@ enum UnityPluginOverrides {
     AddTestBuildTargets,
     DisableAutoActivateAndLicense,
     AddMockLicense,
-
-
     static final EnumSet<UnityPluginOverrides> all = EnumSet.allOf(UnityPluginOverrides.class)
 }
 

@@ -56,7 +56,7 @@ class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
     @Unroll
     def "can set testPlatform with #method and #value"() {
         given: "a build file with custom test task"
-        appendToTestTask("$method($value)")
+        appendToMockTask("$method($value)")
 
         and: "properties file with custom unity version"
         createFile("gradle.properties") << """

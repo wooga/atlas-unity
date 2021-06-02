@@ -39,7 +39,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
     UnityPluginTestOptions options
     Boolean initialized = false
 
-    String getTestTaskName() {
+    String getMockTaskName() {
         "unityIntegrationTest"
     }
 
@@ -47,6 +47,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         Unity.class.name
     }
 
+    // @TODO: This forces this version to be installed without prompting for any test run. Could we instead only try to install when its needed?
     @Shared
     @UnityInstallation(version = "2019.4.27f1", cleanup = false)
     Installation preInstalledUnity
@@ -80,10 +81,10 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
 
         unityMainDirectory = projectDir
 
-        if (isWindows) {
-            unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
-            unityMainDirectory.mkdirs()
-        }
+//        if (!isWindows) {
+//            unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
+//            unityMainDirectory.mkdirs()
+//        }
 
         setProjectSettingsFile()
         setLicenseDirectory()
@@ -116,7 +117,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         }
 
         if (options.addMockTask()) {
-            addTestTask(options.forceMockTaskRun(), options.clearMockTaskActions())
+            addMockTask(options.forceMockTaskRun(), options.clearMockTaskActions())
         }
 
         initialized = true
@@ -187,15 +188,15 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         buildFile << "unity.unityPath = file(\"${escapedPath(path)}\")"
     }
 
-    void addTestTask(Boolean force, Boolean clearActions, String... lines) {
+    void addMockTask(Boolean force, Boolean clearActions, String... lines) {
         addTask(mockTaskName, mockTaskTypeName, force, lines)
         if (clearActions) {
-            clearTestTaskActions()
+            clearMockTaskActions()
         }
     }
 
-    void clearTestTaskActions() {
-        appendToTestTask("""
+    void clearMockTaskActions() {
+        appendToMockTask("""
         doFirst {
             println "woo"
         }
@@ -203,7 +204,7 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
         """.stripIndent())
     }
 
-    void appendToTestTask(String... lines) {
+    void appendToMockTask(String... lines) {
         buildFile << """
         $mockTaskName {
             ${lines.join('\n')}

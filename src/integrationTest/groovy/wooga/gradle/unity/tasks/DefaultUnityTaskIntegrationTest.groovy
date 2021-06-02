@@ -33,7 +33,7 @@ class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
         environmentVariables.set("UNITY_PATH", unityPath)
 
         and: "a build script"
-        appendToTestTask("createProject = \"${project_path}\"")
+        appendToMockTask("createProject = \"${project_path}\"")
 
         when:
         def result = runTasksSuccessfully(mockTaskName)

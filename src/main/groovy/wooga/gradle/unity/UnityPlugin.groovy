@@ -284,7 +284,6 @@ class UnityPlugin implements Plugin<Project> {
         def returnLicenseTask = project.tasks.register(Tasks.returnUnityLicense.toString(), ReturnLicense)
                 { t ->
                     t.group = GROUP
-                    //t.licenseDirectory.convention(extension.licenseDirectory)
                     t.onlyIf(new Spec<Task>() {
                         @Override
                         boolean isSatisfiedBy(Task task) {
@@ -311,6 +310,7 @@ class UnityPlugin implements Plugin<Project> {
 
         // Assign license to ALL tasks of type ReturnLicense
         project.tasks.withType(ReturnLicense).configureEach({ t ->
+            t.licenseDirectory.convention(extension.licenseDirectory)
             t.onlyIf {extension.autoReturnLicense.get()}
         })
 
