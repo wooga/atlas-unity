@@ -28,7 +28,7 @@ trait UnityLicenseSpec extends UnityBaseSpec {
     /**
      * The Unity license directory.
      * Defaults to "/Library/Application Support/Unity/" on macOS and "C:\ProgramData\Unity" on windows.
-     * @return file to unity license directory
+     * @return Reference to Unity license directory
      */
     @SkipWhenEmpty
     @InputDirectory

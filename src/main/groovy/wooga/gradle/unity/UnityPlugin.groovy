@@ -172,14 +172,12 @@ class UnityPlugin implements Plugin<Project> {
             t.group = GROUP
             t.dependsOn(project.tasks.withType(Test).matching {
                 Test tt -> tt.name.startsWith(Tasks.testEditMode.toString())
-                    //(tt.testPlatform.get() as TestPlatform) == TestPlatform.editmode
             })
         })
         def testPlayModeTask = project.tasks.register(Tasks.testPlayMode.toString(), { t ->
             t.group = GROUP
             t.dependsOn(project.tasks.withType(Test).matching {
                 Test tt -> tt.name.startsWith(Tasks.testPlayMode.toString())
-                    //(tt.testPlatform.get() as TestPlatform) == TestPlatform.playmode
             })
         })
         // Create the top-level task which depends on every other test task (due to using the containers above)

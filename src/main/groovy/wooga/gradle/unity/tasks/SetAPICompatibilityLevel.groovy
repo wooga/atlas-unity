@@ -39,6 +39,8 @@ class SetAPICompatibilityLevel extends DefaultTask implements APICompatibilityLe
     @Inject
     SetAPICompatibilityLevel() {
 
+        description = "Sets the API compatibility level for a project's platforms"
+
         previousAPICompatibilityLevel = project.objects.mapProperty(String, APICompatibilityLevel)
         wooga_gradle_unity_traits_APICompatibilityLevelSpec__apiCompatibilityLevel = project.objects.mapProperty(String, APICompatibilityLevel)
         wooga_gradle_unity_traits_APICompatibilityLevelSpec__settingsFile = project.objects.fileProperty()

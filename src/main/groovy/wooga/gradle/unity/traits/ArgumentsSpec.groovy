@@ -24,6 +24,9 @@ trait ArgumentsSpec {
 
     private final Provider<List<String>> arguments
 
+    /**
+     * @return Required arguments, which are supplied through a provider
+     */
     @Input
     Provider<List<String>> getArguments() {
         arguments
@@ -31,6 +34,9 @@ trait ArgumentsSpec {
 
     private final ListProperty<String> additionalArguments
 
+    /**
+     * @return Additional arguments which can be added
+     */
     @Input
     ListProperty<String> getAdditionalArguments() {
         additionalArguments
@@ -58,6 +64,26 @@ trait ArgumentsSpec {
 
     void arguments(String... value) {
         arguments(value.toList())
+    }
+
+    /**
+     * @return Retrieves {@code arguments} and {@code additionalArguments}
+     */
+    List<String> getAllArguments() {
+        List<String> result = new ArrayList<String>()
+
+        if (arguments.present) {
+            arguments.get().each {
+                result << it
+            }
+        }
+
+        if (additionalArguments.present) {
+            additionalArguments.get().each {
+                result << it
+            }
+        }
+        result
     }
 
 }

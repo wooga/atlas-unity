@@ -107,6 +107,9 @@ class UnityPluginConventions {
      */
     static final PropertyLookup testBuildTargets = new PropertyLookup("UNITY_TEST_BUILD_TARGETS", "unity.testBuildTargets", null)
 
+    /**
+     * The path to the Unity license directory
+     */
     static File getLicenseDirectory() {
         File licensePath = null
 

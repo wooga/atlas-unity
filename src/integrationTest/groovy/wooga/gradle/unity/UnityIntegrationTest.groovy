@@ -81,11 +81,6 @@ abstract class UnityIntegrationTest extends IntegrationSpec {
 
         unityMainDirectory = projectDir
 
-//        if (!isWindows) {
-//            unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
-//            unityMainDirectory.mkdirs()
-//        }
-
         setProjectSettingsFile()
         setLicenseDirectory()
 

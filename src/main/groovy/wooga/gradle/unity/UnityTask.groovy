@@ -42,29 +42,11 @@ abstract class UnityTask extends DefaultTask
 
     UnityTask() {
         setCommandLineOptionDefaults()
-
         // When this task is executed, we query the arguments to pass
         // onto the Unity process here. We generate a sequence of Unity's command line options
         // and also an additional one for our custom use
-        wooga_gradle_unity_traits_ArgumentsSpec__arguments = project.provider({
-            List<String> arguments = new ArrayList<String>()
-
-            // Add command line options
-            def unityCmdLineOptions = getUnityCommandLineOptions()
-            unityCommandLineOptions.each({ arguments.add(it) })
-
-            // Add additional arguments
-            if (additionalArguments.present) {
-                additionalArguments.get().each {
-                    arguments << it
-                }
-            }
-
-            arguments
-        })
-
+        wooga_gradle_unity_traits_ArgumentsSpec__arguments = project.provider({ getUnityCommandLineOptions() })
         wooga_gradle_unity_traits_ArgumentsSpec__additionalArguments = project.objects.listProperty(String)
-
     }
 
     @TaskAction
@@ -80,7 +62,7 @@ abstract class UnityTask extends DefaultTask
                 preExecute()
 
                 def unityPath = unityPath.get().asFile.absolutePath
-                def unityArgs = arguments.get()
+                def unityArgs = getAllArguments()
 
                 OutputStream outputStream = getOutputStream()
 
@@ -179,8 +161,7 @@ abstract class UnityTask extends DefaultTask
                 handler.addWriter(unityLogFile.get().asFile.newPrintWriter())
             }
             handler.addWriter(System.out.newPrintWriter())
-        }
-        else{
+        } else {
             outputStream = new ByteArrayOutputStream()
         }
         return outputStream

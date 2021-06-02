@@ -128,17 +128,3 @@ enum SupportedBuildTargetGroup {
     Android,
     iPhone,
 }
-
-//interface APIComp2 {
-//    /**
-//     * Returns the {@code APICompatibilityLevel} if one has been assigned
-//     * @return the{@code APICompatibilityLevel} value
-//     */
-//    APICompatibilityLevel getApiCompatibilityLevel()
-//
-//    /**
-//     * Sets the {@code APICompatibilityLevel}, which affects the project's compilation
-//     */
-//    void setApiCompatibilityLevel(APICompatibilityLevel level)
-//}
-

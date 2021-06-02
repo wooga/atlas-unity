@@ -25,6 +25,9 @@ import static org.gradle.util.ConfigureUtil.configureUsing
 trait UnityAuthenticationSpec {
 
     UnityAuthentication authentication
+    /**
+     * @return Authentication credentials for the Unity Editor
+     */
     @Nested
     UnityAuthentication getAuthentication(){
         authentication

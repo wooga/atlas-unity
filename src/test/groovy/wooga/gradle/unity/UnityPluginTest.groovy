@@ -26,7 +26,7 @@ class UnityPluginTest extends ProjectSpec {
 
     public static final String PLUGIN_NAME = UnityPlugin.PLUGIN_NAME
 
-    def 'Creates the [unity] extension'() {
+    def 'creates the [unity] extension'() {
         given:
         assert !project.plugins.hasPlugin(PLUGIN_NAME)
         assert !project.extensions.findByName(UnityPlugin.EXTENSION_NAME)
@@ -53,27 +53,10 @@ class UnityPluginTest extends ProjectSpec {
         taskType.isInstance(task)
 
         where:
-        taskName  | taskType
-        "example" | DefaultTask
-    }
-
-
-    @Unroll
-    def 'Creates the [#extensionName] extension with type #extensionType'() {
-        given:
-        assert !project.plugins.hasPlugin(PLUGIN_NAME)
-        assert !project.extensions.findByName(extensionName)
-
-        when:
-        project.plugins.apply(PLUGIN_NAME)
-
-        then:
-        def extension = project.extensions.findByName(extensionName)
-        extensionType.isInstance extension
-
-        where:
-        extensionName     | extensionType
-        'SkeletonPackage' | DefaultUnityPluginExtension
+        taskName                       | taskType
+        UnityPlugin.Tasks.test         | DefaultTask
+        UnityPlugin.Tasks.testEditMode | DefaultTask
+        UnityPlugin.Tasks.testPlayMode | DefaultTask
     }
 
 }

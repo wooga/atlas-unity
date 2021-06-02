@@ -40,10 +40,18 @@ trait UnityCommandLineSpec extends UnitySpec {
         commandLineOptions[option].enabled.set(value)
     }
 
+    /**
+     * Enables a command line option, so that it will be passed in as an option to the Unity Editor process
+     * @param option
+     */
     void enableCommandLineOption(UnityCommandLineOption option) {
         commandLineOptions[option].enabled.set(true)
     }
 
+    /**
+     * Toggles a command line option, so that it will be passed in as an option to the Unity Editor process if enabled
+     * @param option
+     */
     void toggleCommandLineOption(UnityCommandLineOption option, Boolean value) {
         toggleCommandLineOption(option, providerFactory.provider({ value }))
     }
@@ -71,7 +79,6 @@ trait UnityCommandLineSpec extends UnitySpec {
     }
 
     /**
-     *
      * @param key
      * @return True if the command line option is present; if it requires arguments
      * it must also have them set
