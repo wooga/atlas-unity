@@ -85,7 +85,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
                 break
 
             case PropertyLocation.environment:
-                def envKey = convertPropertyToEnvName(extensionKey)
+                def envKey = envNameFromProperty(extensionKey)
                 environmentVariables.set(envKey, useBatchMode.toString())
                 break
 

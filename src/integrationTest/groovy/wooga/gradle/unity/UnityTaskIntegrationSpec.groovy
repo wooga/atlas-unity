@@ -174,7 +174,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasksSuccessfully(mockTaskName)
 
         then:
-        if (isWindows) {
+        if (windows) {
             value = value.replace('/', '\\')
         }
         result.standardOutput.contains(value)

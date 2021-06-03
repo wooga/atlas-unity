@@ -17,9 +17,10 @@
 
 package wooga.gradle.unity
 
+import wooga.gradle.unity.utils.PlatformUtilsImpl
 import wooga.gradle.unity.utils.PropertyLookup
 
-class UnityPluginConventions {
+class UnityPluginConventions implements PlatformUtilsImpl {
 
     /**
      * {@code File} to Unity executable on macOS.
@@ -113,10 +114,9 @@ class UnityPluginConventions {
     static File getLicenseDirectory() {
         File licensePath = null
 
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
+        if (isWindows()) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_WIN
-        } else if (osName.contains("mac os x")) {
+        } else if (osName().contains("mac os x")) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_MAC_OS
         }
 
@@ -129,18 +129,16 @@ class UnityPluginConventions {
      */
     static File getPlatformUnityPath() {
         File unityPath = null
-        String osName = System.getProperty("os.name").toLowerCase()
-        String osArch = System.getProperty("os.arch").toLowerCase()
 
-        if (osName.contains("windows")) {
-            if (osArch.contains("64")) {
+        if (isWindows()) {
+            if (is64BitArchitecture()) {
                 unityPath = UnityPluginConventions.UNITY_PATH_WIN
             } else {
                 unityPath = UnityPluginConventions.UNITY_PATH_WIN_32
             }
-        } else if (osName.contains("linux")) {
+        } else if (isLinux()) {
             unityPath = UnityPluginConventions.UNITY_PATH_LINUX
-        } else if (osName.contains("mac os x")) {
+        } else if (isMac()) {
             unityPath = UnityPluginConventions.UNITY_PATH_MAC_OS
         }
         unityPath

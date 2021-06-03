@@ -17,44 +17,15 @@
 
 package wooga.gradle
 
-import groovy.json.StringEscapeUtils
+
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.ProvideSystemProperty
+import wooga.gradle.unity.utils.PlatformUtilsImpl
 
-class IntegrationSpec extends nebula.test.IntegrationSpec {
-
-    enum PropertyLocation {
-        none, script, property, environment
-
-        String reason() {
-            switch (this) {
-                case script:
-                    return "value is provided in script"
-                case property:
-                    return "value is provided in properties"
-                case environment:
-                    return "value is set in environment"
-                default:
-                    return "no value was configured"
-            }
-        }
-    }
-
-    class TestCaseInput {
-        String input
-        String output
-
-        TestCaseInput(String input) {
-            this.input = this.output = input
-        }
-
-        TestCaseInput(String input, String output) {
-            this.input = input
-            this.output = output
-        }
-    }
+class IntegrationSpec extends nebula.test.IntegrationSpec
+        implements PropertyUtils, PlatformUtilsImpl {
 
     @Rule
     ProvideSystemProperty properties = new ProvideSystemProperty("ignoreDeprecations", "true")
@@ -62,44 +33,20 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
-    def escapedPath(String path) {
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
-            return StringEscapeUtils.escapeJava(path)
-        }
-        path
-    }
-
-    static String osPath(String path) {
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
-            path = path.startsWith('/') ? "c:" + path : path
-        }
-        new File(path).path
-    }
 
     def setup() {
         environmentVariables.clear()
     }
 
-    String getOsName() {
-        System.getProperty("os.name").toLowerCase()
-    }
-
-    Boolean getIsWindows() {
-        osName.contains("windows")
+    static String osPath(String path) {
+        if (isWindows()) {
+            path = path.startsWith('/') ? "c:" + path : path
+        }
+        new File(path).path
     }
 
     Boolean fileExists(String... path) {
         fileExists(path.join("/"))
-    }
-
-    String envNameFromProperty(String extensionName, String property) {
-        "${extensionName.toUpperCase()}_${property.replaceAll(/([A-Z])/, "_\$1").toUpperCase()}"
-    }
-
-    String convertPropertyToEnvName(String property) {
-        property.replaceAll(/([A-Z.])/, '_$1').replaceAll(/[.]/, '').toUpperCase()
     }
 
     Boolean outputContains(ExecutionResult result, String message) {
@@ -173,9 +120,6 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
         }
         value
     }
-
-
-
 }
 
 

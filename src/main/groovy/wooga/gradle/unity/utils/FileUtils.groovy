@@ -18,9 +18,8 @@
 package wooga.gradle.unity.utils
 
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.platform.base.Platform
 
-class FileUtils {
+trait FileUtilsImpl {
     static void ensureFile(File file) {
         if(!file.exists()) {
             File parent = file.getParentFile()
@@ -30,20 +29,12 @@ class FileUtils {
             file.createNewFile()
         }
     }
+
     static void ensureFile(RegularFileProperty file) {
         ensureFile(file.get().asFile)
     }
-
-    static String OS = System.getProperty("os.name").toLowerCase()
-    static boolean isWindows() {
-        return (OS.indexOf("win") >= 0)
-    }
-
-    static boolean isMac() {
-        return (OS.indexOf("mac") >= 0)
-    }
-
-    static boolean isLinux() {
-        return (OS.indexOf("linux") >= 0)
-    }
 }
+
+class FileUtils implements FileUtilsImpl {
+}
+

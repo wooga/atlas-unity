@@ -27,6 +27,7 @@ import org.gradle.internal.io.LineBufferingOutputStream
 import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
+import sun.reflect.misc.FieldUtil
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.traits.ArgumentsSpec
 import wooga.gradle.unity.traits.UnityCommandLineSpec
@@ -121,31 +122,6 @@ abstract class UnityTask extends DefaultTask
             FileUtils.ensureFile(unityLogFile)
             return unityLogFile.get().asFile.path
         }
-
-//        // On Windows before 2019, Unity will crash if the file is missing
-//        if (FileUtils.isWindows() && unityVersion.majorVersion < 2019) {
-//            if (unityLogFile.present) {
-//                FileUtils.ensureFile(unityLogFile)
-//                return unityLogFile.get().asFile.path
-//            }
-//        }
-//        // On any other platform
-//        else {
-//            if (logToStdout.get() || unityLogFile.present) {
-//
-//                // "-logFile -" In POSIX, - refers to stdout by convention
-//                if (logToStdout.get()) {
-//                    if (unityVersion.majorVersion >= 2019) {
-//                        return "-"
-//                    }
-//                }
-//                // Otherwise, just assign the path
-//                else {
-//                    FileUtils.ensureFile(unityLogFile)
-//                    return unityLogFile.get().asFile.path
-//                }
-//            }
-//        }
 
         // If no file was found
         return null

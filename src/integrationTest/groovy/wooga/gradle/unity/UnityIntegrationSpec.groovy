@@ -140,7 +140,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory)
         mockUnityFile.executable = true
-        if (osName.contains("windows")) {
+        if (windows) {
             mockUnityFile << """
                 @echo off
                 echo ${mockUnityMessage}              
