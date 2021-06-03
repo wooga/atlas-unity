@@ -19,9 +19,9 @@ package wooga.gradle.unity.tasks
 
 import wooga.gradle.unity.UnityPathResolution
 import wooga.gradle.unity.UnityPluginTestOptions
-import wooga.gradle.unity.UnityTaskIntegrationTest
+import wooga.gradle.unity.UnityTaskIntegrationSpec
 
-class DefaultUnityTaskIntegrationTest extends UnityTaskIntegrationTest<Unity> {
+class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
 
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     def "creates unity project"() {

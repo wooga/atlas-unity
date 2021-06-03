@@ -24,7 +24,7 @@ import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
-abstract class UnityIntegrationTest extends IntegrationSpec {
+abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     File mockUnityFile
     final String mockUnityMessage = "Mock Unity Started"

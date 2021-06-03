@@ -19,14 +19,14 @@ package wooga.gradle.unity.tasks
 
 import spock.lang.Unroll
 import wooga.gradle.unity.UnityPluginTestOptions
-import wooga.gradle.unity.UnityTaskIntegrationTest
+import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
 
 /**
  * Integration spec for activation / return unity license
  */
 
-class ActivateTaskIntegrationTest extends UnityTaskIntegrationTest<Activate> {
+class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
 
     @UnityPluginTestOptions(forceMockTaskRun = false)
     def "skips activation when authentication is empty"() {

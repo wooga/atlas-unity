@@ -26,7 +26,7 @@ import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-abstract class UnityTaskIntegrationTest<T extends UnityTask> extends UnityIntegrationTest {
+abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec {
 
     Class<T> getTaskClass() {
         if (!_taskClass) {

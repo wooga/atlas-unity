@@ -27,7 +27,7 @@ import wooga.gradle.unity.utils.ProjectSettingsFile
 /**
  * Tests the {@link UnityPluginExtension} when applied on the {@link UnityPlugin}
  */
-class UnityPluginIntegrationTest extends UnityIntegrationTest {
+class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
     @Unroll
     @UnityPluginTestOptions(addPluginTestDefaults = false)

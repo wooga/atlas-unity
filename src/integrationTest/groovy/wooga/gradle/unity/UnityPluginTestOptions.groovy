@@ -29,14 +29,6 @@ enum UnityPathResolution {
     Default
 }
 
-enum UnityPluginOverrides {
-    None,
-    AddTestBuildTargets,
-    DisableAutoActivateAndLicense,
-    AddMockLicense,
-    static final EnumSet<UnityPluginOverrides> all = EnumSet.allOf(UnityPluginOverrides.class)
-}
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target([ElementType.METHOD, ElementType.TYPE])
 @ExtensionAnnotation(UnityPluginTestExtension.class)
@@ -45,8 +37,6 @@ enum UnityPluginOverrides {
     boolean applyPlugin() default true
 
     UnityPathResolution unityPath() default UnityPathResolution.Mock
-
-    UnityPluginOverrides pluginOverrides() default UnityPluginOverrides.None
 
     boolean addPluginTestDefaults() default true
 
@@ -75,11 +65,6 @@ class DefaultUnityPluginTestOptions implements UnityPluginTestOptions {
 
     UnityPathResolution unityPath() {
         unityPath
-    }
-
-    @Override
-    UnityPluginOverrides pluginOverrides() {
-        UnityPluginOverrides.None
     }
 
     boolean addPluginTestDefaults() {
@@ -114,7 +99,7 @@ class UnityPluginTestExtension implements IAnnotationDrivenExtension<UnityPlugin
     @Override
     void visitSpecAnnotation(UnityPluginTestOptions annotation, SpecInfo spec) {
         spec.addSetupInterceptor({ invocation ->
-            def unitySpec = invocation.instance as UnityIntegrationTest
+            def unitySpec = invocation.instance as UnityIntegrationSpec
             if (unitySpec) {
                 unitySpec.options = annotation
             }
@@ -125,7 +110,7 @@ class UnityPluginTestExtension implements IAnnotationDrivenExtension<UnityPlugin
     @Override
     void visitFeatureAnnotation(UnityPluginTestOptions annotation, FeatureInfo feature) {
         feature.spec.addSetupInterceptor({ invocation ->
-            def unitySpec = invocation.instance as UnityIntegrationTest
+            def unitySpec = invocation.instance as UnityIntegrationSpec
             if (invocation.feature == feature) {
                 if (unitySpec) {
                     unitySpec.options = annotation

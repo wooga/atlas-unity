@@ -18,11 +18,11 @@ package wooga.gradle.unity.tasks
 
 import spock.lang.Unroll
 
-import wooga.gradle.unity.UnityIntegrationTest
+import wooga.gradle.unity.UnityIntegrationSpec
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
-class SetAPICompLevelTaskIntegrationTest extends UnityIntegrationTest {
+class SetAPICompLevelTaskIntegrationSpec extends UnityIntegrationSpec {
 
     @Unroll
     def "writes api level with type #type to project settings file correctly #expectedAPICompatibilityLevel"() {

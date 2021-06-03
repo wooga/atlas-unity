@@ -1,9 +1,9 @@
 package wooga.gradle.unity.tasks
 
 import wooga.gradle.unity.UnityPluginTestOptions
-import wooga.gradle.unity.UnityTaskIntegrationTest
+import wooga.gradle.unity.UnityTaskIntegrationSpec
 
-class ReturnLicenseTaskIntegrationTest extends UnityTaskIntegrationTest<ReturnLicense> {
+class ReturnLicenseTaskIntegrationSpec extends UnityTaskIntegrationSpec<ReturnLicense> {
 
     @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
     def "return license runs always even when build fails"() {

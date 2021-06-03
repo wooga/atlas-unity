@@ -18,11 +18,11 @@
 package wooga.gradle.unity.tasks
 
 import spock.lang.Unroll
-import wooga.gradle.unity.UnityTaskIntegrationTest
+import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
-class TestTaskIntegrationTest extends UnityTaskIntegrationTest<Test> {
+class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
     def "calls unity test mode"() {
         given: "a build script with fake test unity location"
