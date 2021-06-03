@@ -18,6 +18,7 @@ package wooga.gradle.unity.utils
 
 
 import org.gradle.api.Project
+import org.gradle.api.Transformer
 import org.gradle.api.file.Directory
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
@@ -173,19 +174,27 @@ class PropertyLookup {
     }
 
     Provider<String> getStringValueProvider(Project project) {
-        getStringValueProvider(project.getProviders(), project.properties, System.getenv())
+        project.provider({
+            getStringValueProvider(project.getProviders(), project.properties, System.getenv())
+        }).flatMap({it})
     }
 
     Provider<Boolean> getBooleanValueProvider(Project project) {
-        getBooleanValueProvider(project.getProviders(), project.properties, System.getenv())
+        project.provider ({
+            getBooleanValueProvider(project.getProviders(), project.properties, System.getenv())
+        }).flatMap({it})
     }
 
     Provider<RegularFile> getFileValueProvider(Project project) {
-        getFileValueProvider(project.providers, project.layout, project.properties, System.getenv())
+        project.provider({
+            getFileValueProvider(project.providers, project.layout, project.properties, System.getenv())
+        }).flatMap({it})
     }
 
     Provider<Directory> getDirectoryValueProvider(Project project) {
-        getDirectoryValueProvider(project.providers, project.layout, project.properties, System.getenv())
+        project.provider( {
+            getDirectoryValueProvider(project.providers, project.layout, project.properties, System.getenv())
+        }).flatMap({it})
     }
 
     static String envNameFromProperty(String extensionName, String property) {
