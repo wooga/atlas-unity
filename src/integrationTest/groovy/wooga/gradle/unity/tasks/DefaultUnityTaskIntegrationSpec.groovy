@@ -17,16 +17,14 @@
 
 package wooga.gradle.unity.tasks
 
-import jdk.nashorn.internal.ir.annotations.Ignore
-import spock.lang.IgnoreIf
+import spock.lang.Requires
 import wooga.gradle.unity.UnityPathResolution
 import wooga.gradle.unity.UnityPluginTestOptions
 import wooga.gradle.unity.UnityTaskIntegrationSpec
-import wooga.gradle.unity.utils.PlatformUtils
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
 
-    @IgnoreIf({ PlatformUtils.isWindows() || PlatformUtils.isLinux() })
+    @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     def "creates unity project"() {
         given: "path to future project"
