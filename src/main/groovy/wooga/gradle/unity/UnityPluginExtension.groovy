@@ -17,7 +17,7 @@
 
 package wooga.gradle.unity
 
-
+import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -133,7 +133,7 @@ trait UnityPluginExtension implements UnitySpec,
         autoReturnLicense
     }
 
-    final Provider<Boolean> shouldReturnLicense = providerFactory.provider({getAutoActivateUnity().get() && getAutoReturnLicense().get()})
+    final Provider<Boolean> shouldReturnLicense = providerFactory.provider({ getAutoActivateUnity().get() && getAutoReturnLicense().get() })
 
     void setAutoReturnLicense(Provider<Boolean> value) {
         autoReturnLicense.set(value)
@@ -160,36 +160,37 @@ trait UnityPluginExtension implements UnitySpec,
         autoActivateUnity.set(value)
     }
 
-    private Property<BuildTarget> defaultBuildTarget = objects.property(BuildTarget)
+    private Property<String> defaultBuildTarget = objects.property(String)
 
     /**
      * @return If assigned, what the build target will be assigned to by convention
      */
-    Property<BuildTarget> getDefaultBuildTarget() {
+    Property<String> getDefaultBuildTarget() {
         defaultBuildTarget
     }
 
-    void setDefaultBuildTarget(Provider<BuildTarget> value) {
+    void setDefaultBuildTarget(Provider<String> value) {
         defaultBuildTarget.set(value)
     }
 
     void setDefaultBuildTarget(String value) {
-        defaultBuildTarget.set(value as BuildTarget)
+        defaultBuildTarget.set(value)
     }
 
-    private final List<Object> testBuildTargets = new ArrayList<Object>()
+    private final List<String> testBuildTargets = new ArrayList<String>()
 
     /**
      * @return The build targets used for the {@link wooga.gradle.unity.tasks.Test} task
      */
-    List<Object> getTestBuildTargets() {
+    List<String> getTestBuildTargets() {
         testBuildTargets
     }
 
-    void setTestBuildTargets(Iterable<?> targets) {
+    void setTestBuildTargets(Iterable<String> targets) {
         testBuildTargets.clear()
         testBuildTargets.addAll(targets)
     }
+
 
     /**
      * Returns a {@link java.util.Set} of {@link wooga.gradle.unity.models.BuildTarget} objects to construct unity
@@ -213,30 +214,33 @@ trait UnityPluginExtension implements UnitySpec,
      * @return the buildtargets to generate test tasks for
      * @default the a set with the {@code defaultBuildTarget}
      */
-    Set<BuildTarget> getTestBuildTargets(Project project) {
+    Set<String> getTestBuildTargets(Project project) {
 
+        // If no test targets have been directly assigned through the property,
+        // check among the project's properties.
         if (getTestBuildTargets().empty) {
             if (project.properties.containsKey("unity.testBuildTargets")) {
-                return EnumSet.copyOf(project.properties.get("unity.testBuildTargets").toString().split(",").collect({
-                    it as BuildTarget
-                }))
-            } else if (defaultBuildTarget.get() == BuildTarget.undefined) {
-                return EnumSet.noneOf(BuildTarget)
+                return project.properties.get("unity.testBuildTargets").toString().split(",").collect({
+                    it
+                })
+            } else if (defaultBuildTarget.get() == BuildTarget.undefined.toString()) {
+                return new HashSet<String>()
             }
         }
 
-        List<BuildTarget> targets = new ArrayList<BuildTarget>()
+        // If test targets were assigned to the property
+        Set<String> targets = new HashSet<String>()
         for (Object t : getTestBuildTargets()) {
             if (t != BuildTarget.undefined) {
-                targets.add(t.toString() as BuildTarget)
+                targets.add(t.toString())
             }
         }
 
-        if (getDefaultBuildTarget().getOrElse(BuildTarget.undefined) != BuildTarget.undefined) {
+        if (getDefaultBuildTarget().getOrElse(BuildTarget.undefined.toString()) != BuildTarget.undefined.toString()) {
             targets.add(defaultBuildTarget.get())
         }
 
-        return EnumSet.copyOf(targets)
+        targets
     }
 
 }

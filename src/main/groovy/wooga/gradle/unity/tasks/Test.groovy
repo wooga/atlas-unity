@@ -36,18 +36,13 @@ abstract class Test extends UnityTask implements UnityTestSpec {
         description = "Executes Unity in batch mode and executes specified method"
         reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
         reports.xml.enabled = true
+        quit = false
+        runTests = true
     }
 
     Test(TestPlatform testPlatform) {
         this()
         setTestPlatform(testPlatform)
-    }
-
-    @Override
-    protected void setCommandLineOptionDefaults() {
-        super.setCommandLineOptionDefaults()
-        quit = false
-        runTests = true
     }
 
     @Override

@@ -126,7 +126,7 @@ class UnityPlugin implements Plugin<Project> {
         extension.authentication.password.set(UnityPluginConventions.password.getStringValueProvider(project))
         extension.authentication.serial.set(UnityPluginConventions.serial.getStringValueProvider(project))
 
-        extension.defaultBuildTarget.convention(BuildTarget.undefined)
+        extension.defaultBuildTarget.convention(BuildTarget.undefined.toString())
         extension.batchModeForEditModeTest.convention(UnityPluginConventions.batchModeForEditModeTest.getBooleanValueProvider(project))
         extension.batchModeForPlayModeTest.convention(UnityPluginConventions.batchModeForPlayModeTest.getBooleanValueProvider(project))
 
@@ -144,7 +144,7 @@ class UnityPlugin implements Plugin<Project> {
             t.logToStdout.convention(t.logger.infoEnabled || t.logger.debugEnabled)
             t.toggleLogFile(true)
             t.buildTarget.convention(project.provider {
-                extension.defaultBuildTarget.getOrElse(BuildTarget.undefined).toString()
+                extension.defaultBuildTarget.getOrElse(BuildTarget.undefined.toString())
             })
 
             // Properties used by tasks
@@ -225,12 +225,12 @@ class UnityPlugin implements Plugin<Project> {
         })
     }
 
-    private static TaskProvider<Test> createTestTask(TestPlatform platform, final Project project, String name, BuildTarget buildTarget) {
+    private static TaskProvider<Test> createTestTask(TestPlatform platform, final Project project, String name, String buildTarget) {
         def task = project.tasks.register(name, Test,
                 { t ->
                     t.testPlatform.set(platform.toString().toLowerCase())
                     t.group = GROUP
-                    t.buildTarget.set(buildTarget.toString())
+                    t.buildTarget.set(buildTarget)
                 })
         task
     }

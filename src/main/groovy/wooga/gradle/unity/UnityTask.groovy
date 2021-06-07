@@ -42,7 +42,6 @@ abstract class UnityTask extends DefaultTask
                 ArgumentsSpec {
 
     UnityTask() {
-        setCommandLineOptionDefaults()
         // When this task is executed, we query the arguments to pass
         // onto the Unity process here. We generate a sequence of Unity's command line options
         // and also an additional one for our custom use
@@ -94,12 +93,6 @@ abstract class UnityTask extends DefaultTask
      * @param result The result of the Unity execution
      */
     protected void postExecute(ExecResult result) {
-    }
-
-    /**
-     * Sets the default command line options for the task
-     */
-    protected void setCommandLineOptionDefaults() {
     }
 
     @Internal

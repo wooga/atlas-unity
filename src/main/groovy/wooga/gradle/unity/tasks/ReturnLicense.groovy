@@ -29,11 +29,6 @@ class ReturnLicense extends UnityTask implements UnityLicenseSpec {
     @Inject
     ReturnLicense() {
         description = "Return the currently active license to the license server."
-    }
-
-    @Override
-    protected void setCommandLineOptionDefaults() {
-        super.setCommandLineOptionDefaults()
         returnLicense = true
     }
 }
