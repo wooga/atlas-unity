@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import spock.lang.Subject
 import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
@@ -39,11 +40,11 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     UnityPluginTestOptions options
     Boolean initialized = false
 
-    String getMockTaskName() {
+    String getSubjectUnderTestName() {
         "unityIntegrationTest"
     }
 
-    String getMockTaskTypeName() {
+    String getSubjectUnderTestTypeName() {
         Unity.class.name
     }
 
@@ -173,14 +174,14 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     }
 
     void addMockTask(Boolean force, Boolean clearActions, String... lines) {
-        addTask(mockTaskName, mockTaskTypeName, force, lines)
+        addTask(subjectUnderTestName, subjectUnderTestTypeName, force, lines)
         if (clearActions) {
-            clearMockTaskActions()
+            clearSubjectTaskActions()
         }
     }
 
-    void clearMockTaskActions() {
-        appendToMockTask("""
+    void clearSubjectTaskActions() {
+        appendToSubjectTask("""
         doFirst {
             println "woo"
         }
@@ -188,16 +189,16 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         """.stripIndent())
     }
 
-    void appendToMockTask(String... lines) {
+    void appendToSubjectTask(String... lines) {
         buildFile << """
-        $mockTaskName {
+        $subjectUnderTestName {
             ${lines.join('\n')}
         }
         """.stripIndent()
     }
 
     def runTestTaskSuccessfully() {
-        runTasksSuccessfully(mockTaskName)
+        runTasksSuccessfully(subjectUnderTestName)
     }
 
     void addMockTask(String name, String typeName, Boolean force, String... lines) {

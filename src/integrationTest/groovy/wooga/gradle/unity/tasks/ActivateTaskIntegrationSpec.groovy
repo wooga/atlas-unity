@@ -31,10 +31,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
     @UnityPluginTestOptions(forceMockTaskRun = false)
     def "skips activation when authentication is empty"() {
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        result.wasSkipped(mockTaskName)
+        result.wasSkipped(subjectUnderTestName)
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false)
@@ -52,7 +52,7 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
         result.failure
@@ -79,10 +79,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.wasSkipped(mockTaskName)
+        !result.wasSkipped(subjectUnderTestName)
         result.standardOutput.contains("${UnityCommandLineOption.userName.flag} test@test.test")
         result.standardOutput.contains("${UnityCommandLineOption.password.flag} testtesttest")
         result.standardOutput.contains("${UnityCommandLineOption.serial.flag} abcdefg")
@@ -99,10 +99,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.wasSkipped(mockTaskName)
+        !result.wasSkipped(subjectUnderTestName)
         result.standardOutput.contains("${UnityCommandLineOption.userName.flag} test@test.test")
         result.standardOutput.contains("${UnityCommandLineOption.password.flag} testtesttest")
         result.standardOutput.contains("${UnityCommandLineOption.serial.flag} abcdefg")
@@ -118,7 +118,7 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
                     authentication.serial = "abcdefg"                
             }
 
-            ${mockTaskName} {
+            ${subjectUnderTestName} {
                      authentication.username = "beta@test.test"
                      authentication.password = "betatesttest"
                      authentication.serial = "zyxw"                
@@ -126,10 +126,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.wasSkipped(mockTaskName)
+        !result.wasSkipped(subjectUnderTestName)
         result.standardOutput.contains("${UnityCommandLineOption.userName.flag} beta@test.test")
         result.standardOutput.contains("${UnityCommandLineOption.password.flag} betatesttest")
         result.standardOutput.contains("${UnityCommandLineOption.serial.flag} zyxw")
@@ -146,10 +146,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.wasSkipped(mockTaskName)
+        !result.wasSkipped(subjectUnderTestName)
         result.standardOutput.contains("${UnityCommandLineOption.userName.flag} delta@test.test")
         result.standardOutput.contains("${UnityCommandLineOption.password.flag} deltatesttest")
         result.standardOutput.contains("${UnityCommandLineOption.serial.flag} 123456789")
@@ -167,10 +167,10 @@ class ActivateTaskIntegrationSpec extends UnityTaskIntegrationSpec<Activate> {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.wasSkipped(mockTaskName)
+        !result.wasSkipped(subjectUnderTestName)
         result.standardOutput.contains("${UnityCommandLineOption.projectPath.flag} ${projectDir}")
     }
 }

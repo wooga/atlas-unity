@@ -21,10 +21,7 @@ import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import com.wooga.spock.extensions.uvm.UnityInstallation
 import net.wooga.uvm.Installation
-import spock.lang.IgnoreIf
 import spock.lang.Requires
-import spock.lang.Unroll
-import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
@@ -40,12 +37,12 @@ class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
 
         and: "a build script"
-        appendToMockTask("createProject = \"${project_path}\"",
+        appendToSubjectTask("createProject = \"${project_path}\"",
                 // We need to select a valid build target before loading
                 "buildTarget = \"Android\"")
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")

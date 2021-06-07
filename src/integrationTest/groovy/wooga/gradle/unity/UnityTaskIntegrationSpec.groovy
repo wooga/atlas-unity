@@ -17,16 +17,12 @@
 
 package wooga.gradle.unity
 
-import com.wooga.spock.extensions.uvm.UnityInstallation
-import jdk.nashorn.internal.ir.annotations.Ignore
+
 import org.gradle.api.logging.LogLevel
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.models.UnityCommandLineOption
-import wooga.gradle.unity.tasks.Activate
-import wooga.gradle.unity.tasks.ReturnLicense
-import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.Unity
 
 import java.lang.reflect.ParameterizedType
@@ -35,43 +31,43 @@ import java.nio.file.StandardCopyOption
 
 abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec {
 
-    Class<T> getTaskClass() {
-        if (!_taskClass) {
+    Class<T> getSubjectUnderTestClass() {
+        if (!_sutClass) {
             try {
-                this._taskClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
+                this._sutClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
                         .getActualTypeArguments()[0];
             }
             catch (Exception e) {
-                this._taskClass = (Class<T>) Unity
+                this._sutClass = (Class<T>) Unity
             }
         }
-        _taskClass
+        _sutClass
     }
-    private Class<T> _taskClass
+    private Class<T> _sutClass
 
     @Override
-    String getMockTaskName() {
-        "${taskClass.simpleName.uncapitalize()}Mock"
+    String getSubjectUnderTestName() {
+        "${subjectUnderTestClass.simpleName.uncapitalize()}Test"
     }
 
     @Override
-    String getMockTaskTypeName() {
-        taskClass.getTypeName()
+    String getSubjectUnderTestTypeName() {
+        subjectUnderTestClass.getTypeName()
     }
 
     @Unroll
     def "can set option '#property' (#value) with #method"() {
         given: "a custom build task"
-        appendToMockTask("$method($value)")
+        appendToSubjectTask("$method($value)")
 
         and: "make sure the test file exists"
         def testFile = createFile("test/file")
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         result.standardOutput.contains("Starting process 'command '")
         value == result.standardOutput.contains(" $expectedCommandlineSwitch")
 
@@ -93,7 +89,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     def "can set arguments option '#property' = '#value' by #method"() {
         given: "a custom build task"
         buildFile << """
-            ${mockTaskName} {
+            ${subjectUnderTestName} {
                 $method("$value")
             }
         """.stripIndent()
@@ -102,10 +98,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def testFile = createFile("test/file")
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         result.standardOutput.contains("Starting process 'command '")
         def shouldContain = value != ""
         shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
@@ -128,7 +124,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     def "can configure arguments with #method #message"() {
         given: "a custom archive task"
         buildFile << """
-            ${mockTaskName} {
+            ${subjectUnderTestName} {
                 arguments(["--test", "value"])
             }
         """.stripIndent()
@@ -137,14 +133,14 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         buildFile << """
             task("readValue") {
                 doLast {
-                    println("property: " + ${mockTaskName}.${property}.get())
+                    println("property: " + ${subjectUnderTestName}.${property}.get())
                 }
             }
         """.stripIndent()
 
         and: "a set property"
         buildFile << """
-            ${mockTaskName}.${method}($value)
+            ${subjectUnderTestName}.${method}($value)
         """.stripIndent()
 
         when:
@@ -171,14 +167,14 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "can set unityPath with #method"() {
         given: "a build file with custom test task"
-        appendToMockTask("$method(file('$value'))")
+        appendToSubjectTask("$method(file('$value'))")
 
         and:
         def testUnity = createFile(value)
         Files.copy(mockUnityFile.toPath(), testUnity.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         if (windows) {
@@ -198,28 +194,28 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     def "set log category with #method to '#value'"() {
         given:
         buildFile << """
-            ${mockTaskName}.$method(${value})
+            ${subjectUnderTestName}.$method(${value})
             """.stripIndent()
-        addProviderQueryTask("custom", "${mockTaskName}.unityLogFile", ".get().asFile.path")
+        addProviderQueryTask("custom", "${subjectUnderTestName}.unityLogFile", ".get().asFile.path")
 
         when:
-        def result = runTasksSuccessfully(mockTaskName, "custom")
+        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
 
         then:
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         def resultPath = new File(projectDir, "/build/logs/${path}").getPath()
         //result.standardOutput.contains("-logFile ${resultPath}")
-        result.standardOutput.contains("${mockTaskName}.unityLogFile: ${resultPath}")
+        result.standardOutput.contains("${subjectUnderTestName}.unityLogFile: ${resultPath}")
 
         where:
         rawValue     | useSetter | path
-        "helloworld" | true      | "helloworld/${mockTaskName}.log"
-        "helloworld" | false     | "helloworld/${mockTaskName}.log"
-        "foobar"     | true      | "foobar/${mockTaskName}.log"
-        ""           | true      | "${mockTaskName}.log"
-        ""           | false     | "${mockTaskName}.log"
-        null         | true      | "unity/${mockTaskName}.log"
-        null         | false     | "unity/${mockTaskName}.log"
+        "helloworld" | true      | "helloworld/${subjectUnderTestName}.log"
+        "helloworld" | false     | "helloworld/${subjectUnderTestName}.log"
+        "foobar"     | true      | "foobar/${subjectUnderTestName}.log"
+        ""           | true      | "${subjectUnderTestName}.log"
+        ""           | false     | "${subjectUnderTestName}.log"
+        null         | true      | "unity/${subjectUnderTestName}.log"
+        null         | false     | "unity/${subjectUnderTestName}.log"
 
         value = rawValue != null ? wrapValueBasedOnType(rawValue, String) : null
         method = (useSetter) ? "setLogCategory" : "logCategory.set"
@@ -230,7 +226,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         logLevel = LogLevel.QUIET
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         !result.standardOutput.contains(mockUnityMessage)
@@ -244,12 +240,12 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     def "calls unity with correct logFile parameter when redirectStdOut: #redirectStdOut logFilePath: #logFilePath unityVersion: #unityVersion os: #os"() {
         given:
         if (logFilePath) {
-            appendToMockTask """
+            appendToSubjectTask """
             unityLogFile = ${logFilePath}
             """.stripIndent()
         }
 
-        appendToMockTask("""
+        appendToSubjectTask("""
             logToStdout.set(${redirectStdOut})
         """.stripIndent())
 
@@ -263,10 +259,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def testFile = createFile("test/file")
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         result.standardOutput.contains("Starting process 'command '")
         def cmdSwitch = expectedCommandlineSwitch.replace("#{DEFAULT_LOG_FILE_PATH}", new File(projectDir, "build/logs").path).replace("#{PROVIDED_LOG_FILE_PATH}", new File(projectDir, "test/file").path)
         result.standardOutput.contains("${cmdSwitch}".trim())
@@ -302,21 +298,21 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
         given: "a custom build task"
-        appendToMockTask("""
+        appendToSubjectTask("""
                 logToStdout = false 
         """.stripIndent())
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
         !result.standardOutput.contains(mockUnityMessage)
 
         when:
-        appendToMockTask("""
+        appendToSubjectTask("""
                 logToStdout = true 
         """.stripIndent())
-        result = runTasks(mockTaskName)
+        result = runTasks(subjectUnderTestName)
 
         then:
         result.standardOutput.contains(mockUnityMessage)
@@ -326,13 +322,13 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         given: "a custom log file location"
         def logFile = File.createTempFile("log", "out")
         and: "a custom build task"
-        appendToMockTask("""
+        appendToSubjectTask("""
                 logToStdout = true
                 unityLogFile = file('${escapedPath(logFile.path)}')
         """.stripIndent())
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
         result.standardOutput.contains(mockUnityMessage)

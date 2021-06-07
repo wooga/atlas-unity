@@ -198,10 +198,10 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     def "sets defaultBuildTarget for all tasks"() {
         given: "a build script"
         appendToPluginExtension("defaultBuildTarget = \"android\"")
-        appendToMockTask(taskConfig)
+        appendToSubjectTask(taskConfig)
 
         when:
-        def result = runTasks(mockTaskName)
+        def result = runTasks(subjectUnderTestName)
 
         then:
         result.standardOutput.contains(expected)
@@ -267,11 +267,11 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         result.wasSkipped("activateUnity")
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         result.wasSkipped("returnUnityLicense")
     }
 
@@ -288,11 +288,11 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         result.wasExecuted("activateUnity")
-        result.wasExecuted(mockTaskName)
+        result.wasExecuted(subjectUnderTestName)
         result.wasSkipped("returnUnityLicense")
     }
 
@@ -323,7 +323,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
     def "skips activateUnity and returnUnityLicense when authentication is not set"() {
         when:
-        def result = runTasksSuccessfully(mockTaskName)
+        def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
         result.wasSkipped("activateUnity")
