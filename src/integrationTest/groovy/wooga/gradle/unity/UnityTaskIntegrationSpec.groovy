@@ -18,6 +18,7 @@
 package wooga.gradle.unity
 
 import com.wooga.spock.extensions.uvm.UnityInstallation
+import jdk.nashorn.internal.ir.annotations.Ignore
 import org.gradle.api.logging.LogLevel
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
@@ -298,61 +299,44 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
     }
 
+    @Unroll
+    def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
+        given: "a custom build task"
+        appendToMockTask("""
+                logToStdout = false 
+        """.stripIndent())
 
-//    @Unroll
-//    @Ignore("test occasionally fails on jenkins")
-//    //test occasionally fails on jenkins
-//    //@IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
-//    def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
-//        given: "a custom build task"
-//        buildFile << """
-//            task (mUnity, type: ${taskType.name}) {
-//                dependsOn unitySetup
-//                redirectStdOut = false
-//            }
-//        """.stripIndent()
-//
-//        when:
-//        def result = runTasks("mUnity")
-//
-//        then:
-//        !result.standardOutput.contains("Next license update check is after")
-//
-//        when:
-//        buildFile << """
-//            mUnity.redirectStdOut = true
-//        """.stripIndent()
-//        result = runTasks("mUnity")
-//
-//        then:
-//        result.standardOutput.contains("Next license update check is after")
-//
-//        where:
-//        taskType | _
-//        Unity | _
-//    }
+        when:
+        def result = runTasks(mockTaskName)
 
-//
-//    @Ignore("test occasionally fails on jenkins")
-//    @IgnoreIf({ FileUtils.isWindows() })
-//    def "redirects unity log to stdout and custom logfile if provided"() {
-//        given: "a custom log file location"
-//        def logFile = File.createTempFile("log", "out")
-//        and: "a custom build task"
-//        buildFile << """
-//            task (${testTaskName}, type: ${testTaskTypeName}) {
-//                dependsOn unitySetup
-//                redirectStdOut = true
-//                logFile = file('${escapedPath(logFile.path)}')
-//            }
-//        """.stripIndent()
-//
-//        when:
-//        def result = runTasks(testTaskName)
-//
-//        then:
-//        result.standardOutput.contains("Next license update check is after")
-//        logFile.text.contains("Next license update check is after")
-//    }
+        then:
+        !result.standardOutput.contains(mockUnityMessage)
+
+        when:
+        appendToMockTask("""
+                logToStdout = true 
+        """.stripIndent())
+        result = runTasks(mockTaskName)
+
+        then:
+        result.standardOutput.contains(mockUnityMessage)
+    }
+
+    def "redirects unity log to stdout and custom logfile if provided"() {
+        given: "a custom log file location"
+        def logFile = File.createTempFile("log", "out")
+        and: "a custom build task"
+        appendToMockTask("""
+                logToStdout = true
+                unityLogFile = file('${escapedPath(logFile.path)}')
+        """.stripIndent())
+
+        when:
+        def result = runTasks(mockTaskName)
+
+        then:
+        result.standardOutput.contains(mockUnityMessage)
+        logFile.text.contains(mockUnityMessage)
+    }
 
 }
