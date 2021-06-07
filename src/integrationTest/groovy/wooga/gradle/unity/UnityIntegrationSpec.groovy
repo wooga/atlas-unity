@@ -50,11 +50,6 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         Unity.class.name
     }
 
-    // @TODO: This forces this version to be installed without prompting for any test run. Could we instead only try to install when its needed?
-    @Shared
-    @UnityInstallation(version = "2019.4.27f1", cleanup = false)
-    Installation preInstalledUnity
-
     def setup() {
         setupUnityPluginImpl(true)
     }
@@ -110,7 +105,6 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
                 break
 
             case UnityPathResolution.Default:
-                addDefaultUnityPath()
                 break
         }
 
@@ -170,19 +164,11 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
     }
 
-    protected void addDefaultUnityPath() {
-        addUnityPathToExtension(unityPath)
-    }
-
     protected String getUnityPath() {
         def result = System.getenv().get(unityPathOverrideEnvVariable)
         if (result) {
             return result
         }
-
-
-
-        return preInstalledUnity.executable.path
     }
 
     protected void addUnityPathToExtension(String path) {

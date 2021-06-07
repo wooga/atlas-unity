@@ -17,22 +17,24 @@
 
 package wooga.gradle.unity.tasks
 
-import spock.lang.Requires
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import com.wooga.spock.extensions.uvm.UnityInstallation
+import net.wooga.uvm.Installation
+import spock.lang.Requires
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
 
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    def "creates unity project"() {
+    @UnityInstallation(version = "2019.4.27f1", cleanup = false)
+    def "creates unity project"(Installation unity) {
         given: "path to future project"
         def project_path = "build/test_project"
 
         and: "a pre installed unity editor"
-        def unityPath = getUnityPath()
-        environmentVariables.set("UNITY_PATH", unityPath)
+        environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
 
         and: "a build script"
         appendToMockTask("createProject = \"${project_path}\"",
@@ -43,7 +45,7 @@ class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
         def result = runTasksSuccessfully(mockTaskName)
 
         then:
-        result.standardOutput.contains("Starting process 'command '${unityPath}'")
+        result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
         fileExists(project_path)
         fileExists(project_path, "Assets")
         fileExists(project_path, "Library")

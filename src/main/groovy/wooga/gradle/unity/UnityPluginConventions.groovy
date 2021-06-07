@@ -66,7 +66,7 @@ class UnityPluginConventions implements PlatformUtilsImpl {
     /**
      * The path to the Unity Editor executable
      */
-    static final PropertyLookup unityPath = new PropertyLookup("UNITY_UNITY_PATH", "unity.unityPath", { getPlatformUnityPath().absolutePath })
+    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH","UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })
     /**
      * Used for authentication with Unity's servers
      */
