@@ -105,7 +105,7 @@ abstract class UnityTask extends DefaultTask
     @Internal
     protected ArtifactVersion getUnityVersion() {
         File file = unityPath.present ? unityPath.get().asFile : null
-        UnityVersionManager.retrieveUnityVersion(file, UnityPluginConventions.defaultUnityTestVersion.getValue(project))
+        UnityVersionManager.retrieveUnityVersion(file, UnityPluginConventions.defaultUnityTestVersion.getValue(project).toString())
     }
 
     @Override

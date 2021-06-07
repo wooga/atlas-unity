@@ -20,9 +20,6 @@ package wooga.gradle.unity
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
-import com.wooga.spock.extensions.uvm.UnityInstallation
-import net.wooga.uvm.Installation
-import spock.lang.Shared
 import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile

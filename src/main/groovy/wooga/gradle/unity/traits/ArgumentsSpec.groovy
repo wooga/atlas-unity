@@ -19,6 +19,7 @@ package wooga.gradle.unity.traits
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 
 trait ArgumentsSpec {
 
@@ -69,6 +70,7 @@ trait ArgumentsSpec {
     /**
      * @return Retrieves {@code arguments} and {@code additionalArguments}
      */
+    @Internal
     List<String> getAllArguments() {
         List<String> result = new ArrayList<String>()
 

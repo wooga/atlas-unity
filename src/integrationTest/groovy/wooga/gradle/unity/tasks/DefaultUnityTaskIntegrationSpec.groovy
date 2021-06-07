@@ -21,7 +21,10 @@ import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import com.wooga.spock.extensions.uvm.UnityInstallation
 import net.wooga.uvm.Installation
+import spock.lang.IgnoreIf
 import spock.lang.Requires
+import spock.lang.Unroll
+import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {

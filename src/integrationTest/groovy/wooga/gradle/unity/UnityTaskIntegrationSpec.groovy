@@ -17,9 +17,15 @@
 
 package wooga.gradle.unity
 
+import com.wooga.spock.extensions.uvm.UnityInstallation
 import org.gradle.api.logging.LogLevel
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
+import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.unity.models.UnityCommandLineOption
+import wooga.gradle.unity.tasks.Activate
+import wooga.gradle.unity.tasks.ReturnLicense
+import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.tasks.Unity
 
 import java.lang.reflect.ParameterizedType
@@ -228,6 +234,103 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         then:
         !result.standardOutput.contains(mockUnityMessage)
     }
+
+
+    //I run this test only in macOS due to the path encoding issues.
+    @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
+    @Unroll
+    @RestoreSystemProperties
+    def "calls unity with correct logFile parameter when redirectStdOut: #redirectStdOut logFilePath: #logFilePath unityVersion: #unityVersion os: #os"() {
+        given:
+        if (logFilePath) {
+            appendToMockTask """
+            unityLogFile = ${logFilePath}
+            """.stripIndent()
+        }
+
+        appendToMockTask("""
+            logToStdout.set(${redirectStdOut})
+        """.stripIndent())
+
+        and: "mocked unity version"
+        createFile("gradle.properties") << "defaultUnityTestVersion=${unityVersion}"
+
+        and: "mocked operating system"
+        System.setProperty('os.name', os)
+
+        and: "make sure the test file exists"
+        def testFile = createFile("test/file")
+
+        when:
+        def result = runTasks(mockTaskName)
+
+        then:
+        result.wasExecuted(mockTaskName)
+        result.standardOutput.contains("Starting process 'command '")
+        def cmdSwitch = expectedCommandlineSwitch.replace("#{DEFAULT_LOG_FILE_PATH}", new File(projectDir, "build/logs").path).replace("#{PROVIDED_LOG_FILE_PATH}", new File(projectDir, "test/file").path)
+        result.standardOutput.contains("${cmdSwitch}".trim())
+
+        where:
+        redirectStdOut | logFilePath         | unityVersion | expectedCommandlineSwitch            | os
+        true           | null                | "2018.1.0f1" | "-logFile"                           | "Mac OS X"
+        true           | null                | "2018.1.0f1" | "-logFile"                           | "Linux"
+        true           | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
+        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Mac OS X"
+        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Linux"
+        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Windows 7"
+        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile"                           | "Mac OS X"
+        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile"                           | "Linux"
+        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
+        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Mac OS X"
+        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Linux"
+        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Windows 7"
+        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Mac OS X"
+        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Linux"
+        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
+        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Mac OS X"
+        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Linux"
+        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
+        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Mac OS X"
+        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Linux"
+        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
+        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Mac OS X"
+        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Linux"
+        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
+    }
+
+
+//    @Unroll
+//    @Ignore("test occasionally fails on jenkins")
+//    //test occasionally fails on jenkins
+//    //@IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
+//    def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
+//        given: "a custom build task"
+//        buildFile << """
+//            task (mUnity, type: ${taskType.name}) {
+//                dependsOn unitySetup
+//                redirectStdOut = false
+//            }
+//        """.stripIndent()
+//
+//        when:
+//        def result = runTasks("mUnity")
+//
+//        then:
+//        !result.standardOutput.contains("Next license update check is after")
+//
+//        when:
+//        buildFile << """
+//            mUnity.redirectStdOut = true
+//        """.stripIndent()
+//        result = runTasks("mUnity")
+//
+//        then:
+//        result.standardOutput.contains("Next license update check is after")
+//
+//        where:
+//        taskType | _
+//        Unity | _
+//    }
 
 //
 //    @Ignore("test occasionally fails on jenkins")
