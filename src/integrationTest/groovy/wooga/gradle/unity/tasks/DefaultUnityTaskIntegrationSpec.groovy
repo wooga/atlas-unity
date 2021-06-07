@@ -18,8 +18,8 @@
 package wooga.gradle.unity.tasks
 
 import spock.lang.Requires
-import wooga.gradle.unity.UnityPathResolution
-import wooga.gradle.unity.UnityPluginTestOptions
+import com.wooga.spock.extensions.unity.UnityPathResolution
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {

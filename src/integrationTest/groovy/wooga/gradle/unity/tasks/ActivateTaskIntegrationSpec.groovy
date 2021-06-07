@@ -18,7 +18,7 @@
 package wooga.gradle.unity.tasks
 
 import spock.lang.Unroll
-import wooga.gradle.unity.UnityPluginTestOptions
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
 

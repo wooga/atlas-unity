@@ -1,6 +1,6 @@
 package wooga.gradle.unity.tasks
 
-import wooga.gradle.unity.UnityPluginTestOptions
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class ReturnLicenseTaskIntegrationSpec extends UnityTaskIntegrationSpec<ReturnLicense> {
