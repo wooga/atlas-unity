@@ -20,7 +20,6 @@ package wooga.gradle.unity
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
-import spock.lang.Subject
 import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
@@ -28,12 +27,12 @@ import wooga.gradle.unity.utils.ProjectSettingsFile
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     File mockUnityFile
-    final String mockUnityMessage = "Mock Unity Started"
+    final String mockUnityStartupMessage = "Mock Unity Started"
 
     File unityMainDirectory
     File projectSettingsFile
 
-    final String extensionName = UnityPlugin.getEXTENSION_NAME()
+    final String extensionName = UnityPlugin.EXTENSION_NAME
     final String groupName = "integrationTest"
     final String unityPathOverrideEnvVariable = "UNITY_PATH_TEST"
 
@@ -138,13 +137,13 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         if (windows) {
             mockUnityFile << """
                 @echo off
-                echo ${mockUnityMessage}              
+                echo ${mockUnityStartupMessage}
                 echo %*
             """.stripIndent()
         } else {
             mockUnityFile << """
                 #!/usr/bin/env bash
-                echo ${mockUnityMessage}
+                echo ${mockUnityStartupMessage}
                 echo \$@
             """.stripIndent()
         }

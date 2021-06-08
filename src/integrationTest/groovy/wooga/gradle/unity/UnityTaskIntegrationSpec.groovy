@@ -17,7 +17,9 @@
 
 package wooga.gradle.unity
 
-
+import com.wooga.spock.extensions.unity.UnityPathResolution
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import com.wooga.spock.extensions.uvm.UnityInstallation
 import org.gradle.api.logging.LogLevel
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
@@ -229,7 +231,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        !result.standardOutput.contains(mockUnityMessage)
+        !result.standardOutput.contains(mockUnityStartupMessage)
     }
 
 
@@ -306,7 +308,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasks(subjectUnderTestName)
 
         then:
-        !result.standardOutput.contains(mockUnityMessage)
+        !result.standardOutput.contains(mockUnityStartupMessage)
 
         when:
         appendToSubjectTask("""
@@ -315,7 +317,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         result = runTasks(subjectUnderTestName)
 
         then:
-        result.standardOutput.contains(mockUnityMessage)
+        result.standardOutput.contains(mockUnityStartupMessage)
     }
 
     def "redirects unity log to stdout and custom logfile if provided"() {
@@ -331,8 +333,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasks(subjectUnderTestName)
 
         then:
-        result.standardOutput.contains(mockUnityMessage)
-        logFile.text.contains(mockUnityMessage)
+        result.standardOutput.contains(mockUnityStartupMessage)
+        logFile.text.contains(mockUnityStartupMessage)
     }
 
 }
