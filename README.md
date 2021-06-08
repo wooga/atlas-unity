@@ -124,6 +124,7 @@ Tested with Oracle JDK8
 | 6.6             | ![yes] |
 | 6.7             | ![yes] |
 | 6.8             | ![yes] |
+| 6.9             | ![yes] |
 | 7.0             | ![yes] |
 
 
