@@ -17,54 +17,232 @@
 
 package wooga.gradle.unity
 
-import org.apache.commons.lang.StringEscapeUtils
-import wooga.gradle.unity.utils.internal.ProjectSettingsSpec
+import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
+import com.wooga.spock.extensions.unity.UnityPathResolution
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import wooga.gradle.IntegrationSpec
+import wooga.gradle.unity.tasks.Unity
+import wooga.gradle.unity.utils.ProjectSettingsFile
 
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
-    File unityTestLocation
-    File unityMainDirectory
-    File settings
+    File mockUnityFile
+    final String mockUnityStartupMessage = "Mock Unity Started"
 
-    def escapedPath(String path) {
-        String osName = System.getProperty("os.name").toLowerCase()
-        if (osName.contains("windows")) {
-            return StringEscapeUtils.escapeJava(path)
-        }
-        path
+    File unityMainDirectory
+    File projectSettingsFile
+
+    final String extensionName = UnityPlugin.EXTENSION_NAME
+    final String groupName = "integrationTest"
+    final String unityPathOverrideEnvVariable = "UNITY_PATH_TEST"
+
+    UnityPluginTestOptions options
+    Boolean initialized = false
+
+    String getSubjectUnderTestName() {
+        "unityIntegrationTest"
+    }
+
+    String getSubjectUnderTestTypeName() {
+        Unity.class.name
     }
 
     def setup() {
-        String osName = System.getProperty("os.name").toLowerCase()
-        unityMainDirectory = projectDir
-        if (!osName.contains("windows")) {
-            unityMainDirectory = new File(projectDir, "Unity/SomeLevel/SecondLevel")
-            unityMainDirectory.mkdirs()
+        setupUnityPluginImpl(true)
+    }
+
+    protected def setupUnityPlugin() {
+        setupUnityPluginImpl(false)
+    }
+
+    private void setupUnityPluginImpl(Boolean fromSetup) {
+
+        if (initialized) {
+            return
         }
-        unityTestLocation = createFile("fakeUnity.bat", unityMainDirectory)
-        unityTestLocation.executable = true
-        if (osName.contains("windows")) {
-            unityTestLocation << """
-                @echo off
-                echo %*
+
+        if (!options) {
+            options = new DefaultUnityPluginTestOptions()
+        } else {
+            println "Using option overrides ${options}"
+        }
+
+        if (fromSetup && !options.applyPlugin()) {
+            println "Skipping Unity plugin setup..."
+            return
+        } else {
+            applyUnityPlugin()
+        }
+
+        unityMainDirectory = projectDir
+
+        setProjectSettingsFile()
+        setLicenseDirectory()
+
+        if (options.addPluginTestDefaults()) {
+            buildFile << """
+            unity {
+                 testBuildTargets = ["android"]
+            }
             """.stripIndent()
         }
-        else
-        {
-            unityTestLocation << """
+
+        if (options.disableAutoActivateAndLicense()) {
+            buildFile << """
+            unity {
+                 autoReturnLicense = false
+                 autoActivateUnity = false
+            }
+            """.stripIndent()
+        }
+
+        switch (options.unityPath()) {
+            case UnityPathResolution.Mock:
+                addMockUnityPath()
+                break
+
+            case UnityPathResolution.Default:
+                break
+        }
+
+        if (options.addMockTask()) {
+            addMockTask(options.forceMockTaskRun(), options.clearMockTaskActions())
+        }
+
+        initialized = true
+    }
+
+    private void applyUnityPlugin() {
+        buildFile << """
+            group = '${groupName}'
+            ${applyPlugin(UnityPlugin)}         
+        """.stripIndent()
+    }
+
+    protected File setProjectSettingsFile(String content = ProjectSettingsFile.DEFAULT_TEMPLATE_CONTENT) {
+        if (!projectSettingsFile){
+            projectSettingsFile = createFile("ProjectSettings/ProjectSettings.asset")
+        }
+        else{
+            projectSettingsFile.text = ""
+        }
+        projectSettingsFile << content
+        projectSettingsFile
+    }
+
+    protected void addMockUnityPath() {
+
+        mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory)
+        mockUnityFile.executable = true
+        if (windows) {
+            mockUnityFile << """
+                @echo off
+                echo ${mockUnityStartupMessage}
+                echo %*
+            """.stripIndent()
+        } else {
+            mockUnityFile << """
                 #!/usr/bin/env bash
+                echo ${mockUnityStartupMessage}
                 echo \$@
             """.stripIndent()
         }
+        addUnityPathToExtension(mockUnityFile.path)
+    }
 
-        settings = createFile("ProjectSettings/ProjectSettings.asset")
-        settings << ProjectSettingsSpec.TEMPLATE_CONTENT
-
+    void setLicenseDirectory() {
+        // Setup fake license dir so we don't delete actual licenses
+        def licenseDir = File.createTempDir("unity","testLicenseDir")
+        createFile("testLicense", licenseDir)
         buildFile << """
-            group = 'test'
-            ${applyPlugin(UnityPlugin)}
-         
-            unity.unityPath(file("${escapedPath(unityTestLocation.path)}"))
+        unity {
+            licenseDirectory.set(new File("${escapedPath(licenseDir.path)}"))
+        }
         """.stripIndent()
+    }
+
+    protected String getUnityPath() {
+        def result = System.getenv().get(unityPathOverrideEnvVariable)
+        if (result) {
+            return result
+        }
+    }
+
+    protected void addUnityPathToExtension(String path) {
+        buildFile << "unity.unityPath = file(\"${escapedPath(path)}\")"
+    }
+
+    void addMockTask(Boolean force, Boolean clearActions, String... lines) {
+        addTask(subjectUnderTestName, subjectUnderTestTypeName, force, lines)
+        if (clearActions) {
+            clearSubjectTaskActions()
+        }
+    }
+
+    void clearSubjectTaskActions() {
+        appendToSubjectTask("""
+        doFirst {
+            println "woo"
+        }
+        actions = [actions[0]]
+        """.stripIndent())
+    }
+
+    void appendToSubjectTask(String... lines) {
+        buildFile << """
+        $subjectUnderTestName {
+            ${lines.join('\n')}
+        }
+        """.stripIndent()
+    }
+
+    def runTestTaskSuccessfully() {
+        runTasksSuccessfully(subjectUnderTestName)
+    }
+
+    void addMockTask(String name, String typeName, Boolean force, String... lines) {
+        def originalTypeName = typeName
+        typeName = "MockTestTask"
+        buildFile << """
+            class ${typeName} extends ${originalTypeName} {                   
+                @Override
+                void exec() {
+                }
+            }
+            """.stripIndent()
+        addTask(name, typeName, force, lines)
+    }
+
+    void addTask(String name, String typeName, Boolean force, String... lines) {
+        lines = lines ?: []
+        buildFile << """
+        task (${name}, type: ${typeName}) {                       
+            ${force ? "onlyIf = {true}\n" : ""}${lines.join('\n')}
+        }
+        """.stripIndent()
+    }
+
+    void appendToPluginExtension(String... lines) {
+        StringBuilder builder = new StringBuilder()
+        builder.append("unity {")
+        lines.each { l -> builder.append("${l}\n") }
+        builder.append("}")
+        buildFile << """
+            unity {
+                defaultBuildTarget = "android"
+            }
+        """.stripIndent()
+        buildFile << builder.toString()
+    }
+
+    void addProviderQueryTask(String name, String path, String invocation = ".getOrNull()") {
+        buildFile << """
+            task(${name}) {
+                doLast {
+                    def value = ${path}${invocation}
+                    println("${path}: " + value)
+                }
+            }
+        """
     }
 }

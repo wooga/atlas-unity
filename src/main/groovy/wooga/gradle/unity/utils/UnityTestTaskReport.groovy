@@ -1,34 +1,34 @@
 /*
- * Copyright 2021 Wooga GmbH
+ * Copyright 2018 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.utils
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
-
-import javax.inject.Inject
+import org.gradle.api.reporting.Report
+import org.gradle.api.reporting.ReportContainer
+import org.gradle.api.reporting.SingleFileReport
 
 /**
- * Return the currently active license to the license server.
+ * Container type for Unity test task result reports.
  */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
+interface UnityTestTaskReport extends ReportContainer<Report>{
 
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
+    /**
+     * Returns a {@link org.gradle.api.reporting.SingleFileReport} object.
+     * @return the xml report object.
+     */
+    SingleFileReport getXml()
 }

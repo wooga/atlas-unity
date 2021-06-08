@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.traits
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
+trait UnityTestSpec extends UnityBaseSpec {
 
-import javax.inject.Inject
 
-/**
- * Return the currently active license to the license server.
- */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
-
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
 }

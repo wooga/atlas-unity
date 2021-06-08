@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Wooga GmbH
+ * Copyright 2018-2020 Wooga GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package wooga.gradle.unity.tasks
+package com.wooga.spock.extensions.unity
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
-
-import javax.inject.Inject
-
-/**
- * Return the currently active license to the license server.
- */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
-
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
+enum UnityPathResolution {
+    /**
+     * No Unity path will be set
+     */
+    None,
+    /**
+     * A mock Unity executable will be set (a batch file that echos back)
+     */
+    Mock,
+    /**
+     * Returns an installed Unity version (if none are present, will install one locally)
+     */
+    Default
 }
