@@ -56,6 +56,10 @@ class SetAPICompatibilityLevel extends DefaultTask implements APICompatibilityLe
             @Override
             boolean isSatisfiedBy(SetAPICompatibilityLevel t) {
                 def file = settingsFile.get().asFile
+                if (!file.exists()){
+                    logger.warn("No project settings file is present at ${file.path}")
+                    return false
+                }
                 def projectSettings = new ProjectSettingsFile(file)
 
                 Map<String, APICompatibilityLevel> currentAPICompLevel = projectSettings.getAPICompatibilityLevelPerPlatform()
