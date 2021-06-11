@@ -59,6 +59,14 @@ trait PlatformUtilsImpl {
         }
         path
     }
+
+    /**
+     * Returns the pat to the usr directory in UNIX
+     * @return
+     */
+    static String getUnixUserHomePath() {
+        System.getProperty("user.home")
+    }
 }
 
 class PlatformUtils implements PlatformUtilsImpl {
