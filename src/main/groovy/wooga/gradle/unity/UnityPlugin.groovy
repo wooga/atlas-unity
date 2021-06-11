@@ -126,7 +126,6 @@ class UnityPlugin implements Plugin<Project> {
         extension.authentication.password.set(UnityPluginConventions.password.getStringValueProvider(project))
         extension.authentication.serial.set(UnityPluginConventions.serial.getStringValueProvider(project))
 
-        extension.defaultBuildTarget.convention(BuildTarget.undefined.toString())
         extension.batchModeForEditModeTest.convention(UnityPluginConventions.batchModeForEditModeTest.getBooleanValueProvider(project))
         extension.batchModeForPlayModeTest.convention(UnityPluginConventions.batchModeForPlayModeTest.getBooleanValueProvider(project))
 
@@ -143,9 +142,7 @@ class UnityPlugin implements Plugin<Project> {
             t.quit.convention(true)
             t.logToStdout.convention(t.logger.infoEnabled || t.logger.debugEnabled)
             t.toggleLogFile(true)
-            t.buildTarget.convention(project.provider {
-                extension.defaultBuildTarget.getOrElse(BuildTarget.undefined.toString())
-            })
+            t.buildTarget.convention(extension.defaultBuildTarget)
 
             // Properties used by tasks
             t.unityPath.convention(extension.unityPath)
