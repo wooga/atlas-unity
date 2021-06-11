@@ -112,12 +112,15 @@ class UnityPluginConventions implements PlatformUtilsImpl {
      * The path to the Unity license directory
      */
     static File getLicenseDirectory() {
-        File licensePath = null
+        File licensePath
 
         if (isWindows()) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_WIN
-        } else if (osName().contains("mac os x")) {
+        } else if (isMac()) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_MAC_OS
+        }
+        else{
+            licensePath = new File("")
         }
 
         licensePath
