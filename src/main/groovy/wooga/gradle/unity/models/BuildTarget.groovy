@@ -20,7 +20,6 @@ package wooga.gradle.unity.models
  * The build target values for Unity
  */
 enum BuildTarget {
-    undefined,
     win32,
     win64,
     osx,

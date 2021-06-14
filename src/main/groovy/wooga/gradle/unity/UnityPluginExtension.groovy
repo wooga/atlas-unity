@@ -223,20 +223,18 @@ trait UnityPluginExtension implements UnitySpec,
                 return project.properties.get("unity.testBuildTargets").toString().split(",").collect({
                     it
                 })
-            } else if (defaultBuildTarget.get() == BuildTarget.undefined.toString()) {
+            } else if (!defaultBuildTarget.isPresent() ) {
                 return new HashSet<String>()
             }
         }
 
         // If test targets were assigned to the property
         Set<String> targets = new HashSet<String>()
-        for (Object t : getTestBuildTargets()) {
-            if (t != BuildTarget.undefined) {
-                targets.add(t.toString())
-            }
+        for (String t : getTestBuildTargets()) {
+            targets.add(t)
         }
 
-        if (getDefaultBuildTarget().getOrElse(BuildTarget.undefined.toString()) != BuildTarget.undefined.toString()) {
+        if (getDefaultBuildTarget().present) {
             targets.add(defaultBuildTarget.get())
         }
 

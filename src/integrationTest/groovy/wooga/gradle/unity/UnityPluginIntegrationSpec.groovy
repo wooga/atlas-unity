@@ -175,7 +175,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         "unityPath"                | "setUnityPath"  | osPath("/foo/bar/unity3") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
         "unityPath"                | "unityPath.set" | osPath("/foo/bar/unity4") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
 
-        "defaultBuildTarget"       | _               | _                         | BuildTarget.undefined                                      | BuildTarget             | PropertyLocation.none
+        "defaultBuildTarget"       | _               | _                         | null                                                          | _                       | PropertyLocation.none
         "autoActivateUnity"        | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
         "autoReturnLicense"        | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
         "logCategory"              | _               | _                         | "unity"                                                    | "Property<String>"      | PropertyLocation.none
