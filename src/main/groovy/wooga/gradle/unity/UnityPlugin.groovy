@@ -293,9 +293,7 @@ class UnityPlugin implements Plugin<Project> {
                 }
 
         activateTask.configure({ t ->
-            //if (extension.autoReturnLicense.get()) {
-                t.finalizedBy(returnLicenseTask)
-            //}
+            t.finalizedBy(returnLicenseTask)
         })
 
         // Assign authentication to ALL tasks of type Activate
@@ -306,21 +304,15 @@ class UnityPlugin implements Plugin<Project> {
         // Assign license to ALL tasks of type ReturnLicense
         project.tasks.withType(ReturnLicense).configureEach({ t ->
             t.licenseDirectory.convention(extension.licenseDirectory)
-            t.onlyIf {extension.autoReturnLicense.get()}
+            t.onlyIf { extension.autoReturnLicense.get() }
         })
 
-        //project.afterEvaluate {
-            project.tasks.withType(UnityTask).configureEach({ t ->
-                if (!Activate.isInstance(t) && !ReturnLicense.isInstance(t)) {
-                    //if (extension.autoActivateUnity.get()) {
-                        t.dependsOn(activateTask)
-                    //}
+        project.tasks.withType(UnityTask).configureEach({ t ->
+            if (!Activate.isInstance(t) && !ReturnLicense.isInstance(t)) {
+                t.dependsOn(activateTask)
+                t.finalizedBy(returnLicenseTask)
+            }
+        })
 
-                    //if (extension.autoReturnLicense.get()) {
-                        t.finalizedBy(returnLicenseTask)
-                    //}
-                }
-            })
-        //}
     }
 }

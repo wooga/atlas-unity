@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import wooga.gradle.unity.utils.PlatformUtils
 import wooga.gradle.unity.utils.PlatformUtilsImpl
 import wooga.gradle.unity.utils.PropertyLookup
 
@@ -53,7 +54,13 @@ class UnityPluginConventions implements PlatformUtilsImpl {
     static File UNITY_LICENSE_DIRECTORY_MAC_OS = new File("/Library/Application Support/Unity/")
 
     /**
-     * {@code File} to Unity license directory on windows.
+     * {@code File} to Unity license directory on Linux.
+     * @value "/Library/Application Support/Unity/"
+     */
+    static File UNITY_LICENSE_DIRECTORY_LINUX = new File("${PlatformUtils.unixUserHomePath}/share/unity3d/Unity/")
+
+    /**
+     * {@code File} to Unity license directory on Windows.
      * @value "C:\ProgramData\Unity"
      */
     static File UNITY_LICENSE_DIRECTORY_WIN = new File("C:\\ProgramData\\Unity")
@@ -66,7 +73,7 @@ class UnityPluginConventions implements PlatformUtilsImpl {
     /**
      * The path to the Unity Editor executable
      */
-    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH","UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })
+    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH", "UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })
     /**
      * Used for authentication with Unity's servers
      */
@@ -112,12 +119,15 @@ class UnityPluginConventions implements PlatformUtilsImpl {
      * The path to the Unity license directory
      */
     static File getLicenseDirectory() {
-        File licensePath = null
+        File licensePath
 
         if (isWindows()) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_WIN
-        } else if (osName().contains("mac os x")) {
+        } else if (isMac()) {
             licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_MAC_OS
+        } else {
+            licensePath = UnityPluginConventions.UNITY_LICENSE_DIRECTORY_LINUX
+
         }
 
         licensePath
