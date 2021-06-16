@@ -47,6 +47,7 @@ abstract class UnityTask extends DefaultTask
         // and also an additional one for our custom use
         wooga_gradle_unity_traits_ArgumentsSpec__arguments = project.provider({ getUnityCommandLineOptions() })
         wooga_gradle_unity_traits_ArgumentsSpec__additionalArguments = project.objects.listProperty(String)
+        wooga_gradle_unity_traits_ArgumentsSpec__environment =  project.objects.mapProperty(String, String)
     }
 
     @TaskAction
@@ -63,14 +64,15 @@ abstract class UnityTask extends DefaultTask
 
                 def unityPath = unityPath.get().asFile.absolutePath
                 def unityArgs = getAllArguments()
-
-                OutputStream outputStream = getOutputStream()
+                def unityEnvironment = environment.get()
+                def outputStream = getOutputStream()
 
                 exec.with {
                     executable unityPath
                     args = unityArgs
                     standardOutput = outputStream
                     ignoreExitValue = true
+                    environment = unityEnvironment
                 }
             }
         })
