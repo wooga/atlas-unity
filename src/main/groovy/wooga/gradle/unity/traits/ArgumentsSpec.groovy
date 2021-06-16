@@ -17,6 +17,7 @@
 package wooga.gradle.unity.traits
 
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -88,4 +89,12 @@ trait ArgumentsSpec {
         result
     }
 
+    private final MapProperty<String, ?> environment
+    /**
+     * @return Used for populating the system environment
+     */
+    @Internal
+    MapProperty<String, ?> getEnvironment() {
+        environment
+    }
 }

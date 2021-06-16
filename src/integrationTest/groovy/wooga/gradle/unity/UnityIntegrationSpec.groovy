@@ -137,14 +137,20 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         if (windows) {
             mockUnityFile << """
                 @echo off
-                echo ${mockUnityStartupMessage}
+                echo [ENVIRONMENT]:
+                set
+                echo [ARGUMENTS]:
                 echo %*
+                echo ${mockUnityStartupMessage}
             """.stripIndent()
         } else {
             mockUnityFile << """
                 #!/usr/bin/env bash
-                echo ${mockUnityStartupMessage}
+                echo [ENVIRONMENT]:
+                env
+                echo [ARGUMENTS]:
                 echo \$@
+                echo ${mockUnityStartupMessage}
             """.stripIndent()
         }
         addUnityPathToExtension(mockUnityFile.path)

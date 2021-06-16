@@ -223,6 +223,48 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         method = (useSetter) ? "setLogCategory" : "logCategory.set"
     }
 
+    def "set environment for task exec"() {
+        given:
+        appendToSubjectTask("$method($value)")
+        addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get()")
+
+        when:
+        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
+
+        then:
+        result.standardOutput.contains("${subjectUnderTestName}.environment: ${rawValue.toString()}")
+
+        where:
+        property      | useSetter | rawValue
+        "environment" | true      | ["A": "7"]
+        "environment" | false     | ["A": "7"]
+
+        method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
+        value = wrapValueBasedOnType(rawValue, Map)
+    }
+
+    def "adds environment for task exec"() {
+        given:
+        appendToSubjectTask("environment.set(${wrapValueBasedOnType(initialValue, Map)})")
+        appendToSubjectTask("$method(${wrapValueBasedOnType(rawValue, Map)})")
+        addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get().sort()")
+
+        when:
+        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
+
+        then:
+        def expectedValue = new HashMap<String, ?>()
+        expectedValue.putAll(initialValue)
+        expectedValue.putAll(rawValue)
+        result.standardOutput.contains("${subjectUnderTestName}.environment: ${expectedValue}")
+
+        where:
+        method               | rawValue   | initialValue
+        "environment.putAll" | ["A": "7"] | ["B": "5"]
+
+        value = wrapValueBasedOnType(rawValue, Map)
+    }
+
     def "task executes without output when set to quiet"() {
         given:
         logLevel = LogLevel.QUIET
