@@ -47,7 +47,7 @@ abstract class UnityTask extends DefaultTask
         // and also an additional one for our custom use
         wooga_gradle_unity_traits_ArgumentsSpec__arguments = project.provider({ getUnityCommandLineOptions() })
         wooga_gradle_unity_traits_ArgumentsSpec__additionalArguments = project.objects.listProperty(String)
-        wooga_gradle_unity_traits_ArgumentsSpec__environment =  project.objects.mapProperty(String, String)
+        wooga_gradle_unity_traits_ArgumentsSpec__environment =  project.objects.mapProperty(String, Object)
     }
 
     @TaskAction

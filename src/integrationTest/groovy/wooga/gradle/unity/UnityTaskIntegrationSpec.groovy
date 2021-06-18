@@ -223,7 +223,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         method = (useSetter) ? "setLogCategory" : "logCategory.set"
     }
 
-    def "set environment for task exec"() {
+    @Unroll
+    def "set environment variable #rawValue for task exec"() {
         given:
         appendToSubjectTask("$method($value)")
         addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get()")
@@ -236,8 +237,14 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         where:
         property      | useSetter | rawValue
-        "environment" | true      | ["A": "7"]
-        "environment" | false     | ["A": "7"]
+        "environment" | true      | ["A": "foo"]
+        "environment" | false     | ["A": "bar"]
+        "environment" | true      | ["A": 7]
+        "environment" | false     | ["A": 7]
+        "environment" | true      | ["A": file("foo.bar")]
+        "environment" | false     | ["A": file("foo.bar")]
+        "environment" | true      | ["A": true]
+        "environment" | false     | ["A": false]
 
         method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
         value = wrapValueBasedOnType(rawValue, Map)
