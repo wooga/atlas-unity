@@ -225,9 +225,21 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
     @Unroll
     def "set environment variable #rawValue for task exec"() {
-        given:
+        given: "some clean environment variables"
+        def envNames = System.getenv().keySet().toArray()
+        environmentVariables.clear(*envNames)
+
+        and: "a test value in system env"
+        initialValue.each { key, value ->
+            environmentVariables.set(key, value)
+        }
+
+        and: "an overridden environment"
         appendToSubjectTask("$method($value)")
         addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get()")
+
+        and: "some values in the user environment"
+        environmentVariables.set("USER_A", "foo")
 
         when:
         def result = runTasksSuccessfully(subjectUnderTestName, "custom")
@@ -246,13 +258,21 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         "environment" | true      | ["A": true]
         "environment" | false     | ["A": false]
 
+        initialValue = ["B": "5", "C" : "7"]
         method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
         value = wrapValueBasedOnType(rawValue, Map)
     }
 
     def "adds environment for task exec"() {
-        given:
-        appendToSubjectTask("environment.set(${wrapValueBasedOnType(initialValue, Map)})")
+        given: "some clean environment variables"
+        def envNames = System.getenv().keySet().toArray()
+        environmentVariables.clear(*envNames)
+
+        and: "a test value in system env"
+        initialValue.each { key, value ->
+            environmentVariables.set(key, value)
+        }
+
         appendToSubjectTask("$method(${wrapValueBasedOnType(rawValue, Map)})")
         addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get().sort()")
 
