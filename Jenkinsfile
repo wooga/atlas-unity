@@ -18,15 +18,17 @@
 
 withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', variable: 'artifactory_publish'),
                  usernameColonPassword(credentialsId: 'artifactory_deploy', variable: 'artifactory_deploy'),
-                 string(credentialsId: 'atlas_unity_coveralls_token', variable: 'coveralls_token')]) {
+                 string(credentialsId: 'atlas_unity_coveralls_token', variable: 'coveralls_token'),
+                 string(credentialsId: 'atlas_plugins_sonar_token', variable: 'sonar_token')]) {
 
     def testEnvironment = [
                             "artifactoryCredentials=${artifactory_publish}",
                             "nugetkey=${artifactory_deploy}"
                           ]
 
-    buildGradlePlugin plaforms: ['osx','windows','linux'],
+    buildGradlePlugin platforms: ['macos','windows','linux'],
                       coverallsToken: coveralls_token,
+                      sonarToken: sonar_token,
                       testEnvironment: testEnvironment,
                       labels: 'primary'
 }
