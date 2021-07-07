@@ -117,7 +117,14 @@ enum UnityCommandLineOption {
      */
     returnLicense("-returnlicense"),
 
-    // Testing
+    // Testing commands provided by the Unity Test Framework
+    // https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/reference-command-line.html
+
+    /**
+     * Don't save your current Project into the Unity launcher/hub history.
+     */
+    forgetProjectPath("-forgetProjectPath"),
+
     /**
      * Run Editor tests from the project.
      * <p>
@@ -125,6 +132,41 @@ enum UnityCommandLineOption {
      * because the Editor automatically closes down after the run is finished.
      */
     runTests("-runTests"),
+
+    /**
+     * A semicolon-separated list of test categories to include in the run. A semi-colon separated list
+     * should be formatted as a string enclosed in quotation marks, e.g. testCategory "firstCategory;secondCategory".
+     * If using both testFilter and testCategory, then only tests that match both are run.
+     * This argument supports negation using '!'.
+     * If using '!MyCategory' then no tests with the 'MyCategory' category will be included in the run.
+     */
+    testCategory("-testCategory", true),
+
+    /**
+     * A semicolon-separated list of test names to run, or a regular expression pattern
+     * to match tests by their full name. A semi-colon separated list should be formatted
+     * as a string enclosed in quotation marks, e.g. testFilter "Low;Medium".
+     * This argument supports negation using '!'. If using the test filter '!MyNamespace.Something.MyTest',
+     * then all tests except that test will be run.
+     */
+    testFilter("-testFilter", true),
+
+    /**
+     * The platform to run tests on. Accepted values:
+     * - EditMode: Edit Mode tests. Equivalent to running tests from the EditMode tab of the Test Runner window.
+     * - PlayMode: Play Mode tests that run in the Editor. Equivalent to running tests from the PlayMode tab
+     *             of the Test Runner window.
+     * - Any value from the BuildTarget enum: Play Mode tests that run on a player built for the specified platform.
+     *   Equivalent to using the Run all tests (<target_platform>) dropdown in the PlayMode tab of the Test Runner window.
+     * Note: If no value is specified for this argument, tests run in Edit Mode.
+     */
+    testPlatform( "-testPlatform", true),
+
+    /**
+     * A semicolon-separated list of test assemblies to include in the run. A semi-colon separated list
+     * should be formatted as a string enclosed in quotation marks, e.g. assemblyNames "firstAssembly;secondAssembly"
+     */
+    assemblyNames("-assemblyNames", true),
 
     /**
      * Path where the result file should be placed.
@@ -136,14 +178,20 @@ enum UnityCommandLineOption {
     testResults("-testResults", true),
 
     /**
-     * The testplatform to use for the tests.
-     * <p>
-     * {@code -testPlatform <platform>}
-     * @see TestPlatform
+     * The time, in seconds, the editor should wait for heartbeats after starting a test run on a player.
+     * This defaults to 10 minutes.
      */
-    testPlatform( "-testPlatform", true),
+    playerHeartbeatTimeout("-playerHeartbeatTimeout", true),
 
-    // Misc
+    /**
+     * If included, the test run will run tests synchronously, guaranteeing that all tests runs in one editor
+     * update call. Note that this is only supported for EditMode tests, and that tests which take multiple frames
+     * (i.e. [UnityTest] tests, or tests with [UnitySetUp] or [UnityTearDown] scaffolding) will be filtered out.
+     */
+    runSynchronously("-runSynchronously"),
+
+    // General
+
     /**
      * Execute the static method as soon as Unity is started,
      * the project is open and after the optional Asset server update has been performed.

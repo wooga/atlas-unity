@@ -28,14 +28,35 @@ import wooga.gradle.unity.models.UnityCommandLineOption
 
 trait UnityCommandLineSpec extends UnitySpec {
 
+    /**
+     *  Instanced configuration of a command line option
+     */
+    static class UnityCommandLineOptionSetting {
+        final UnityCommandLineOption option
+        Property<Boolean> enabled
+        Property<String> arguments
+
+        UnityCommandLineOptionSetting(UnityCommandLineOption option, ObjectFactory objects) {
+            this.option = option
+            this.enabled = objects.property(Boolean)
+            this.arguments = objects.property(String)
+        }
+    }
+
     private Map<UnityCommandLineOption, UnityCommandLineOptionSetting> commandLineOptions = UnityCommandLineOption.values().collectEntries(
             { [it, new UnityCommandLineOptionSetting(it, objects)] }
     )
 
+    /**
+     * @return Returns the instanced configuration of a command line option
+     */
     UnityCommandLineOptionSetting getCommandLineOption(UnityCommandLineOption option) {
         commandLineOptions[option]
     }
 
+    /**
+     * Enables or disables a command line option
+     */
     void toggleCommandLineOption(UnityCommandLineOption option, Provider<Boolean> value) {
         commandLineOptions[option].enabled.set(value)
     }
@@ -56,6 +77,9 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(option, providerFactory.provider({ value }))
     }
 
+    /**
+     * Sets a command line option with the given argument (while enabling it)
+     */
     void setCommandLineOption(UnityCommandLineOption option, Provider<String> args) {
         if (args) {
             commandLineOptions[option].enabled.set(providerFactory.provider({ true }))
@@ -63,6 +87,16 @@ trait UnityCommandLineSpec extends UnitySpec {
         }
     }
 
+    /**
+     * Sets a command line option with the given argument (while enabling it)
+     */
+    void setCommandLineOption(UnityCommandLineOption option, String args) {
+        setCommandLineOption(option, providerFactory.provider({ args }))
+    }
+
+    /**
+     * Sets a convention for a command line option with the given argument (while enabling it)
+     */
     void setCommandLineOptionConvention(UnityCommandLineOption option, Provider<String> args) {
         if (args) {
             commandLineOptions[option].enabled.set(providerFactory.provider({ true }))
@@ -70,10 +104,9 @@ trait UnityCommandLineSpec extends UnitySpec {
         }
     }
 
-    void setCommandLineOption(UnityCommandLineOption option, String args) {
-        setCommandLineOption(option, providerFactory.provider({ args }))
-    }
-
+    /**
+     * Sets a convention for a command line option with the given argument (while enabling it)
+     */
     void setCommandLineOptionConvention(UnityCommandLineOption option, String args) {
         setCommandLineOptionConvention(option, providerFactory.provider({ args }))
     }
@@ -94,11 +127,19 @@ trait UnityCommandLineSpec extends UnitySpec {
         false
     }
 
+    /**
+     * @return Given a command line option, returns its currently set arguments o
+     * or those that are provided via a fallback
+     */
     String getArgumentsOrDefault(UnityCommandLineOption key) {
         def option = commandLineOptions[key]
-        option.arguments.getOrElse(fetchUnityCommandLineOptionArguments(key))
+        option.arguments.getOrElse(getDefaultUnityCommandLineOptionArguments(key))
     }
 
+    /**
+     * @return A list of all currently set command line options as flags,
+     * in a format that Unity can parse when invoked from the command line
+     */
     @Internal
     List<String> getUnityCommandLineOptions() {
         def result = []
@@ -127,7 +168,11 @@ trait UnityCommandLineSpec extends UnitySpec {
         result
     }
 
-    String fetchUnityCommandLineOptionArguments(UnityCommandLineOption option) {
+    /**
+     * @return The default arguments for a given a command line option,
+     * which will be retrieved whenever the arguments for an option have not been set manually
+     */
+    String getDefaultUnityCommandLineOptionArguments(UnityCommandLineOption option) {
         switch (option) {
             case UnityCommandLineOption.projectPath:
                 return projectDirectory.get().asFile.path
@@ -138,10 +183,14 @@ trait UnityCommandLineSpec extends UnitySpec {
         }
     }
 
+    // TODO: Refactor this out
     String fetchLogFilePath() {
         null
     }
 
+    // -----------------------------------------------------------------------/
+    // General
+    // -----------------------------------------------------------------------/
     @Internal
     Property<Boolean> getBatchMode() {
         getCommandLineOption(UnityCommandLineOption.batchMode).enabled
@@ -169,7 +218,7 @@ trait UnityCommandLineSpec extends UnitySpec {
     }
 
     @Internal
-    Property<String> getLogFile(){
+    Property<String> getLogFile() {
         getCommandLineOption(UnityCommandLineOption.logFile).arguments
     }
 
@@ -190,7 +239,7 @@ trait UnityCommandLineSpec extends UnitySpec {
     }
 
     @Internal
-    Property<Boolean> getQuit(){
+    Property<Boolean> getQuit() {
         getCommandLineOption(UnityCommandLineOption.quit).enabled
     }
 
@@ -224,44 +273,6 @@ trait UnityCommandLineSpec extends UnitySpec {
 
     void setReturnLicense(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.returnLicense, value)
-    }
-
-    void setRunTests(Provider<Boolean> value) {
-        toggleCommandLineOption(UnityCommandLineOption.runTests, value)
-    }
-
-    void setRunTests(Boolean value) {
-        toggleCommandLineOption(UnityCommandLineOption.runTests, value)
-    }
-
-    @Internal
-    Property<String> getTestResults() {
-        return getCommandLineOption(UnityCommandLineOption.testResults).arguments
-    }
-
-    void setTestResults(Provider<String> value) {
-        setCommandLineOption(UnityCommandLineOption.testResults, value)
-    }
-
-    void setTestResults(String value) {
-        setCommandLineOption(UnityCommandLineOption.testResults, value)
-    }
-
-    @Internal
-    Property<String> getTestPlatform() {
-        return getCommandLineOption(UnityCommandLineOption.testPlatform).arguments
-    }
-
-    void setTestPlatform(Provider<String> value) {
-        setCommandLineOption(UnityCommandLineOption.testPlatform, value)
-    }
-
-    void setTestPlatform(String value) {
-        setCommandLineOption(UnityCommandLineOption.testPlatform, value)
-    }
-
-    void setTestPlatform(TestPlatform value) {
-        setCommandLineOption(UnityCommandLineOption.testPlatform, value.toString())
     }
 
     void setExecuteMethod(Provider<String> value) {
@@ -346,17 +357,104 @@ trait UnityCommandLineSpec extends UnitySpec {
         getCommandLineOption(UnityCommandLineOption.buildTarget).arguments
     }
 
-    static class UnityCommandLineOptionSetting {
-        final UnityCommandLineOption option
-        Property<Boolean> enabled
-        Property<String> arguments
-
-        UnityCommandLineOptionSetting(UnityCommandLineOption option, ObjectFactory objects) {
-            this.option = option
-            this.enabled = objects.property(Boolean)
-            this.arguments = objects.property(String)
-        }
+    // -----------------------------------------------------------------------/
+    // Tests
+    // -----------------------------------------------------------------------/
+    void setForgetProjectPath(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.forgetProjectPath, value)
     }
 
-}
+    void setForgetProjectPath(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.forgetProjectPath, value)
+    }    
+    
+    void setRunTests(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.runTests, value)
+    }
 
+    void setRunTests(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.runTests, value)
+    }
+
+    void setTestCategory(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.testCategory, value)
+    }
+
+    void setTestCategory(String value) {
+        setCommandLineOption(UnityCommandLineOption.testCategory, value)
+    }
+
+    void setTestCategory(String... value) {
+        setCommandLineOption(UnityCommandLineOption.testCategory, value.join(";"))
+    }
+
+    void setTestFilter(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.testFilter, value)
+    }
+
+    void setTestFilter(String value) {
+        setCommandLineOption(UnityCommandLineOption.testFilter, value)
+    }
+
+    void setTestFilter(String... value) {
+        setCommandLineOption(UnityCommandLineOption.testFilter, value.join(";"))
+    }
+
+    @Internal
+    Property<String> getTestPlatform() {
+        return getCommandLineOption(UnityCommandLineOption.testPlatform).arguments
+    }
+
+    void setTestPlatform(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.testPlatform, value)
+    }
+
+    void setTestPlatform(String value) {
+        setCommandLineOption(UnityCommandLineOption.testPlatform, value)
+    }
+
+    void setTestPlatform(TestPlatform value) {
+        setCommandLineOption(UnityCommandLineOption.testPlatform, value.toString())
+    }
+
+    void setAssemblyNames(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.assemblyNames, value)
+    }
+
+    void setAssemblyNames(String value) {
+        setCommandLineOption(UnityCommandLineOption.assemblyNames, value)
+    }
+
+    void setAssemblyNames(String... value) {
+        setCommandLineOption(UnityCommandLineOption.assemblyNames, value.join(";"))
+    }
+
+    @Internal
+    Property<String> getTestResults() {
+        return getCommandLineOption(UnityCommandLineOption.testResults).arguments
+    }
+
+    void setTestResults(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.testResults, value)
+    }
+
+    void setTestResults(String value) {
+        setCommandLineOption(UnityCommandLineOption.testResults, value)
+    }
+
+    void setPlayerHeartbeatTimeout(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.playerHeartbeatTimeout, value)
+    }
+
+    void setPlayerHeartbeatTimeout(String value) {
+        setCommandLineOption(UnityCommandLineOption.playerHeartbeatTimeout, value)
+    }
+
+    void setRunSynchronously(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.runSynchronously, value)
+    }
+
+    void setRunSynchronously(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.runSynchronously, value)
+    }
+}
