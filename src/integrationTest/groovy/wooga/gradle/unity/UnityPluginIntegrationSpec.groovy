@@ -24,6 +24,7 @@ import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.utils.PropertyQueryTaskWriter
 
 /**
  * Tests the {@link UnityPluginExtension} when applied on the {@link UnityPlugin}
@@ -132,9 +133,8 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
             disableAutoActivateAndLicense = false)
     @Unroll()
     def "extension property :#property returns '#testValue' if #reason"() {
-        given:
+        given: "an applied plugin"
         setupUnityPlugin()
-        addProviderQueryTask("custom", "${extensionName}.${property}")
 
         and: "a set value"
         switch (location) {
@@ -158,14 +158,13 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
             testValue = testValue.replaceAll("#projectDir#", escapedPath(projectDir.path))
         }
 
-        and: "an applied plugin"
-        setupUnityPlugin()
-
-        when: ""
-        def result = runTasksSuccessfully("custom")
+        when:
+        def query = new PropertyQueryTaskWriter("${extensionName}.${property}")
+        query.write(buildFile)
+        def result = runTasksSuccessfully(query.taskName)
 
         then:
-        result.standardOutput.contains("${extensionName}.${property}: ${testValue}")
+        query.matches(result, testValue)
 
         where:
         property                   | method          | rawValue                  | expectedValue                                              | type                    | location
@@ -216,42 +215,22 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
     @Unroll
     def "plugin sets default #property"() {
-        given: "a build script"
-
-        buildFile << """
-            task(customTest) {
-                doLast {
-                    print "$property: "
-                    println unity.${property}.getOrNull()
-                }
-            }
-        """
-
-        and: "a path to the project"
+        given: "a path to the project"
         def path = new File(projectDir, expectedPath)
 
         when:
-        def result = runTasks("customTest")
+        def query = new PropertyQueryTaskWriter("unity.${property}")
+        query.write(buildFile)
+        def result = runTasks(query.taskName)
 
         then:
-        result.standardOutput.contains("$property: ${path.path}")
+        query.matches(result, "${path.path}")
 
         where:
         property     | expectedPath
         'assetsDir'  | "Assets"
         'pluginsDir' | "Assets/Plugins"
         'logsDir'    | "build/logs"
-    }
-
-    void appendPropertyPrint(String property, String root) {
-        buildFile << """
-            task(customTest) {
-                doLast {
-                    print "$property: "
-                    println ${root}${property}.getOrNull()
-                }
-            }
-        """
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)

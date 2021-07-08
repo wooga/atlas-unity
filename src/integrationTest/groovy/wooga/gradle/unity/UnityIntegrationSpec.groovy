@@ -20,6 +20,8 @@ package wooga.gradle.unity
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import nebula.test.functional.ExecutionResult
+import org.gradle.internal.impldep.com.amazonaws.transform.MapEntry
 import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
@@ -120,10 +122,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     }
 
     protected File setProjectSettingsFile(String content = ProjectSettingsFile.DEFAULT_TEMPLATE_CONTENT) {
-        if (!projectSettingsFile){
+        if (!projectSettingsFile) {
             projectSettingsFile = createFile("ProjectSettings/ProjectSettings.asset")
-        }
-        else{
+        } else {
             projectSettingsFile.text = ""
         }
         projectSettingsFile << content
@@ -158,7 +159,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
     void setLicenseDirectory() {
         // Setup fake license dir so we don't delete actual licenses
-        def licenseDir = File.createTempDir("unity","testLicenseDir")
+        def licenseDir = File.createTempDir("unity", "testLicenseDir")
         createFile("testLicense", licenseDir)
         buildFile << """
         unity {
@@ -239,16 +240,5 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
             }
         """.stripIndent()
         buildFile << builder.toString()
-    }
-
-    void addProviderQueryTask(String name, String path, String invocation = ".getOrNull()") {
-        buildFile << """
-            task(${name}) {
-                doLast {
-                    def value = ${path}${invocation}
-                    println("${path}: " + value)
-                }
-            }
-        """
     }
 }

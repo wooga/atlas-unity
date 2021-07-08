@@ -1,6 +1,6 @@
-package wooga.gradle
+package wooga.gradle.utils
 
-trait PropertyUtils {
+trait PropertyUtilsImpl {
 
     enum PropertyLocation {
         none, script, property, environment
@@ -19,11 +19,15 @@ trait PropertyUtils {
         }
     }
 
-    String envNameFromProperty(String extensionName, String property) {
+    static String envNameFromProperty(String extensionName, String property) {
         "${extensionName.toUpperCase()}_${property.replaceAll(/([A-Z])/, "_\$1").toUpperCase()}"
     }
 
-    String envNameFromProperty(String property) {
+    static String envNameFromProperty(String property) {
         property.replaceAll(/([A-Z.])/, '_$1').replaceAll(/[.]/, '').toUpperCase()
     }
 }
+
+class PropertyUtils implements PropertyUtilsImpl {
+}
+

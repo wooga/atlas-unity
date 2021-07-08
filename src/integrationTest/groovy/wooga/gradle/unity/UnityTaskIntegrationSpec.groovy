@@ -17,15 +17,15 @@
 
 package wooga.gradle.unity
 
-import com.wooga.spock.extensions.unity.UnityPathResolution
-import com.wooga.spock.extensions.unity.UnityPluginTestOptions
-import com.wooga.spock.extensions.uvm.UnityInstallation
+
 import org.gradle.api.logging.LogLevel
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
+import wooga.gradle.utils.MapPropertyQueryTaskWriter
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Unity
+import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
@@ -131,25 +131,18 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
             }
         """.stripIndent()
 
-        and: "a task to read back the value"
-        buildFile << """
-            task("readValue") {
-                doLast {
-                    println("property: " + ${subjectUnderTestName}.${property}.get())
-                }
-            }
-        """.stripIndent()
-
         and: "a set property"
         buildFile << """
             ${subjectUnderTestName}.${method}($value)
         """.stripIndent()
 
         when:
-        def result = runTasksSuccessfully("readValue")
+        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.${property}")
+        query.write(buildFile)
+        def result = runTasksSuccessfully(query.taskName)
 
         then:
-        outputContains(result, "property: " + expectedValue.toString())
+        query.matches(result, expectedValue)
 
         where:
         method                    | rawValue         | type                      | append | expectedValue
@@ -198,16 +191,16 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         buildFile << """
             ${subjectUnderTestName}.$method(${value})
             """.stripIndent()
-        addProviderQueryTask("custom", "${subjectUnderTestName}.unityLogFile", ".get().asFile.path")
 
         when:
-        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
+        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.unityLogFile")
+        query.write(buildFile)
+        def result = runTasksSuccessfully(subjectUnderTestName, query.taskName)
 
         then:
         result.wasExecuted(subjectUnderTestName)
         def resultPath = new File(projectDir, "/build/logs/${path}").getPath()
-        //result.standardOutput.contains("-logFile ${resultPath}")
-        result.standardOutput.contains("${subjectUnderTestName}.unityLogFile: ${resultPath}")
+        query.matches(result, resultPath)
 
         where:
         rawValue     | useSetter | path
@@ -226,8 +219,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "set environment variable #rawValue for task exec"() {
         given: "some clean environment variables"
-        def envNames = System.getenv().keySet().toArray()
-        environmentVariables.clear(*envNames)
+        if (!windows){
+            def envNames = System.getenv().keySet().toArray()
+            environmentVariables.clear(*envNames)
+        }
 
         and: "a test value in system env"
         initialValue.each { key, value ->
@@ -236,16 +231,17 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         and: "an overridden environment"
         appendToSubjectTask("$method($value)")
-        addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get()")
 
         and: "some values in the user environment"
         environmentVariables.set("USER_A", "foo")
 
         when:
-        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
+        def query = new MapPropertyQueryTaskWriter(propertyPath)
+        query.write(buildFile)
+        def result = runTasksSuccessfully(subjectUnderTestName, query.taskName)
 
         then:
-        result.standardOutput.contains("${subjectUnderTestName}.environment: ${rawValue.toString()}")
+        query.contains(result, rawValue)
 
         where:
         property      | useSetter | rawValue
@@ -261,12 +257,16 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         initialValue = ["B": "5", "C" : "7"]
         method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
         value = wrapValueBasedOnType(rawValue, Map)
+        propertyPath = "${subjectUnderTestName}.environment"
+
     }
 
     def "adds environment for task exec"() {
         given: "some clean environment variables"
-        def envNames = System.getenv().keySet().toArray()
-        environmentVariables.clear(*envNames)
+        if (!windows){
+            def envNames = System.getenv().keySet().toArray()
+            environmentVariables.clear(*envNames)
+        }
 
         and: "a test value in system env"
         initialValue.each { key, value ->
@@ -274,22 +274,21 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         }
 
         appendToSubjectTask("$method(${wrapValueBasedOnType(rawValue, Map)})")
-        addProviderQueryTask("custom", "${subjectUnderTestName}.environment", ".get().sort()")
 
         when:
-        def result = runTasksSuccessfully(subjectUnderTestName, "custom")
+        def query = new MapPropertyQueryTaskWriter(propertyPath)
+        query.write(buildFile)
+        def result = runTasksSuccessfully(subjectUnderTestName, query.taskName)
 
         then:
-        def expectedValue = new HashMap<String, ?>()
-        expectedValue.putAll(initialValue)
-        expectedValue.putAll(rawValue)
-        result.standardOutput.contains("${subjectUnderTestName}.environment: ${expectedValue}")
+        query.contains(result, initialValue, rawValue)
 
         where:
         method               | rawValue   | initialValue
         "environment.putAll" | ["A": "7"] | ["B": "5"]
 
         value = wrapValueBasedOnType(rawValue, Map)
+        propertyPath = "${subjectUnderTestName}.environment"
     }
 
     def "task executes without output when set to quiet"() {
