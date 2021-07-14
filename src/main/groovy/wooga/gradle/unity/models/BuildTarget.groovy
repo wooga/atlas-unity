@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package wooga.gradle.unity.tasks
-
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
-
-import javax.inject.Inject
+package wooga.gradle.unity.models
 
 /**
- * Return the currently active license to the license server.
+ * The build target values for Unity
  */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
-
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
+enum BuildTarget {
+    win32,
+    win64,
+    osx,
+    linux,
+    linux64,
+    ios,
+    android,
+    web,
+    webstreamed,
+    webgl,
+    xboxone,
+    ps4,
+    psp2,
+    wsaplayer,
+    tizen,
+    samsungtv
 }

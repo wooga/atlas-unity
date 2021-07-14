@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.traits
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ProviderFactory
+import org.gradle.internal.impldep.org.eclipse.jgit.errors.NotSupportedException
 
 import javax.inject.Inject
 
-/**
- * Return the currently active license to the license server.
- */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
+trait UnityBaseSpec {
 
     @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
+    ProviderFactory getProviderFactory() {
+        throw new NotSupportedException("")
     }
+
+    @Inject
+    ObjectFactory getObjects() {
+        throw new NotSupportedException("")
+    }
+
 }

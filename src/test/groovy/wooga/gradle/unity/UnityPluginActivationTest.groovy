@@ -5,30 +5,21 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
+import nebula.test.PluginProjectSpec
 
-import javax.inject.Inject
-
-/**
- * Return the currently active license to the license server.
- */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
-
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
+class UnityPluginActivationTest extends PluginProjectSpec {
+    @Override
+    String getPluginName() {  UnityPluginTest.PLUGIN_NAME }
 }

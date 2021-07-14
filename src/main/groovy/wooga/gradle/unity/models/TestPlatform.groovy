@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package wooga.gradle.unity.tasks
-
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
-
-import javax.inject.Inject
+package wooga.gradle.unity.models
 
 /**
- * Return the currently active license to the license server.
+ * The Unity test platform values.
+ * <p>
+ * Unity contains multiple test unit/integration test runner.
+ * The @{code TestPlatform} value determines the which runner to invoke.
  */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
+enum TestPlatform {
+    /**
+     * Editmode tests are basic unit tests with no access or interaction with the Unity engine.
+     */
+    editmode,
 
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
-    }
+    /**
+     * Playmode tests will be executed within a running Unity engine.
+     */
+    playmode
 }

@@ -5,30 +5,25 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package wooga.gradle.unity.tasks
+package wooga.gradle.unity.models
 
-import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityLicenseSpec
+import org.gradle.api.model.ObjectFactory
 
-import javax.inject.Inject
+class DefaultUnityAuthentication implements UnityAuthentication {
 
-/**
- * Return the currently active license to the license server.
- */
-class ReturnLicense extends UnityTask implements UnityLicenseSpec {
-
-    @Inject
-    ReturnLicense() {
-        description = "Return the currently active license to the license server."
-        returnLicense = true
+    DefaultUnityAuthentication(ObjectFactory objects) {
+        wooga_gradle_unity_models_UnityAuthentication__username = objects.property(String)
+        wooga_gradle_unity_models_UnityAuthentication__password = objects.property(String)
+        wooga_gradle_unity_models_UnityAuthentication__serial = objects.property(String)
     }
 }
