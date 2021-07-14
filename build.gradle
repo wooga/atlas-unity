@@ -45,7 +45,7 @@ dependencies {
         exclude module: 'logback-classic'
     }
 
-    testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.1.0") {
+    testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.2.0") {
         exclude module: 'groovy-all'
     }
 
