@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 
 import org.gradle.api.logging.LogLevel
+import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
 import spock.util.environment.RestoreSystemProperties
@@ -403,6 +404,24 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         then:
         result.standardOutput.contains(mockUnityStartupMessage)
         logFile.text.contains(mockUnityStartupMessage)
+    }
+
+    @Ignore
+    // TODO: How to make the task fail/throw within the exec block?
+    def "task action does not invoke post execute if process didn't run"() {
+        given: "a task that is definitely gonna fail"
+        appendToSubjectTask("""
+                environment = null
+        """.stripIndent())
+
+        when:
+        def result = runTasks(subjectUnderTestName)
+
+        then:
+        !result.success
+        outputContains(result, "${subjectUnderTestName}.preExecute")
+        outputContains(result, "${subjectUnderTestName}.execute")
+        !outputContains(result, "${subjectUnderTestName}.postExecute")
     }
 
 }

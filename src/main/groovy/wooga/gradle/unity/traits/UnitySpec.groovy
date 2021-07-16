@@ -16,25 +16,17 @@
 
 package wooga.gradle.unity.traits
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.internal.impldep.org.eclipse.jgit.errors.NotSupportedException
-import wooga.gradle.unity.UnityPluginConventions
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.unity.utils.UnityLogErrorReader
 
 import javax.inject.Inject
 
@@ -113,6 +105,15 @@ trait UnitySpec extends UnityBaseSpec {
     @Internal
     Property<Boolean> getLogToStdout() {
         logToStdout
+    }
+
+    private final Property<UnityLogErrorReader> logErrorReader = objects.property(UnityLogErrorReader)
+    /**
+     * @return The reader used for parsing the Unity Editor log whenever the exits with a failure code
+     */
+    @Internal
+    Property<UnityLogErrorReader> getLogErrorReader(){
+        logErrorReader
     }
 
 }

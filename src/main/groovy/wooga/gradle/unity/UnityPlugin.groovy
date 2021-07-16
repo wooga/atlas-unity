@@ -31,7 +31,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.tasks.Activate
 
@@ -39,8 +38,8 @@ import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
-import wooga.gradle.unity.utils.UnityTestTaskReport
-import wooga.gradle.unity.utils.UnityTestTaskReportsImpl
+import wooga.gradle.unity.utils.UnityLogErrorParse
+import wooga.gradle.unity.utils.UnityLogErrorReader
 
 /**
  * A {@link org.gradle.api.Plugin} which provides tasks to run unity batch-mode commands.
@@ -111,6 +110,7 @@ class UnityPlugin implements Plugin<Project> {
         extension.pluginsDir.convention(extension.assetsDir.dir("Plugins"))
         extension.logsDir.convention(UnityPluginConventions.logDirectory.getDirectoryValueProvider(project))
 
+        extension.logErrorReader.convention(new UnityLogErrorReader())
         extension.logCategory.convention(UnityPluginConventions.logCategory.getStringValueProvider(project))
         final ReportingExtension reportingExtension = (ReportingExtension) project.extensions.getByName(ReportingExtension.NAME)
         extension.reportsDir.convention(project.layout.buildDirectory.dir(project.provider({ reportingExtension.file("unity").path })))
@@ -149,6 +149,7 @@ class UnityPlugin implements Plugin<Project> {
             t.projectDirectory.convention(extension.projectDirectory)
             t.projectSettings.convention(extension.projectSettings)
             t.logCategory.convention(extension.logCategory)
+            t.logErrorReader.convention(extension.logErrorReader)
 
             t.unityLogFile.convention(extension.logsDir.file(project.provider {
                 t.logCategory.get().isEmpty() ? "${t.name}.log" : "${t.logCategory.get()}/${t.name}.log"
