@@ -17,9 +17,9 @@
 
 package wooga.gradle.unity
 
+import com.wooga.gradle.PropertyLookup
 import wooga.gradle.unity.utils.PlatformUtils
 import wooga.gradle.unity.utils.PlatformUtilsImpl
-import wooga.gradle.unity.utils.PropertyLookup
 
 class UnityPluginConventions implements PlatformUtilsImpl {
 
