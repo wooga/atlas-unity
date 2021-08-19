@@ -339,4 +339,13 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         result.wasSkipped("returnUnityLicense")
         result.wasExecuted("activateUnity")
     }
+
+    @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
+    def "runs generateSolution task from cli"() {
+        when:
+        def result = runTasksSuccessfully("generateSolution")
+
+        then:
+        result.wasExecuted("generateSolution")
+    }
 }
