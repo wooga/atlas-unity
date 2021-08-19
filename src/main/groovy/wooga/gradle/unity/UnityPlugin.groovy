@@ -131,6 +131,7 @@ class UnityPlugin implements Plugin<Project> {
             def file = new File(extension.projectDirectory.get().asFile.path, "ProjectSettings/ProjectSettings.asset")
             return new ProjectSettingsFile(file)
         }))
+        extension.enableTestCodeCoverage.convention(UnityPluginConventions.enableTestCodeCoverage.getBooleanValueProvider(project))
     }
 
     private static void configureUnityTasks(UnityPluginExtension extension, final Project project) {
@@ -214,6 +215,12 @@ class UnityPlugin implements Plugin<Project> {
             }
             t.batchMode.set(testBatchModeProvider)
             t.reports.xml.outputLocation.convention(extension.reportsDir.file(t.name + "/" + t.name + "." + reports.xml.name))
+            t.enableCodeCoverage.convention(extension.enableTestCodeCoverage)
+            t.coverageResultsPath.convention(extension.enableTestCodeCoverage.map {
+                return it? extension.reportsDir.getOrElse(null)?.asFile?.absolutePath: null
+            })
+            t.coverageOptions.convention(extension.enableTestCodeCoverage.map {it? "generateAdditionalMetrics" : null})
+            t.debugCodeOptimization.convention(extension.enableTestCodeCoverage) //needed from 2020.1 and on for coverage
         })
 
         // Make sure the lifecycle check task depends on our test task

@@ -199,7 +199,29 @@ enum UnityCommandLineOption {
     /**
      * Enables code coverage and allows access to the Coverage API.
      */
-    enableCodeCoverage("-enableCodeCoverage")
+    enableCodeCoverage("-enableCodeCoverage"),
+    /**
+     * Sets the location where the coverage results and report will be saved to.
+     * The default location is the project's path.
+     * https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@1.1/manual/CoverageBatchmode.html
+     */
+    coverageResultsPath("-coverageResultsPath", true),
+    /**
+     * Sets the location where the coverage report history will be saved to.
+     * The default location is the project's path.
+     * https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@1.1/manual/CoverageBatchmode.html
+     */
+    coverageHistoryPath("-coverageHistoryPath", true),
+    /**
+     *  Passes extra options. This is semicolon separated.
+     * https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@1.1/manual/CoverageBatchmode.html
+     */
+    coverageOptions("-coverageOptions", true),
+    /**
+     * Enables debug code optimization mode, overriding the current default code optimization mode for the session.
+     * Needed for code coverage on 2020.1 and older versions.
+     */
+    debugCodeOptimization("-debugCodeOptimization")
 
     private final String flag
     private final Boolean hasArguments

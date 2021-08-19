@@ -168,23 +168,27 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         result.standardOutput.contains("${extensionName}.${property}: ${testValue}")
 
         where:
-        property                   | method          | rawValue                  | expectedValue                                              | type                    | location
-        "unityPath"                | _               | _                         | UnityPluginConventions.getPlatformUnityPath().absolutePath | "Provider<RegularFile>" | PropertyLocation.none
-        "unityPath"                | _               | osPath("/foo/bar/unity1") | _                                                          | _                       | PropertyLocation.environment
-        "unityPath"                | _               | osPath("/foo/bar/unity2") | _                                                          | _                       | PropertyLocation.property
-        "unityPath"                | "setUnityPath"  | osPath("/foo/bar/unity3") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
-        "unityPath"                | "unityPath.set" | osPath("/foo/bar/unity4") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
+        property                   | method                       | rawValue                  | expectedValue                                              | type                    | location
+        "unityPath"                | _                            | _                         | UnityPluginConventions.getPlatformUnityPath().absolutePath | "Provider<RegularFile>" | PropertyLocation.none
+        "unityPath"                | _                            | osPath("/foo/bar/unity1") | _                                                          | _                       | PropertyLocation.environment
+        "unityPath"                | _                            | osPath("/foo/bar/unity2") | _                                                          | _                       | PropertyLocation.property
+        "unityPath"                | "setUnityPath"               | osPath("/foo/bar/unity3") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
+        "unityPath"                | "unityPath.set"              | osPath("/foo/bar/unity4") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
 
-        "defaultBuildTarget"       | _               | _                         | null                                                          | _                       | PropertyLocation.none
-        "autoActivateUnity"        | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "autoReturnLicense"        | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "logCategory"              | _               | _                         | "unity"                                                    | "Property<String>"      | PropertyLocation.none
-        "batchModeForEditModeTest" | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "batchModeForPlayModeTest" | _               | _                         | true                                                       | Boolean                 | PropertyLocation.none
+        "defaultBuildTarget"       | _                            | _                         | null                                                       | _                       | PropertyLocation.none
+        "autoActivateUnity"        | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
+        "autoReturnLicense"        | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
+        "logCategory"              | _                            | _                         | "unity"                                                    | "Property<String>"      | PropertyLocation.none
+        "batchModeForEditModeTest" | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
+        "batchModeForPlayModeTest" | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
 
-        "assetsDir"                | _               | _                         | osPath("#projectDir#/Assets")                              | "Provider<Directory>"   | PropertyLocation.none
-        "logsDir"                  | _               | _                         | osPath("#projectDir#/build/logs")                          | "Provider<Directory>"   | PropertyLocation.none
-        "reportsDir"               | _               | _                         | osPath("#projectDir#/build/reports")                       | "Provider<Directory>"   | PropertyLocation.none
+        "assetsDir"                | _                            | _                         | osPath("#projectDir#/Assets")                              | "Provider<Directory>"   | PropertyLocation.none
+        "logsDir"                  | _                            | _                         | osPath("#projectDir#/build/logs")                          | "Provider<Directory>"   | PropertyLocation.none
+        "reportsDir"               | _                            | _                         | osPath("#projectDir#/build/reports")                       | "Provider<Directory>"   | PropertyLocation.none
+        "enableTestCodeCoverage"   | _                            | _                         | false                                                      | Boolean                 | PropertyLocation.none
+        "enableTestCodeCoverage"   | "enableTestCodeCoverage.set" | true                      | _                                                          | "Provider<Boolean>"     | PropertyLocation.script
+        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                          | Boolean                 | PropertyLocation.script
+        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                          | "Provider<Boolean>"     | PropertyLocation.script
 
         value = (type != _) ? wrapValueBasedOnType(rawValue, type) : rawValue
         providedValue = (location == PropertyLocation.script) ? type : value
@@ -342,6 +346,16 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
     def "runs generateSolution task"() {
+        when:
+        def result = runTasksSuccessfully("generateSolution")
+
+        then:
+        result.wasExecuted("generateSolution")
+    }
+
+
+    @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
+    def "runs test with coverage options from cli"() {
         when:
         def result = runTasksSuccessfully("generateSolution")
 
