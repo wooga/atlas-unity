@@ -31,16 +31,13 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.tasks.Activate
-
+import wooga.gradle.unity.tasks.GenerateSolution
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
-import wooga.gradle.unity.utils.UnityTestTaskReport
-import wooga.gradle.unity.utils.UnityTestTaskReportsImpl
 
 /**
  * A {@link org.gradle.api.Plugin} which provides tasks to run unity batch-mode commands.
@@ -76,7 +73,8 @@ class UnityPlugin implements Plugin<Project> {
         activateUnity(Activate),
         returnUnityLicense(ReturnLicense),
         setAPICompatibilityLevel(APICompatibilityLevel),
-        unsetAPICompatibilityLevel(APICompatibilityLevel)
+        unsetAPICompatibilityLevel(APICompatibilityLevel),
+        generateSolution(GenerateSolution)
 
         private final Class taskClass
 
@@ -161,6 +159,7 @@ class UnityPlugin implements Plugin<Project> {
         addTestTasks(project, extension)
         addSetAPICompatibilityLevelTasks(project, extension)
         addActivateAndReturnLicenseTasks(project, extension)
+        addGenerateSolutionTask(project)
     }
 
     private static void addTestTasks(final Project project, final UnityPluginExtension extension) {
@@ -314,6 +313,12 @@ class UnityPlugin implements Plugin<Project> {
                 t.finalizedBy(returnLicenseTask)
             }
         })
+    }
 
+    private static void addGenerateSolutionTask(Project project) {
+        project.tasks.register(Tasks.generateSolution.toString(), GenerateSolution) {task ->
+            task.description = "Generates a synchronized solution file for the unity project"
+            task.group = GROUP
+        }
     }
 }
