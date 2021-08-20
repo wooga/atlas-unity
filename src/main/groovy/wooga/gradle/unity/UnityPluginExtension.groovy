@@ -17,14 +17,13 @@
 
 package wooga.gradle.unity
 
-import org.codehaus.groovy.runtime.StringGroovyMethods
+
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.traits.APICompatibilityLevelSpec
 import wooga.gradle.unity.traits.UnityAuthenticationSpec
 import wooga.gradle.unity.traits.UnityLicenseSpec
@@ -191,6 +190,22 @@ trait UnityPluginExtension implements UnitySpec,
         testBuildTargets.addAll(targets)
     }
 
+    private final Property<Boolean> enableTestCodeCoverage = objects.property(Boolean)
+
+    /**
+     * @return true if code coverage is enabled for tests, false otherwise.
+     */
+    Property<Boolean> getEnableTestCodeCoverage() {
+        return enableTestCodeCoverage
+    }
+
+    void setEnableTestCodeCoverage(Boolean value) {
+        enableTestCodeCoverage.set(value)
+    }
+
+    void setEnableTestCodeCoverage(Provider<Boolean> value) {
+        enableTestCodeCoverage.set(value)
+    }
 
     /**
      * Returns a {@link java.util.Set} of {@link wooga.gradle.unity.models.BuildTarget} objects to construct unity

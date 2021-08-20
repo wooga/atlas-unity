@@ -1,6 +1,6 @@
 package wooga.gradle.unity.tasks
 
-
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.internal.reflect.Instantiator
@@ -63,6 +63,10 @@ abstract class Test extends UnityTask implements UnityTestSpec {
             if (testPlatform.getOrNull() == TestPlatform.playmode.toString() &&
                     !projectSettings.get().playModeTestRunnerEnabled) {
                 throw new StopExecutionException("PlayMode tests not activated for this project. Please activate PlayMode tests first")
+            }
+
+            if(unityVersion.majorVersion >= 2018 && unityVersion.minorVersion >= 3) {
+                enableCodeCoverage.convention(false)
             }
 
         } else {

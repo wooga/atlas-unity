@@ -114,6 +114,10 @@ class UnityPluginConventions implements PlatformUtilsImpl {
      * Targets to generate tests for
      */
     static final PropertyLookup testBuildTargets = new PropertyLookup("UNITY_TEST_BUILD_TARGETS", "unity.testBuildTargets", null)
+    /**
+     * Targets to generate tests for
+     */
+    static final PropertyLookup enableTestCodeCoverage = new PropertyLookup("UNITY_ENABLE_TEST_COVERAGE", "unity.enableTestCodeCoverage", false)
 
     /**
      * The path to the Unity license directory

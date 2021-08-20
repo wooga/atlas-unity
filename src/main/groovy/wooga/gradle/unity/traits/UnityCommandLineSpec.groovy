@@ -16,6 +16,7 @@
 
 package wooga.gradle.unity.traits
 
+import org.gradle.api.file.Directory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -307,12 +308,64 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.deepProfiling, value)
     }
 
+    @Internal
+    Property<Boolean> getEnableCodeCoverage(){
+        getCommandLineOption(UnityCommandLineOption.enableCodeCoverage).enabled
+    }
+
     void setEnableCodeCoverage(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.enableCodeCoverage, value)
     }
 
     void setEnableCodeCoverage(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.enableCodeCoverage, value)
+    }
+
+    @Internal
+    Property<String> getCoverageResultsPath() {
+        getCommandLineOption(UnityCommandLineOption.coverageResultsPath).arguments
+    }
+
+    void setCoverageResultsPath(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.coverageResultsPath, value)
+    }
+
+    void setCoverageResultsPath(String value) {
+        setCommandLineOption(UnityCommandLineOption.coverageResultsPath, value)
+    }
+
+    void setCoverageHistoryPath(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.coverageHistoryPath, value)
+    }
+
+    void setCoverageHistoryPath(String value) {
+        setCommandLineOption(UnityCommandLineOption.coverageHistoryPath, value)
+    }
+
+    @Internal
+    Property<String> getCoverageOptions() {
+        getCommandLineOption(UnityCommandLineOption.coverageOptions).arguments
+    }
+
+    void setCoverageOptions(String value) {
+        setCommandLineOption(UnityCommandLineOption.coverageOptions, value)
+    }
+
+    void setCoverageOptions(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.coverageOptions, value)
+    }
+
+    @Internal
+    Property<Boolean> getDebugCodeOptimization(){
+        getCommandLineOption(UnityCommandLineOption.debugCodeOptimization).enabled
+    }
+
+    void setDebugCodeOptimization(boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.debugCodeOptimization, value)
+    }
+
+    void setDebugCodeOptimization(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.debugCodeOptimization, value)
     }
 
     void setUserName(Provider<String> value) {

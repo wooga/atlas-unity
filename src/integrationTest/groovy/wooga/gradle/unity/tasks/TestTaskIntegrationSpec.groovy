@@ -17,9 +17,13 @@
 
 package wooga.gradle.unity.tasks
 
+import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import kotlin.Unit
 import spock.lang.Unroll
+import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
+import wooga.gradle.unity.testutils.GradleRunResult
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
 class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
@@ -201,4 +205,55 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
         result.standardOutput.contains("PlayMode tests not activated")
 
     }
+
+    @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
+    def "sets up coverage arguments if code coverage is enabled"() {
+        given: "a build script with fake test unity location"
+        and: "enabled test code coverage on extension"
+        buildFile << """
+        ${UnityPlugin.EXTENSION_NAME} {
+            enableTestCodeCoverage = true
+        }
+        """
+        when:
+        def result = runTasksSuccessfully("test")
+
+        then:
+        def playModeResult = new GradleRunResult(":testPlayModeAndroid", result.standardOutput)
+        matchesExpectedCoverageArgs(playModeResult)
+        def editModeResult = new GradleRunResult(":testEditModeAndroid", result.standardOutput)
+        matchesExpectedCoverageArgs(editModeResult)
+    }
+
+    @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
+    def "doesnt sets up coverage arguments if code coverage is disabled"() {
+        given: "a build script with fake test unity location"
+        and: "enabled test code coverage on extension"
+        buildFile << """
+        ${UnityPlugin.EXTENSION_NAME} {
+            enableTestCodeCoverage.set(false)
+        }
+        """
+        when:
+        def result = runTasksSuccessfully("test")
+
+        then:
+        def playModeResult = new GradleRunResult(":testPlayModeAndroid", result.standardOutput)
+        !playModeResult.args.contains("-enableCodeCoverage")
+        def editModeResult = new GradleRunResult(":testEditModeAndroid", result.standardOutput)
+        !editModeResult.args.contains("-enableCodeCoverage")
+    }
+
+    boolean matchesExpectedCoverageArgs(GradleRunResult taskResult) {
+        return taskResult.args.contains("-enableCodeCoverage") &&
+            taskResult.args.contains("-coverageResultsPath") &&
+            taskResult.argValueMatches("-coverageResultsPath") { String value ->
+                new File(value) == new File(projectDir, "build/reports/unity")
+            } &&
+            taskResult.args.contains("-coverageOptions") &&
+            taskResult.argValueMatches("-coverageOptions") {it == "generateAdditionalMetrics"} &&
+            taskResult.args.contains("-debugCodeOptimization")
+
+    }
+
 }
