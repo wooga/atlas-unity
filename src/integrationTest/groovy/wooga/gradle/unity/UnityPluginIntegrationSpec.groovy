@@ -341,7 +341,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
-    def "runs generateSolution task from cli"() {
+    def "runs generateSolution task"() {
         when:
         def result = runTasksSuccessfully("generateSolution")
 
