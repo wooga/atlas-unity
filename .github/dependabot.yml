@@ -1,0 +1,21 @@
+version: 2
+registries:
+  maven-repository-wooga-jfrog-io-wooga-atlas-maven:
+    type: maven-repository
+    url: https://wooga.jfrog.io/wooga/atlas-maven
+    username: atlas
+    password: "${{secrets.MAVEN_REPOSITORY_WOOGA_JFROG_IO_WOOGA_ATLAS_MAVEN_PASSWORD}}"
+
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.spockframework:spock-core
+    versions:
+    - ">= 0"
+  registries:
+  - maven-repository-wooga-jfrog-io-wooga-atlas-maven

@@ -67,7 +67,6 @@ class Activate extends UnityTask implements UnityAuthenticationSpec {
     @Override
     protected void preExecute() {
         super.preExecute()
-        // @TODO: When moved to constructor, doesn't get queried properly. It could be because the authentication keeps changing?
         setCommandLineOptionConvention(UnityCommandLineOption.userName, authentication.username)
         setCommandLineOptionConvention(UnityCommandLineOption.password, authentication.password)
         setCommandLineOptionConvention(UnityCommandLineOption.serial, authentication.serial)
