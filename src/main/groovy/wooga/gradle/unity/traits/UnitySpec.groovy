@@ -16,27 +16,20 @@
 
 package wooga.gradle.unity.traits
 
-import org.gradle.api.model.ObjectFactory
+
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.internal.impldep.org.eclipse.jgit.errors.NotSupportedException
 import wooga.gradle.unity.UnityPluginConventions
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.utils.ProjectSettingsFile
-
-import javax.inject.Inject
+import wooga.gradle.unity.utils.UnityFileTree
 
 trait UnitySpec extends UnityBaseSpec {
 
@@ -75,6 +68,33 @@ trait UnitySpec extends UnityBaseSpec {
     }
     void setUnityPath(Provider<RegularFile> value) {
         unityPath.set(value)
+    }
+
+    private Provider<UnityFileTree> getUnityFileTree() {
+        return unityPath.map({ RegularFile unityExec ->
+            UnityPluginConventions.getUnityFileTree(unityExec.asFile)
+        }.memoize())
+    }
+
+    /**
+     * @return The path to the Unity root directory
+     */
+    Provider<Directory> getUnityRootDir() {
+        return layout.dir(getUnityFileTree().map({it.unityRoot}.memoize()))
+    }
+
+    /**
+     * @return The path to Unity .NET Core dotnet executable
+     */
+    Provider<RegularFile> getDotnetExecutable() {
+        return layout.file(getUnityFileTree().map({it.dotnetExecutable}.memoize()))
+    }
+
+    /**
+     * @return The path to the Unity mono framework directory (MonoBleedingEdge)
+     */
+    Provider<Directory> getMonoFrameworkDir() {
+        return layout.dir(getUnityFileTree().map({it.unityMonoFramework}.memoize()))
     }
 
     private RegularFileProperty unityLogFile = objects.fileProperty()
