@@ -41,6 +41,12 @@ github {
 }
 
 dependencies {
+
+    implementation 'com.wooga.gradle:gradle-commons:[0, 1)'
+    implementation 'org.apache.maven:maven-artifact:3.8.1'
+    implementation "org.yaml:snakeyaml:1.28"
+    implementation 'net.wooga:unity-version-manager-jni:[1,2)'
+
     testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:+') {
         exclude module: 'logback-classic'
     }
@@ -51,7 +57,4 @@ dependencies {
 
     testImplementation 'com.github.stefanbirkner:system-rules:1.18.0'
 
-    implementation 'org.apache.maven:maven-artifact:3.8.1'
-    implementation "org.yaml:snakeyaml:1.28"
-    implementation 'net.wooga:unity-version-manager-jni:[1,2)'
 }

@@ -24,6 +24,7 @@ import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.utils.PropertyLocation
 import wooga.gradle.utils.PropertyQueryTaskWriter
 
 /**
