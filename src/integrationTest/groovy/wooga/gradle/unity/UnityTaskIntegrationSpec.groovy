@@ -76,15 +76,52 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         where:
         [testCase, useSetter, value] <<
                 [
+                        // For each option that is a flag (with a boolean value)
                         UnityCommandLineOption.flags.collect(
                                 { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
                         [true, false],
+                        // Test both true and false values
                         [true, false]
                 ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
         method = (useSetter) ? "set${property.capitalize()}" : property
+    }
+
+    @Unroll
+    def "can get option '#property' (#value) with #getMethod"() {
+        given: "a custom build task"
+        appendToSubjectTask("$setMethod($value)")
+
+        when:
+        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.${property}")
+        query.write(buildFile)
+        def result = runTasks(subjectUnderTestName, query.taskName)
+
+        then:
+        result.wasExecuted(subjectUnderTestName)
+        result.standardOutput.contains("Starting process 'command '")
+        value == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        query.matches(result, value)
+
+        where:
+        [testCase, useGetter, value] <<
+                [
+                        // For each option that is a flag (with a boolean value)
+                        UnityCommandLineOption.flags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test both true and false values
+                        [true, false]
+                ].combinations()
+
+        property = testCase[0]
+        expectedCommandlineSwitch = testCase[1]
+        setMethod = "set${property.capitalize()}"
+        getMethod = property
     }
 
     @Unroll
@@ -111,15 +148,57 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         where:
         [testCase, useSetter, value] <<
                 [
+                        // For each option that requires an argument (with a string value)
                         UnityCommandLineOption.argumentFlags.collect(
                                 { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
                         [true, false],
+                        // Test a valid string and an empty one (which will lead to the option being ignored)
                         ["foobar", ""]
                 ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
         method = (useSetter) ? "set${property.capitalize()}" : property
+    }
+
+    @Unroll
+    def "can get arguments option '#property' = '#value' by #getMethod"() {
+        given: "a custom build task"
+        buildFile << """
+            ${subjectUnderTestName} {
+                $method("$value")
+            }
+        """.stripIndent()
+
+        when:
+        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.${property}")
+        query.write(buildFile)
+        def result = runTasks(subjectUnderTestName, query.taskName)
+
+        then:
+        result.wasExecuted(subjectUnderTestName)
+        result.standardOutput.contains("Starting process 'command '")
+        def shouldContain = value != ""
+        shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        query.matches(result, value)
+
+        where:
+        [testCase, useSetter, value] <<
+                [
+                        // For each option that requires an argument (with a string value)
+                        UnityCommandLineOption.argumentFlags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test a valid string and an empty one (which will lead to the option being ignored)
+                        ["foobar", ""]
+                ].combinations()
+
+        property = testCase[0]
+        expectedCommandlineSwitch = testCase[1]
+        method = (useSetter) ? "set${property.capitalize()}" : property
+        getMethod = property
     }
 
     @Unroll
