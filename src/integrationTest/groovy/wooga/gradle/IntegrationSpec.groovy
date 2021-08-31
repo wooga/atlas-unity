@@ -25,6 +25,8 @@ import org.junit.contrib.java.lang.system.ProvideSystemProperty
 import wooga.gradle.unity.utils.PlatformUtilsImpl
 import wooga.gradle.utils.PropertyUtilsImpl
 
+import static java.lang.System.lineSeparator
+
 class IntegrationSpec extends nebula.test.IntegrationSpec
         implements PropertyUtilsImpl, PlatformUtilsImpl {
 
@@ -84,13 +86,11 @@ class IntegrationSpec extends nebula.test.IntegrationSpec
                         value = "project.layout.file(${wrapValueBasedOnType(rawValue, "Provider<File>", fallback)})"
                         break
                     case "Directory":
-                        value = """
-                                project.provider({
-                                    def d = project.layout.directoryProperty()
-                                    d.set(${wrapValueBasedOnType(rawValue, "File", fallback)})
-                                    d.get()
-                                })
-                        """.trim().stripIndent()
+                        value = "project.provider{ "+
+                                "def d = project.objects.directoryProperty();"+
+                                "d.set(${wrapValueBasedOnType(rawValue, "File", fallback)});"+
+                                "d.get();"+
+                                "}".trim().stripIndent()
                         break
                     default:
                         value = "project.provider(${wrapValueBasedOnType(rawValue, "Closure<${subType}>", fallback)})"

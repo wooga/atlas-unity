@@ -20,12 +20,14 @@ package wooga.gradle.unity
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
-import wooga.gradle.unity.models.BuildTarget
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
 import wooga.gradle.utils.PropertyLocation
 import wooga.gradle.utils.PropertyQueryTaskWriter
+
+import static wooga.gradle.unity.UnityPluginConventions.getUnityFileTree
+import static wooga.gradle.unity.UnityPluginConventions.getPlatformUnityPath
 
 /**
  * Tests the {@link UnityPluginExtension} when applied on the {@link UnityPlugin}
@@ -132,7 +134,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
     @UnityPluginTestOptions(unityPath = UnityPathResolution.None, addPluginTestDefaults = false,
             disableAutoActivateAndLicense = false)
-    @Unroll()
+    @Unroll
     def "extension property :#property returns '#testValue' if #reason"() {
         given: "an applied plugin"
         setupUnityPlugin()
@@ -168,27 +170,29 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         query.matches(result, testValue)
 
         where:
-        property                   | method                       | rawValue                  | expectedValue                                              | type                    | location
-        "unityPath"                | _                            | _                         | UnityPluginConventions.getPlatformUnityPath().absolutePath | "Provider<RegularFile>" | PropertyLocation.none
-        "unityPath"                | _                            | osPath("/foo/bar/unity1") | _                                                          | _                       | PropertyLocation.environment
-        "unityPath"                | _                            | osPath("/foo/bar/unity2") | _                                                          | _                       | PropertyLocation.property
-        "unityPath"                | "setUnityPath"               | osPath("/foo/bar/unity3") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
-        "unityPath"                | "unityPath.set"              | osPath("/foo/bar/unity4") | _                                                          | "Provider<RegularFile>" | PropertyLocation.script
+        property                   | method                       | rawValue                  | expectedValue                                                   | type                    | location
+        "unityPath"                | _                            | _                         | getPlatformUnityPath().absolutePath                             | "Provider<RegularFile>" | PropertyLocation.none
+        "unityPath"                | _                            | osPath("/foo/bar/unity1") | _                                                               | _                       | PropertyLocation.environment
+        "unityPath"                | _                            | osPath("/foo/bar/unity2") | _                                                               | _                       | PropertyLocation.property
+        "unityPath"                | "setUnityPath"               | osPath("/foo/bar/unity3") | _                                                               | "Provider<RegularFile>" | PropertyLocation.script
+        "unityPath"                | "unityPath.set"              | osPath("/foo/bar/unity4") | _                                                               | "Provider<RegularFile>" | PropertyLocation.script
 
-        "defaultBuildTarget"       | _                            | _                         | null                                                       | _                       | PropertyLocation.none
-        "autoActivateUnity"        | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "autoReturnLicense"        | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "logCategory"              | _                            | _                         | "unity"                                                    | "Property<String>"      | PropertyLocation.none
-        "batchModeForEditModeTest" | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
-        "batchModeForPlayModeTest" | _                            | _                         | true                                                       | Boolean                 | PropertyLocation.none
+        "unityRootDir"             | _                            | _                         | getUnityFileTree(getPlatformUnityPath()).unityRoot.absolutePath | "Provider<Directory>"   | PropertyLocation.none
 
-        "assetsDir"                | _                            | _                         | osPath("#projectDir#/Assets")                              | "Provider<Directory>"   | PropertyLocation.none
-        "logsDir"                  | _                            | _                         | osPath("#projectDir#/build/logs")                          | "Provider<Directory>"   | PropertyLocation.none
-        "reportsDir"               | _                            | _                         | osPath("#projectDir#/build/reports")                       | "Provider<Directory>"   | PropertyLocation.none
-        "enableTestCodeCoverage"   | _                            | _                         | false                                                      | Boolean                 | PropertyLocation.none
-        "enableTestCodeCoverage"   | "enableTestCodeCoverage.set" | true                      | _                                                          | "Provider<Boolean>"     | PropertyLocation.script
-        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                          | Boolean                 | PropertyLocation.script
-        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                          | "Provider<Boolean>"     | PropertyLocation.script
+        "defaultBuildTarget"       | _                            | _                         | null                                                            | _                       | PropertyLocation.none
+        "autoActivateUnity"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "autoReturnLicense"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "logCategory"              | _                            | _                         | "unity"                                                         | "Property<String>"      | PropertyLocation.none
+        "batchModeForEditModeTest" | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "batchModeForPlayModeTest" | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+
+        "assetsDir"                | _                            | _                         | osPath("#projectDir#/Assets")                                   | "Provider<Directory>"   | PropertyLocation.none
+        "logsDir"                  | _                            | _                         | osPath("#projectDir#/build/logs")                               | "Provider<Directory>"   | PropertyLocation.none
+        "reportsDir"               | _                            | _                         | osPath("#projectDir#/build/reports")                            | "Provider<Directory>"   | PropertyLocation.none
+        "enableTestCodeCoverage"   | _                            | _                         | false                                                           | Boolean                 | PropertyLocation.none
+        "enableTestCodeCoverage"   | "enableTestCodeCoverage.set" | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
+        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | Boolean                 | PropertyLocation.script
+        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
 
         value = (type != _) ? wrapValueBasedOnType(rawValue, type) : rawValue
         providedValue = (location == PropertyLocation.script) ? type : value

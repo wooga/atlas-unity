@@ -16,6 +16,7 @@
 
 package wooga.gradle.unity.traits
 
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.internal.impldep.org.eclipse.jgit.errors.NotSupportedException
@@ -25,13 +26,17 @@ import javax.inject.Inject
 trait UnityBaseSpec {
 
     @Inject
+    ProjectLayout getLayout() {
+        throw new NotSupportedException("ProjectLayout is supposed to be injected here by gradle")
+    }
+    @Inject
     ProviderFactory getProviderFactory() {
-        throw new NotSupportedException("")
+        throw new NotSupportedException("ProviderFactory is supposed to be injected here by gradle")
     }
 
     @Inject
     ObjectFactory getObjects() {
-        throw new NotSupportedException("")
+        throw new NotSupportedException("ObjectFactory is supposed to be injected here by gradle")
     }
 
 }

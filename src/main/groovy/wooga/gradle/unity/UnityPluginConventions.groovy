@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import com.wooga.gradle.PropertyLookup
 import wooga.gradle.unity.utils.PlatformUtils
 import wooga.gradle.unity.utils.PlatformUtilsImpl
+import wooga.gradle.unity.utils.UnityFileTree
 
 class UnityPluginConventions implements PlatformUtilsImpl {
 
@@ -73,7 +74,7 @@ class UnityPluginConventions implements PlatformUtilsImpl {
     /**
      * The path to the Unity Editor executable
      */
-    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH", "UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })
+    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH", "UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })    /**
     /**
      * Used for authentication with Unity's servers
      */
@@ -143,7 +144,6 @@ class UnityPluginConventions implements PlatformUtilsImpl {
      */
     static File getPlatformUnityPath() {
         File unityPath = null
-
         if (isWindows()) {
             if (is64BitArchitecture()) {
                 unityPath = UnityPluginConventions.UNITY_PATH_WIN
@@ -158,6 +158,9 @@ class UnityPluginConventions implements PlatformUtilsImpl {
         unityPath
     }
 
+    static UnityFileTree getUnityFileTree(File unityExec) {
+        return UnityFileTree.fromUnityExecutable(unityExec)
+     }
 
 }
 
