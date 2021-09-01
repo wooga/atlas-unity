@@ -19,6 +19,7 @@ package wooga.gradle.unity.tasks
 
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import kotlin.Unit
+import nebula.test.functional.ExecutionResult
 import spock.lang.Unroll
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityTaskIntegrationSpec
@@ -206,24 +207,41 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
     }
 
+    @Unroll("#setupMsg coverage arguments for unity version #unityVersion if enableTestCodeCoverage is #enableTestCodeCoverage")
     @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
     def "sets up coverage arguments if code coverage is enabled"() {
         given: "a build script with fake test unity location"
         and: "enabled test code coverage on extension"
         buildFile << """
         ${UnityPlugin.EXTENSION_NAME} {
-            enableTestCodeCoverage = true
+            enableTestCodeCoverage = ${enableTestCodeCoverage}
         }
         """
         when:
-        def result = runTasksSuccessfully("test")
+        ExecutionResult result = unityVersion?
+                runTasksSuccessfully("test", "-PdefaultUnityTestVersion=${unityVersion}") :
+                runTasksSuccessfully("test")
 
         then:
         def playModeResult = new GradleRunResult(":testPlayModeAndroid", result.standardOutput)
-        matchesExpectedCoverageArgs(playModeResult)
+        setsUpCoverage ? matchesExpectedCoverageArgs(playModeResult) : !matchesExpectedCoverageArgs(playModeResult)
         def editModeResult = new GradleRunResult(":testEditModeAndroid", result.standardOutput)
-        matchesExpectedCoverageArgs(editModeResult)
+        setsUpCoverage ? matchesExpectedCoverageArgs(editModeResult) : !matchesExpectedCoverageArgs(editModeResult)
+
+        where:
+        enableTestCodeCoverage | unityVersion | setsUpCoverage | setupMsg
+        true                   | "2017.1.1f3" | false          | "doesn't sets up"
+        true                   | "2018.2.1f3" | false          | "doesn't sets up"
+        false                  | "2018.2.1f3" | false          | "doesn't sets up"
+        true                   | "2019.1.1f3" | true           | "sets up"
+        false                  | "2019.1.1f3" | false          | "doesn't sets up"
+        true                   | "2020.5.1f3" | true           | "sets up"
+        false                  | "2020.5.1f3" | false          | "doesn't sets up"
+        false                  | null         | false          | "doesn't sets up"
+        true                   | null         | true           | "sets up"
+
     }
+
 
     @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
     def "doesnt sets up coverage arguments if code coverage is disabled"() {
@@ -246,13 +264,13 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
     boolean matchesExpectedCoverageArgs(GradleRunResult taskResult) {
         return taskResult.args.contains("-enableCodeCoverage") &&
-            taskResult.args.contains("-coverageResultsPath") &&
-            taskResult.argValueMatches("-coverageResultsPath") { String value ->
-                new File(value) == new File(projectDir, "build/reports/unity")
-            } &&
-            taskResult.args.contains("-coverageOptions") &&
-            taskResult.argValueMatches("-coverageOptions") {it == "generateAdditionalMetrics"} &&
-            taskResult.args.contains("-debugCodeOptimization")
+                taskResult.args.contains("-coverageResultsPath") &&
+                taskResult.argValueMatches("-coverageResultsPath") { String value ->
+                    new File(value) == new File(projectDir, "build/reports/unity")
+                } &&
+                taskResult.args.contains("-coverageOptions") &&
+                taskResult.argValueMatches("-coverageOptions") { it == "generateAdditionalMetrics" } &&
+                taskResult.args.contains("-debugCodeOptimization")
 
     }
 
