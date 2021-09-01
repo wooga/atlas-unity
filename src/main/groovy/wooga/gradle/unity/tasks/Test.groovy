@@ -65,7 +65,7 @@ abstract class Test extends UnityTask implements UnityTestSpec {
                 throw new StopExecutionException("PlayMode tests not activated for this project. Please activate PlayMode tests first")
             }
 
-            if(unityVersion.majorVersion >= 2018 && unityVersion.minorVersion >= 3) {
+            if(unityVersion.majorVersion <= 2018 && unityVersion.minorVersion <= 3) {
                 enableCodeCoverage.convention(false)
             }
 
