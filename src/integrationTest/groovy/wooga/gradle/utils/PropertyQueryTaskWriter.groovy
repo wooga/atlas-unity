@@ -26,7 +26,7 @@ abstract class BasePropertyQueryTaskWriter {
     BasePropertyQueryTaskWriter(String path, String invocation = ".getOrNull()", String taskName = null) {
         this.path = path
         this.invocation = invocation
-        this.taskName = taskName ?: PropertyUtils.envNameFromProperty("Query_${path}")
+        this.taskName = taskName ?: PropertyUtils.envNameFromProperty("query_${path}")
     }
 }
 

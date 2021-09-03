@@ -1,9 +1,11 @@
+// TODO: To be moved to a common test library
+
 package wooga.gradle.utils
 
 trait PropertyUtilsImpl {
 
     static String envNameFromProperty(String extensionName, String property) {
-        "${extensionName.toUpperCase()}_${property.replaceAll(/([A-Z])/, "_\$1").toUpperCase()}"
+        envNameFromProperty(extensionName + "." + property)
     }
 
     static String envNameFromProperty(String property) {

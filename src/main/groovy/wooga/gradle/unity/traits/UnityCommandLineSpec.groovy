@@ -252,12 +252,22 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.quit, value)
     }
 
+    @Internal
+    Property<Boolean> getNoGraphics() {
+        getCommandLineOption(UnityCommandLineOption.noGraphics).enabled
+    }
+
     void setNoGraphics(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.noGraphics, value)
     }
 
     void setNoGraphics(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.noGraphics, value)
+    }
+
+    @Internal
+    Property<String> getCreateProject() {
+        getCommandLineOption(UnityCommandLineOption.createProject).arguments
     }
 
     void setCreateProject(Provider<String> value) {
@@ -268,6 +278,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.createProject, value)
     }
 
+    @Internal
+    Property<Boolean> getReturnLicense() {
+        getCommandLineOption(UnityCommandLineOption.returnLicense).enabled
+    }
     void setReturnLicense(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.returnLicense, value)
     }
@@ -276,6 +290,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.returnLicense, value)
     }
 
+    @Internal
+    Property<String> getExecuteMethod(){
+        getCommandLineOption (UnityCommandLineOption.executeMethod).arguments
+    }
     void setExecuteMethod(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.executeMethod, value)
     }
@@ -284,6 +302,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.executeMethod, value)
     }
 
+    @Internal
+    Property<String> getExportPackage(){
+        getCommandLineOption (UnityCommandLineOption.exportPackage).arguments
+    }
     void setExportPackage(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.exportPackage, value)
     }
@@ -292,6 +314,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.exportPackage, value)
     }
 
+    @Internal
+    Property<Boolean> getDisableAssemblyUpdater() {
+        getCommandLineOption(UnityCommandLineOption.disableAssemblyUpdater).enabled
+    }
     void setDisableAssemblyUpdater(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.disableAssemblyUpdater, value)
     }
@@ -300,6 +326,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.disableAssemblyUpdater, value)
     }
 
+    @Internal
+    Property<Boolean> getDeepProfiling() {
+        getCommandLineOption(UnityCommandLineOption.deepProfiling).enabled
+    }
     void setDeepProfiling(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.deepProfiling, value)
     }
@@ -312,11 +342,9 @@ trait UnityCommandLineSpec extends UnitySpec {
     Property<Boolean> getEnableCodeCoverage(){
         getCommandLineOption(UnityCommandLineOption.enableCodeCoverage).enabled
     }
-
     void setEnableCodeCoverage(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.enableCodeCoverage, value)
     }
-
     void setEnableCodeCoverage(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.enableCodeCoverage, value)
     }
@@ -325,15 +353,17 @@ trait UnityCommandLineSpec extends UnitySpec {
     Property<String> getCoverageResultsPath() {
         getCommandLineOption(UnityCommandLineOption.coverageResultsPath).arguments
     }
-
     void setCoverageResultsPath(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.coverageResultsPath, value)
     }
-
     void setCoverageResultsPath(String value) {
         setCommandLineOption(UnityCommandLineOption.coverageResultsPath, value)
     }
 
+    @Internal
+    Property<String> getCoverageHistoryPath() {
+        getCommandLineOption(UnityCommandLineOption.coverageHistoryPath).arguments
+    }
     void setCoverageHistoryPath(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.coverageHistoryPath, value)
     }
@@ -368,22 +398,32 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.debugCodeOptimization, value)
     }
 
+    @Internal
+    Property<String> getUserName() {
+        getCommandLineOption(UnityCommandLineOption.userName).arguments
+    }
     void setUserName(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.userName, value)
     }
-
     void setUserName(String value) {
         setCommandLineOption(UnityCommandLineOption.userName, value)
     }
 
+    @Internal
+    Property<String> getPassword() {
+        getCommandLineOption(UnityCommandLineOption.password).arguments
+    }
     void setPassword(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.password, value)
     }
-
     void setPassword(String value) {
         setCommandLineOption(UnityCommandLineOption.password, value)
     }
 
+    @Internal
+    Property<String> getSerial() {
+        getCommandLineOption(UnityCommandLineOption.serial).arguments
+    }
     void setSerial(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.serial, value)
     }
@@ -392,6 +432,11 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.serial, value)
     }
 
+    @Input
+    @Optional
+    Property<String> getBuildTarget() {
+        getCommandLineOption(UnityCommandLineOption.buildTarget).arguments
+    }
     void setBuildTarget(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.buildTarget, value)
     }
@@ -404,23 +449,26 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.buildTarget, value.toString())
     }
 
-    @Input
-    @Optional
-    Property<String> getBuildTarget() {
-        getCommandLineOption(UnityCommandLineOption.buildTarget).arguments
-    }
-
     // -----------------------------------------------------------------------/
     // Tests
     // -----------------------------------------------------------------------/
+    @Internal
+    Property<Boolean> getForgetProjectPath(){
+        getCommandLineOption(UnityCommandLineOption.forgetProjectPath).enabled
+    }
+
     void setForgetProjectPath(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.forgetProjectPath, value)
     }
 
     void setForgetProjectPath(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.forgetProjectPath, value)
-    }    
-    
+    }
+
+    @Internal
+    Property<Boolean> getRunTests(){
+        getCommandLineOption(UnityCommandLineOption.runTests).enabled
+    }
     void setRunTests(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.runTests, value)
     }
@@ -429,6 +477,11 @@ trait UnityCommandLineSpec extends UnitySpec {
         toggleCommandLineOption(UnityCommandLineOption.runTests, value)
     }
 
+    @Input
+    @Optional
+    Property<String> getTestCategory() {
+        getCommandLineOption(UnityCommandLineOption.testCategory).arguments
+    }
     void setTestCategory(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.testCategory, value)
     }
@@ -441,6 +494,11 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.testCategory, value.join(";"))
     }
 
+    @Input
+    @Optional
+    Property<String> getTestFilter() {
+        getCommandLineOption(UnityCommandLineOption.testFilter).arguments
+    }
     void setTestFilter(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.testFilter, value)
     }
@@ -470,6 +528,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.testPlatform, value.toString())
     }
 
+    @Internal
+    Property<String> getAssemblyNames() {
+        return getCommandLineOption(UnityCommandLineOption.assemblyNames).arguments
+    }
     void setAssemblyNames(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.assemblyNames, value)
     }
@@ -495,6 +557,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.testResults, value)
     }
 
+    @Internal
+    Property<String> getPlayerHeartbeatTimeout() {
+        return getCommandLineOption(UnityCommandLineOption.playerHeartbeatTimeout).arguments
+    }
     void setPlayerHeartbeatTimeout(Provider<String> value) {
         setCommandLineOption(UnityCommandLineOption.playerHeartbeatTimeout, value)
     }
@@ -503,6 +569,10 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.playerHeartbeatTimeout, value)
     }
 
+    @Internal
+    Property<Boolean> getRunSynchronously(){
+        getCommandLineOption(UnityCommandLineOption.runSynchronously).enabled
+    }
     void setRunSynchronously(Provider<Boolean> value) {
         toggleCommandLineOption(UnityCommandLineOption.runSynchronously, value)
     }
