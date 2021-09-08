@@ -19,6 +19,7 @@ package wooga.gradle
 
 
 import nebula.test.functional.ExecutionResult
+import org.gradle.util.Path
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.ProvideSystemProperty
@@ -46,8 +47,9 @@ class IntegrationSpec extends nebula.test.IntegrationSpec
         new File(path).path
     }
 
+    // TODO: Don't use separator
     Boolean fileExists(String... path) {
-        fileExists(path.join("/"))
+        fileExists(path.join(Path.SEPARATOR))
     }
 
     Boolean outputContains(ExecutionResult result, String message) {
