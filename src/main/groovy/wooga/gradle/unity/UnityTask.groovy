@@ -104,7 +104,7 @@ abstract class UnityTask extends DefaultTask
     }
 
     @Override
-    String fetchLogFilePath() {
+    String resolveLogFilePath() {
         def unityVersion = getUnityVersion()
 
         // In Unity 2019 or greater, we need to pass this to properly redirect stdout
@@ -113,7 +113,10 @@ abstract class UnityTask extends DefaultTask
             return "-"
         }
 
-        if (unityLogFile.present) {
+        // If there's a provided log file path
+        // AND we don't want to log to std out
+        if (unityLogFile.present
+                && !(logToStdout.present && logToStdout.get())) {
             FileUtils.ensureFile(unityLogFile)
             return unityLogFile.get().asFile.path
         }

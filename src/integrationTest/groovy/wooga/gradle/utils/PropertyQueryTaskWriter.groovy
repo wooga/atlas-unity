@@ -5,10 +5,10 @@ import nebula.test.Integration
 import nebula.test.functional.ExecutionResult
 
 /**
- * Writes a task for querying the value of a property
+ * Writes a task for querying the value in a task
  * from a given path with the specified invocation.
  */
-abstract class BasePropertyQueryTaskWriter {
+abstract class QueryTaskWriter {
 
     String path
     String invocation
@@ -23,7 +23,7 @@ abstract class BasePropertyQueryTaskWriter {
      */
     abstract void write(File file);
 
-    BasePropertyQueryTaskWriter(String path, String invocation = ".getOrNull()", String taskName = null) {
+    QueryTaskWriter(String path, String invocation, String taskName = null) {
         this.path = path
         this.invocation = invocation
         this.taskName = taskName ?: PropertyUtils.envNameFromProperty("query_${path}")
@@ -35,9 +35,52 @@ abstract class BasePropertyQueryTaskWriter {
  * from a given path with the specified invocation.
  */
 @InheritConstructors
+abstract class BasePropertyQueryTaskWriter extends QueryTaskWriter{
+
+    BasePropertyQueryTaskWriter(String path, String invocation = ".getOrNull()", String taskName = null) {
+        super(path, invocation, taskName)
+    }
+}
+
+/**
+ * Writes a task for querying the value of a property
+ * from a given path with the specified invocation.
+ */
+@InheritConstructors
 class PropertyQueryTaskWriter extends BasePropertyQueryTaskWriter {
 
     final String separator = " : "
+
+    void write(File file) {
+        file << """
+            task(${taskName}) {
+                doLast {
+                    def value = ${path}${invocation ?: ""}
+                    println("${path}${separator}" + value)
+                }
+            }
+        """.stripIndent()
+    }
+
+    /**
+     * @return True if the property's toString() matches the given value
+     */
+    Boolean matches(ExecutionResult result, Object value) {
+        result.standardOutput.contains("${path}${separator}${value}")
+    }
+}
+
+/**
+ * Writes a task for querying the value of a method
+ * from a given path with the specified invocation.
+ */
+class MethodQueryTaskWriter extends QueryTaskWriter {
+
+    final String separator = " : "
+
+    MethodQueryTaskWriter(String path, String taskName = null) {
+        super(path, "()", taskName)
+    }
 
     void write(File file) {
         file << """

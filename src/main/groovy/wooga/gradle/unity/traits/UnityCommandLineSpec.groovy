@@ -16,7 +16,7 @@
 
 package wooga.gradle.unity.traits
 
-import org.gradle.api.file.Directory
+
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -180,12 +180,12 @@ trait UnityCommandLineSpec extends UnitySpec {
             case UnityCommandLineOption.buildTarget:
                 return buildTarget.get()
             case UnityCommandLineOption.logFile:
-                return fetchLogFilePath()
+                return resolveLogFilePath()
         }
     }
 
     // TODO: Refactor this out
-    String fetchLogFilePath() {
+    String resolveLogFilePath() {
         null
     }
 

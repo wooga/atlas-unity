@@ -25,6 +25,7 @@ import spock.util.environment.RestoreSystemProperties
 import wooga.gradle.utils.MapPropertyQueryTaskWriter
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Unity
+import wooga.gradle.utils.MethodQueryTaskWriter
 import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import java.lang.reflect.ParameterizedType
@@ -298,7 +299,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "set environment variable #rawValue for task exec"() {
         given: "some clean environment variables"
-        if (!windows){
+        if (!windows) {
             def envNames = System.getenv().keySet().toArray()
             environmentVariables.clear(*envNames)
         }
@@ -333,7 +334,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         "environment" | true      | ["A": true]
         "environment" | false     | ["A": false]
 
-        initialValue = ["B": "5", "C" : "7"]
+        initialValue = ["B": "5", "C": "7"]
         method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
         value = wrapValueBasedOnType(rawValue, Map)
         propertyPath = "${subjectUnderTestName}.environment"
@@ -342,7 +343,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
     def "adds environment for task exec"() {
         given: "some clean environment variables"
-        if (!windows){
+        if (!windows) {
             def envNames = System.getenv().keySet().toArray()
             environmentVariables.clear(*envNames)
         }
@@ -381,69 +382,6 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         !result.standardOutput.contains(mockUnityStartupMessage)
     }
 
-
-    //I run this test only in macOS due to the path encoding issues.
-    @IgnoreIf({ System.getProperty("os.name").toLowerCase().contains("windows") })
-    @Unroll
-    @RestoreSystemProperties
-    def "calls unity with correct logFile parameter when redirectStdOut: #redirectStdOut logFilePath: #logFilePath unityVersion: #unityVersion os: #os"() {
-        given:
-        if (logFilePath) {
-            appendToSubjectTask """
-            unityLogFile = ${logFilePath}
-            """.stripIndent()
-        }
-
-        appendToSubjectTask("""
-            logToStdout.set(${redirectStdOut})
-        """.stripIndent())
-
-        and: "mocked unity version"
-        createFile("gradle.properties") << "defaultUnityTestVersion=${unityVersion}"
-
-        and: "mocked operating system"
-        System.setProperty('os.name', os)
-
-        and: "make sure the test file exists"
-        def testFile = createFile("test/file")
-
-        when:
-        def result = runTasks(subjectUnderTestName)
-
-        then:
-        result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
-        def cmdSwitch = expectedCommandlineSwitch.replace("#{DEFAULT_LOG_FILE_PATH}", new File(projectDir, "build/logs").path).replace("#{PROVIDED_LOG_FILE_PATH}", new File(projectDir, "test/file").path)
-        result.standardOutput.contains("${cmdSwitch}".trim())
-
-        where:
-        redirectStdOut | logFilePath         | unityVersion | expectedCommandlineSwitch            | os
-        true           | null                | "2018.1.0f1" | "-logFile"                           | "Mac OS X"
-        true           | null                | "2018.1.0f1" | "-logFile"                           | "Linux"
-        true           | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
-        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Mac OS X"
-        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Linux"
-        true           | null                | "2019.1.0f1" | "-logFile -"                         | "Windows 7"
-        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile"                           | "Mac OS X"
-        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile"                           | "Linux"
-        true           | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
-        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Mac OS X"
-        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Linux"
-        true           | 'file("test/file")' | "2019.1.0f1" | "-logFile -"                         | "Windows 7"
-        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Mac OS X"
-        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Linux"
-        false          | null                | "2018.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
-        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Mac OS X"
-        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Linux"
-        false          | null                | "2019.1.0f1" | "-logFile #{DEFAULT_LOG_FILE_PATH}"  | "Windows 7"
-        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Mac OS X"
-        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Linux"
-        false          | 'file("test/file")' | "2018.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
-        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Mac OS X"
-        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Linux"
-        false          | 'file("test/file")' | "2019.1.0f1" | "-logFile #{PROVIDED_LOG_FILE_PATH}" | "Windows 7"
-    }
-
     @Unroll
     def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
         given: "a custom build task"
@@ -477,11 +415,61 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         """.stripIndent())
 
         when:
-        def result = runTasks(subjectUnderTestName)
+        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.logFile")
+        query.write(buildFile)
+        def result = runTasks(subjectUnderTestName, query.taskName)
 
         then:
         result.standardOutput.contains(mockUnityStartupMessage)
         logFile.text.contains(mockUnityStartupMessage)
+        !query.matches(result, logFile.path)
+    }
+
+    @Unroll
+    def "calls unity with correct logFile parameter when logToStdout is '#logToStdout' and logFilePath is '#logFilePathSet' on unityVersion '#unityVersion'"() {
+        given:
+        appendToSubjectTask("logToStdout = ${logToStdout}")
+
+        if (logFilePathSet) {
+            def logFile = File.createTempFile("log", "out")
+            expectedValue = expectedValue.replace("#path", logFile.path)
+            // The escaped path has two \\ dir separators
+            appendToSubjectTask("unityLogFile = file('${escapedPath(logFile.path)}')")
+        }
+
+        and: "mocked unity version"
+        setUnityTestVersion(unityVersion)
+
+        when:
+        def query = new MethodQueryTaskWriter("${subjectUnderTestName}.resolveLogFilePath")
+        query.write(buildFile)
+        def result = runTasks(subjectUnderTestName, query.taskName)
+
+        then:
+        result.wasExecuted(subjectUnderTestName)
+        result.standardOutput.contains("Starting process 'command '")
+        flagPresent == result.standardOutput.contains(flag)
+        if (flagPresent){
+            query.matches(result, expectedValue)
+        }
+
+        where:
+        unityVersion | logFilePathSet | logToStdout | isLogWrittenToFile | expectedValue | flagPresent
+        "2019"       | true           | false       | true               | "#path"       | true
+        "2019"       | true           | true        | true               | "-"           | true
+        "2019"       | false          | true        | false              | "-"           | true
+        // TODO: Perhaps think about disabling logging on an extension-scope for all tasks
+        // TODO: Log file path is enabled by default on the plugin
+        // "2019"       | false          | false       | false              | ""            | false
+
+        "2018"       | true           | false       | true               | "#path"       | true
+        "2018"       | true           | true        | true               | ""            | true
+        "2018"       | false          | true        | false              | ""            | true
+        // TODO: Log file path is enabled by default on the plugin
+        // "2018"       | false          | false       | false              | ""            | false
+
+        flag = "-logFile"
+
     }
 
 }
