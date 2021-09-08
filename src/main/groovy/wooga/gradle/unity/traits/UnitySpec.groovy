@@ -79,6 +79,7 @@ trait UnitySpec extends UnityBaseSpec {
     /**
      * @return The path to the Unity root directory
      */
+    @Internal
     Provider<Directory> getUnityRootDir() {
         return layout.dir(getUnityFileTree().map({it.unityRoot}.memoize()))
     }
@@ -86,6 +87,7 @@ trait UnitySpec extends UnityBaseSpec {
     /**
      * @return The path to Unity .NET Core dotnet executable
      */
+    @Internal
     Provider<RegularFile> getDotnetExecutable() {
         return layout.file(getUnityFileTree().map({it.dotnetExecutable}.memoize()))
     }
@@ -93,6 +95,7 @@ trait UnitySpec extends UnityBaseSpec {
     /**
      * @return The path to the Unity mono framework directory (MonoBleedingEdge)
      */
+    @Internal
     Provider<Directory> getMonoFrameworkDir() {
         return layout.dir(getUnityFileTree().map({it.unityMonoFramework}.memoize()))
     }
