@@ -241,4 +241,12 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
         buildFile << builder.toString()
     }
+
+    /**
+     * Sets the unity version parsed by the plugin
+     * @param version
+     */
+    void setUnityTestVersion(String version) {
+        createFile("gradle.properties") << "defaultUnityTestVersion=${version}"
+    }
 }
