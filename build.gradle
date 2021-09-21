@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '2.2.1'
+    id 'net.wooga.plugins' version '2.2.2'
 }
 
 group 'net.wooga.gradle'
