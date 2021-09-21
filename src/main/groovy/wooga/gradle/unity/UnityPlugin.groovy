@@ -33,6 +33,7 @@ import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.tasks.Activate
+import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
@@ -74,7 +75,8 @@ class UnityPlugin implements Plugin<Project> {
         returnUnityLicense(ReturnLicense),
         setAPICompatibilityLevel(APICompatibilityLevel),
         unsetAPICompatibilityLevel(APICompatibilityLevel),
-        generateSolution(GenerateSolution)
+        generateSolution(GenerateSolution),
+        addUPMPackages(AddUPMPackages)
 
         private final Class taskClass
 
@@ -159,8 +161,9 @@ class UnityPlugin implements Plugin<Project> {
     private static void addTasks(UnityPluginExtension extension, Project project) {
         addTestTasks(project, extension)
         addSetAPICompatibilityLevelTasks(project, extension)
-        addActivateAndReturnLicenseTasks(project, extension)
         addGenerateSolutionTask(project)
+        addAddUPMPackagesTask(project, extension)
+        addActivateAndReturnLicenseTasks(project, extension)
     }
 
     private static void addTestTasks(final Project project, final UnityPluginExtension extension) {
@@ -327,5 +330,28 @@ class UnityPlugin implements Plugin<Project> {
             task.description = "Generates a synchronized solution file for the unity project"
             task.group = GROUP
         }
+    }
+
+    private static void addAddUPMPackagesTask(Project project, final UnityPluginExtension extension) {
+        def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) {task ->
+            task.group = GROUP
+        }
+        def manifestFile = extension.projectDirectory.map({ it.file("Packages/manifest.json") })
+
+        addUPMPackagesTask.configure( { t->
+            t.manifestPath.set(manifestFile)
+            t.upmPackages.putAll(extension.getUPMPackages())
+
+            // should be made from the Test task setup?
+            if (extension.enableTestCodeCoverage) {
+                t.upmPackages.put("com.unity.testtools.codecoverage", "1.1.0")
+            }
+        })
+
+        project.tasks.withType(UnityTask).configureEach({ t ->
+            if (!Activate.isInstance(t) && !AddUPMPackages.isInstance(t)) {
+                t.dependsOn(addUPMPackagesTask)
+            }
+        })
     }
 }
