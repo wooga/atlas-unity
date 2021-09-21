@@ -348,10 +348,10 @@ class UnityPlugin implements Plugin<Project> {
             }
         })
 
-        project.tasks.withType(UnityTask).configureEach({ t ->
-            if (!Activate.isInstance(t) && !AddUPMPackages.isInstance(t)) {
-                t.dependsOn(addUPMPackagesTask)
-            }
-        })
+//        project.tasks.withType(UnityTask).configureEach({ t ->
+//            if (!Activate.isInstance(t) && !AddUPMPackages.isInstance(t)) {
+//                t.dependsOn(addUPMPackagesTask)
+//            }
+//        })
     }
 }

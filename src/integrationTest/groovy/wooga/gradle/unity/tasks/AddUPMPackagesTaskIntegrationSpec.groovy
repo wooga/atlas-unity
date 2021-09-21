@@ -11,7 +11,7 @@ class AddUPMPackagesTaskIntegrationSpec extends UnityTaskIntegrationSpec<AddUPMP
 
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    @UnityInstallation(version = "2019.4.24f1", cleanup = false, basePath = "/Applications/Unity/Hub/Editor")
+    @UnityInstallation(version = "2019.4.24f1", cleanup = false)
     def "adds Packages"(Installation unity) {
         given: "an unity3D project"
         def project_path = "build/test_project"
