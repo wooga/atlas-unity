@@ -262,11 +262,11 @@ trait UnityPluginExtension implements UnitySpec,
     /**
      * @return The UPM packages to add
      */
-    MapProperty<String, String> getUPMPackages() {
+    MapProperty<String, String> getUpmPackages() {
         upmPackages
     }
 
-    void setUPMPackage(MapProperty<String, String> upmPackages) {
+    void setUpmPackages(MapProperty<String, String> upmPackages) {
         upmPackages.clear()
         upmPackages.putAll(upmPackages)
     }

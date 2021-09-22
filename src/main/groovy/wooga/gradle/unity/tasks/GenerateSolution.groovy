@@ -6,6 +6,5 @@ class GenerateSolution extends UnityTask {
 
     GenerateSolution() {
         executeMethod = "UnityEditor.SyncVS.SyncSolution"
-        quit = true
     }
 }

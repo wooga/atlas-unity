@@ -17,7 +17,7 @@
 
 package wooga.gradle.unity
 
-
+import groovy.json.JsonOutput
 import org.gradle.api.logging.LogLevel
 import spock.lang.IgnoreIf
 import spock.lang.Unroll
@@ -71,8 +71,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
-        value == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        def taskLogBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        def stdOut = result.standardOutput.substring(taskLogBeginIndex)
+        stdOut.contains("Starting process 'command '")
+        value == stdOut.contains(" $expectedCommandlineSwitch")
 
         where:
         [testCase, useSetter, value] <<
@@ -103,9 +105,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
-        value == result.standardOutput.contains(" $expectedCommandlineSwitch")
-        query.matches(result, value)
+        def taskLogBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        def stdOut = result.standardOutput.substring(taskLogBeginIndex)
+        stdOut.contains("Starting process 'command '")
+        query.matches(result.standardOutput, value)
 
         where:
         [testCase, useGetter, value] <<
@@ -142,9 +145,11 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
+        def taskLogBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        def stdOut = result.standardOutput.substring(taskLogBeginIndex)
+        stdOut.contains("Starting process 'command '")
         def shouldContain = value != ""
-        shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        shouldContain == stdOut.contains(" $expectedCommandlineSwitch")
 
         where:
         [testCase, useSetter, value] <<
@@ -179,10 +184,12 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
+        def taskLogBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        def stdOut = result.standardOutput.substring(taskLogBeginIndex)
+        stdOut.contains("Starting process 'command '")
         def shouldContain = value != ""
-        shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
-        query.matches(result, value)
+        shouldContain == stdOut.contains(" $expectedCommandlineSwitch")
+        query.matches(stdOut, value)
 
         where:
         [testCase, useSetter, value] <<
@@ -222,7 +229,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasksSuccessfully(query.taskName)
 
         then:
-        query.matches(result, expectedValue)
+        query.matches(result.standardOutput, expectedValue)
 
         where:
         method                    | rawValue         | type                      | append | expectedValue
@@ -280,7 +287,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         then:
         result.wasExecuted(subjectUnderTestName)
         def resultPath = new File(projectDir, "/build/logs/${path}").getPath()
-        query.matches(result, resultPath)
+        query.matches(result.standardOutput, resultPath)
 
         where:
         rawValue     | useSetter | path
@@ -393,7 +400,9 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasks(subjectUnderTestName)
 
         then:
-        !result.standardOutput.contains(mockUnityStartupMessage)
+        def taskLogBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        def stdOut = result.standardOutput.substring(taskLogBeginIndex)
+        !stdOut.contains(mockUnityStartupMessage)
 
         when:
         appendToSubjectTask("""
@@ -402,7 +411,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         result = runTasks(subjectUnderTestName)
 
         then:
-        result.standardOutput.contains(mockUnityStartupMessage)
+        def taskBeginIndex = result.standardOutput.indexOf("Task :${subjectUnderTestName}")
+        result.standardOutput.substring(taskBeginIndex).contains(mockUnityStartupMessage)
     }
 
     def "redirects unity log to stdout and custom logfile if provided"() {
@@ -422,7 +432,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         then:
         result.standardOutput.contains(mockUnityStartupMessage)
         logFile.text.contains(mockUnityStartupMessage)
-        !query.matches(result, logFile.path)
+        !query.matches(result.standardOutput, logFile.path)
     }
 
     @Unroll

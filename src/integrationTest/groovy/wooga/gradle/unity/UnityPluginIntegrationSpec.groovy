@@ -107,7 +107,8 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully("Custom")
 
         then:
-        result.standardOutput.contains(UnityCommandLineOption.batchMode.flag) == expectBatchModeFlag
+        def taskStdOut = result.standardOutput.substring(result.standardOutput.indexOf("Task :Custom"))
+        taskStdOut.contains(UnityCommandLineOption.batchMode.flag) == expectBatchModeFlag
 
         where:
         testPlatform | useBatchMode | location                     | expectBatchModeFlag
@@ -167,7 +168,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully(query.taskName)
 
         then:
-        query.matches(result, testValue)
+        query.matches(result.standardOutput, testValue)
 
         where:
         property                   | method                       | rawValue                  | expectedValue                                                   | type                    | location
@@ -189,10 +190,15 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         "assetsDir"                | _                            | _                         | osPath("#projectDir#/Assets")                                   | "Provider<Directory>"   | PropertyLocation.none
         "logsDir"                  | _                            | _                         | osPath("#projectDir#/build/logs")                               | "Provider<Directory>"   | PropertyLocation.none
         "reportsDir"               | _                            | _                         | osPath("#projectDir#/build/reports")                            | "Provider<Directory>"   | PropertyLocation.none
+
         "enableTestCodeCoverage"   | _                            | _                         | false                                                           | Boolean                 | PropertyLocation.none
         "enableTestCodeCoverage"   | "enableTestCodeCoverage.set" | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
         "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | Boolean                 | PropertyLocation.script
         "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
+
+        "upmPackages"              | "setUpmPackages"             | _                         | [:]                                                            | _                       | PropertyLocation.none
+        "upmPackages"              | "setUpmPackages"             | ["unity.package": "ver"]  | ["unity.package": "ver"]                                                               | Map                     | PropertyLocation.script
+        "upmPackages"              | "upmPackages.set"            | ["unity.package": "ver"]  | ["unity.package": "ver"]                                                               | Map                     | PropertyLocation.script
 
         value = (type != _) ? wrapValueBasedOnType(rawValue, type) : rawValue
         providedValue = (location == PropertyLocation.script) ? type : value
@@ -233,7 +239,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasks(query.taskName)
 
         then:
-        query.matches(result, "${path.path}")
+        query.matches(result.standardOutput, "${path.path}")
 
         where:
         property     | expectedPath
@@ -328,6 +334,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         result.wasExecuted("activateUnity")
     }
 
+
     @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
     def "runs generateSolution task"() {
         when:
@@ -336,4 +343,5 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         then:
         result.wasExecuted("generateSolution")
     }
+
 }

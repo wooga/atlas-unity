@@ -166,8 +166,7 @@ class UnityPlugin implements Plugin<Project> {
         addActivateAndReturnLicenseTasks(project, extension)
     }
 
-    private static void addTestTasks(final Project project, final UnityPluginExtension extension) {
-
+    private static void addTestTasks(Project project, UnityPluginExtension extension) {
         // Create "container" tasks which will depend on any tasks of type Test with the given platforms
         def testEditModeTask = project.tasks.register(Tasks.testEditMode.toString(), { t ->
             t.group = GROUP
@@ -333,25 +332,17 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void addAddUPMPackagesTask(Project project, final UnityPluginExtension extension) {
+        def manifestFile = project.layout.projectDirectory.file("Packages/manifest.json")
         def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) {task ->
             task.group = GROUP
-        }
-        def manifestFile = extension.projectDirectory.map({ it.file("Packages/manifest.json") })
-
-        addUPMPackagesTask.configure( { t->
-            t.manifestPath.set(manifestFile)
-            t.upmPackages.putAll(extension.getUPMPackages())
-
-            // should be made from the Test task setup?
-            if (extension.enableTestCodeCoverage) {
-                t.upmPackages.put("com.unity.testtools.codecoverage", "1.1.0")
+            task.manifestPath.convention(manifestFile)
+            task.upmPackages.putAll(extension.upmPackages)
+            if (extension.enableTestCodeCoverage.getOrElse(false)) {
+                task.upmPackages.put("com.unity.testtools.codecoverage", "1.1.0")
             }
-        })
-
-//        project.tasks.withType(UnityTask).configureEach({ t ->
-//            if (!Activate.isInstance(t) && !AddUPMPackages.isInstance(t)) {
-//                t.dependsOn(addUPMPackagesTask)
-//            }
-//        })
+        }
+        project.tasks.withType(Test).configureEach {testTask ->
+            testTask.dependsOn(addUPMPackagesTask)
+        }
     }
 }
