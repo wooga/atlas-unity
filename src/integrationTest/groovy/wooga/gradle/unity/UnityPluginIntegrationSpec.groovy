@@ -196,9 +196,9 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | Boolean                 | PropertyLocation.script
         "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
 
-        "upmPackages"              | "setUpmPackages"             | _                         | [:]                                                            | _                       | PropertyLocation.none
-        "upmPackages"              | "setUpmPackages"             | ["unity.package": "ver"]  | ["unity.package": "ver"]                                                               | Map                     | PropertyLocation.script
-        "upmPackages"              | "upmPackages.set"            | ["unity.package": "ver"]  | ["unity.package": "ver"]                                                               | Map                     | PropertyLocation.script
+        "upmPackages"              | "setUpmPackages"             | _                         | [:]                                                             | _                       | PropertyLocation.none
+        "upmPackages"              | "setUpmPackages"             | ["unity.package": "ver"]  | ["unity.package": "ver"]                                        | Map                     | PropertyLocation.script
+        "upmPackages"              | "upmPackages.set"            | ["unity.package": "ver"]  | ["unity.package": "ver"]                                        | Map                     | PropertyLocation.script
 
         value = (type != _) ? wrapValueBasedOnType(rawValue, type) : rawValue
         providedValue = (location == PropertyLocation.script) ? type : value
@@ -342,6 +342,31 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         result.wasExecuted("generateSolution")
+    }
+
+    @Unroll
+    def "runs addUPMPackages task if there are packages to add"() {
+        given:
+        buildFile << """
+            unity {
+                enableTestCodeCoverage = ${testCoverageEnabled}
+                upmPackages = ${wrapValueBasedOnType(packagesToInstall, Map)}
+            }
+        """
+        when:
+        def result = runTasks("test")
+
+        then:
+        shouldRun ?
+                result.wasExecuted("addUPMPackages") :
+                result.standardOutput.contains("Task :addUPMPackages SKIPPED")
+
+        where:
+        testCoverageEnabled | packagesToInstall  | shouldRun
+        false               | [:]                | false
+        false               | ["package": "ver"] | true
+        true                | [:]                | true
+        true                | ["package": "ver"] | true
     }
 
 }

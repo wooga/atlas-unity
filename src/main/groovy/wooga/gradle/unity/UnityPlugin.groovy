@@ -344,5 +344,11 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks.withType(Test).configureEach {testTask ->
             testTask.dependsOn(addUPMPackagesTask)
         }
+        project.afterEvaluate {
+            addUPMPackagesTask.configure {task ->
+                def upmPackageCount = task.upmPackages.forUseAtConfigurationTime().getOrElse([:]).size()
+                task.onlyIf { upmPackageCount > 0 }
+            }
+        }
     }
 }

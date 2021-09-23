@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import spock.lang.Unroll
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.AddUPMPackages
@@ -64,7 +65,7 @@ class UnityPluginTest extends ProjectSpec {
     }
 
     @Unroll
-    def "configures addUPMPackages task "() {
+    def "configures addUPMPackages task"() {
         given: "project without applied atlas-unity plugin"
         assert !project.plugins.hasPlugin(PLUGIN_NAME)
 
@@ -79,10 +80,12 @@ class UnityPluginTest extends ProjectSpec {
         then:
         def task = project.tasks.findByName(UnityPlugin.Tasks.addUPMPackages.toString()) as AddUPMPackages
         def packages = task.upmPackages.get()
+        and: "task has a manifest file"
         task.manifestPath.present
         task.manifestPath.get().asFile == new File(projectDir, "Packages/manifest.json")
+        and: "task contains expected packages"
         packages.entrySet().containsAll(extUPMPackages.entrySet())
-        if(coverageEnabled) {
+        if (coverageEnabled) {
             packages["com.unity.testtools.codecoverage"] == "1.1.0"
             packages.size() == extUPMPackages.size() + 1
         } else {

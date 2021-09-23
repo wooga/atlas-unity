@@ -37,6 +37,9 @@ class AddUPMPackages extends UnityTask implements UnityBaseSpec {
             } else {
                 project.logger.warn("manifest.json not found, skipping UPM packages install: ${upmPackages.get()}")
             }
+        } else {
+            project.logger.warn("this unity version (${unityVersion.majorVersion}.${unityVersion.minorVersion}) " +
+                    "does not support UPM packages, skipping")
         }
     }
 
