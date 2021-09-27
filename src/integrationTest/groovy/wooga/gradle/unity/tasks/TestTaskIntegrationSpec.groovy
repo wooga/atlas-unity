@@ -256,6 +256,10 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
             enableTestCodeCoverage.set(false)
         }
         """
+        
+        and: "a mocked unity project with enabled playmode tests"
+        setProjectSettingsFile(ProjectSettingsFile.TEMPLATE_CONTENT_ENABLED)
+
         when:
         def result = runTasksSuccessfully("test")
 
