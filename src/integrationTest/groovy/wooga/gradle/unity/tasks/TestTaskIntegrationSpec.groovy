@@ -217,6 +217,10 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
             enableTestCodeCoverage = ${enableTestCodeCoverage}
         }
         """
+
+        and: "a mocked unity project with enabled playmode tests"
+        setProjectSettingsFile(ProjectSettingsFile.TEMPLATE_CONTENT_ENABLED)
+
         when:
         ExecutionResult result = unityVersion?
                 runTasksSuccessfully("test", "-PdefaultUnityTestVersion=${unityVersion}") :

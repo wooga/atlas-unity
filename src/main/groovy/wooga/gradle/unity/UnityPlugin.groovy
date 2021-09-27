@@ -189,7 +189,7 @@ class UnityPlugin implements Plugin<Project> {
             extension.getTestBuildTargets(project).each { target ->
                 def suffix = target.toString().capitalize()
                 createTestTask(TestPlatform.editmode, project, Tasks.testEditMode.toString() + suffix, target)
-                createTestTask(TestPlatform.editmode, project, Tasks.testPlayMode.toString() + suffix, target)
+                createTestTask(TestPlatform.playmode, project, Tasks.testPlayMode.toString() + suffix, target)
             }
         }
 
