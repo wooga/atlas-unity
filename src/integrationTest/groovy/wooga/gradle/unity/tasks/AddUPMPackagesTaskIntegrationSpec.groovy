@@ -25,6 +25,7 @@ class AddUPMPackagesTaskIntegrationSpec extends UnityTaskIntegrationSpec<AddUPMP
         and: "a setup AddUPMPackageTask"
         appendToSubjectTask("""
                 createProject = "${projectPath}"
+                manifestPath = new File("${projectPath}/Packages/manifest.json")
                 buildTarget = "Android"
                 upmPackages.put("com.unity.testtools.codecoverage", "1.1.0") 
                 upmPackages.put("com.unity.package", "anyString")

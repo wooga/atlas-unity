@@ -168,7 +168,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasksSuccessfully(query.taskName)
 
         then:
-        query.matches(result.standardOutput, testValue)
+        query.matches(result, testValue)
 
         where:
         property                   | method                       | rawValue                  | expectedValue                                                   | type                    | location
@@ -239,7 +239,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasks(query.taskName)
 
         then:
-        query.matches(result.standardOutput, "${path.path}")
+        query.matches(result, "${path.path}")
 
         where:
         property     | expectedPath

@@ -267,7 +267,6 @@ trait UnityPluginExtension implements UnitySpec,
     }
 
     void setUpmPackages(MapProperty<String, String> upmPackages) {
-        upmPackages.clear()
-        upmPackages.putAll(upmPackages)
+        upmPackages.set(upmPackages)
     }
 }

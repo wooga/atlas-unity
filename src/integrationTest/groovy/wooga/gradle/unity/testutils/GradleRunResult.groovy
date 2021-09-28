@@ -6,6 +6,19 @@ class GradleRunResult {
     private final ArrayList<String> args;
     private final Map<String, String> envs;
 
+    static String taskLog(String task, String stdOutput) {
+        if(!task.startsWith(":")) {
+            task = ":" + task
+        }
+        String taskString = "> Task ${task}"
+        int taskBeginIdx = stdOutput.indexOf(taskString) + taskString.length()
+        String taskTail = stdOutput.substring(taskBeginIdx)
+        int taskEndIdx = taskTail.indexOf("> Task")
+
+        def logs = taskEndIdx > 0? taskTail.substring(0, taskEndIdx) : taskTail
+        return taskString + logs
+    }
+
     GradleRunResult(String stdOutput) {
         this(null, stdOutput)
     }
@@ -30,15 +43,6 @@ class GradleRunResult {
         def argIndex = args.indexOf(key)
         def value = args[argIndex+1]
         return matcher(value)
-    }
-
-    private static String taskLog(String task, String stdOutput) {
-        String taskString = "> Task ${task}"
-        int taskBeginIdx = stdOutput.indexOf(taskString) + taskString.length()
-        String taskTail = stdOutput.substring(taskBeginIdx)
-        int taskEndIdx = taskTail.indexOf("> Task")
-        def logs = taskTail.substring(0, taskEndIdx)
-        return logs
     }
 
     private static ArrayList<String> loadArgs(String stdOutput) {
