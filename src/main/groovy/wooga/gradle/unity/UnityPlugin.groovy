@@ -337,9 +337,9 @@ class UnityPlugin implements Plugin<Project> {
             task.group = GROUP
             task.manifestPath.convention(manifestFile)
             task.upmPackages.putAll(extension.upmPackages)
-            if (extension.enableTestCodeCoverage.getOrElse(false)) {
-                task.upmPackages.put("com.unity.testtools.codecoverage", "1.1.0")
-            }
+            task.upmPackages.put("com.unity.testtools.codecoverage", extension.enableTestCodeCoverage.map({
+                it ? "1.1.0" : null
+            }))
         }
         project.tasks.withType(Test).configureEach {testTask ->
             testTask.dependsOn(addUPMPackagesTask)
