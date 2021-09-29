@@ -33,6 +33,7 @@ import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.tasks.Activate
+import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
@@ -74,7 +75,8 @@ class UnityPlugin implements Plugin<Project> {
         returnUnityLicense(ReturnLicense),
         setAPICompatibilityLevel(APICompatibilityLevel),
         unsetAPICompatibilityLevel(APICompatibilityLevel),
-        generateSolution(GenerateSolution)
+        generateSolution(GenerateSolution),
+        addUPMPackages(AddUPMPackages)
 
         private final Class taskClass
 
@@ -152,19 +154,19 @@ class UnityPlugin implements Plugin<Project> {
             t.unityLogFile.convention(extension.logsDir.file(project.provider {
                 t.logCategory.get().isEmpty() ? "${t.name}.log" : "${t.logCategory.get()}/${t.name}.log"
             }))
-            t.environment.putAll(project.provider({System.getenv()}))
+            t.environment.putAll(project.provider({ System.getenv() }))
         }
     }
 
     private static void addTasks(UnityPluginExtension extension, Project project) {
         addTestTasks(project, extension)
         addSetAPICompatibilityLevelTasks(project, extension)
-        addActivateAndReturnLicenseTasks(project, extension)
         addGenerateSolutionTask(project)
+        addAddUPMPackagesTask(project, extension)
+        addActivateAndReturnLicenseTasks(project, extension)
     }
 
-    private static void addTestTasks(final Project project, final UnityPluginExtension extension) {
-
+    private static void addTestTasks(Project project, UnityPluginExtension extension) {
         // Create "container" tasks which will depend on any tasks of type Test with the given platforms
         def testEditModeTask = project.tasks.register(Tasks.testEditMode.toString(), { t ->
             t.group = GROUP
@@ -217,9 +219,9 @@ class UnityPlugin implements Plugin<Project> {
             t.reports.xml.outputLocation.convention(extension.reportsDir.file(t.name + "/" + t.name + "." + reports.xml.name))
             t.enableCodeCoverage.convention(extension.enableTestCodeCoverage)
             t.coverageResultsPath.convention(extension.enableTestCodeCoverage.map {
-                return it? extension.reportsDir.getOrElse(null)?.asFile?.absolutePath: null
+                return it ? extension.reportsDir.getOrElse(null)?.asFile?.absolutePath : null
             })
-            t.coverageOptions.convention(extension.enableTestCodeCoverage.map {it? "generateAdditionalMetrics" : null})
+            t.coverageOptions.convention(extension.enableTestCodeCoverage.map { it ? "generateAdditionalMetrics" : null })
             t.debugCodeOptimization.convention(extension.enableTestCodeCoverage) //needed from 2020.1 and on for coverage
         })
 
@@ -323,9 +325,30 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void addGenerateSolutionTask(Project project) {
-        project.tasks.register(Tasks.generateSolution.toString(), GenerateSolution) {task ->
+        project.tasks.register(Tasks.generateSolution.toString(), GenerateSolution) { task ->
             task.description = "Generates a synchronized solution file for the unity project"
             task.group = GROUP
+        }
+    }
+
+    private static void addAddUPMPackagesTask(Project project, final UnityPluginExtension extension) {
+        def manifestFile = project.layout.projectDirectory.file("Packages/manifest.json")
+        def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) { task ->
+            task.group = GROUP
+            task.manifestPath.convention(manifestFile)
+            task.upmPackages.putAll(extension.upmPackages)
+            task.upmPackages.putAll(extension.enableTestCodeCoverage.map {
+                it? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
+            })
+        }
+        project.tasks.withType(Test).configureEach { testTask ->
+            testTask.dependsOn(addUPMPackagesTask)
+        }
+        addUPMPackagesTask.configure { task ->
+            task.onlyIf {
+                def upmPackageCount = task.upmPackages.forUseAtConfigurationTime().getOrElse([:]).size()
+                upmPackageCount > 0
+            }
         }
     }
 }

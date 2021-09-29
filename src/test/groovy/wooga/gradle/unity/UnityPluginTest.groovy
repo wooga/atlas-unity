@@ -19,8 +19,11 @@ package wooga.gradle.unity
 
 import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import spock.lang.Unroll
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
+import wooga.gradle.unity.tasks.AddUPMPackages
+import wooga.gradle.unity.tasks.GenerateSolution
 
 class UnityPluginTest extends ProjectSpec {
 
@@ -53,10 +56,48 @@ class UnityPluginTest extends ProjectSpec {
         taskType.isInstance(task)
 
         where:
-        taskName                       | taskType
-        UnityPlugin.Tasks.test         | DefaultTask
-        UnityPlugin.Tasks.testEditMode | DefaultTask
-        UnityPlugin.Tasks.testPlayMode | DefaultTask
+        taskName                           | taskType
+        UnityPlugin.Tasks.test             | DefaultTask
+        UnityPlugin.Tasks.testEditMode     | DefaultTask
+        UnityPlugin.Tasks.testPlayMode     | DefaultTask
+        UnityPlugin.Tasks.generateSolution | GenerateSolution
+        UnityPlugin.Tasks.addUPMPackages   | AddUPMPackages
+    }
+
+    @Unroll
+    def "configures addUPMPackages task"() {
+        given: "project without applied atlas-unity plugin"
+        assert !project.plugins.hasPlugin(PLUGIN_NAME)
+
+        when: "applying atlas unity plugin"
+        project.plugins.apply(PLUGIN_NAME)
+        and: "configured unity extension"
+        project.extensions.unity.with {
+            upmPackages = extUPMPackages
+            enableTestCodeCoverage = coverageEnabled
+        }
+
+        then:
+        def task = project.tasks.findByName(UnityPlugin.Tasks.addUPMPackages.toString()) as AddUPMPackages
+        def packages = task.upmPackages.get()
+        and: "task has a manifest file"
+        task.manifestPath.present
+        task.manifestPath.get().asFile == new File(projectDir, "Packages/manifest.json")
+        and: "task contains expected packages"
+        packages.entrySet().containsAll(extUPMPackages.entrySet())
+        if (coverageEnabled) {
+            packages["com.unity.testtools.codecoverage"] == "1.1.0"
+            packages.size() == extUPMPackages.size() + 1
+        } else {
+            packages.size() == extUPMPackages.size()
+        }
+
+        where:
+        coverageEnabled | extUPMPackages
+        true            | [:]
+        false           | [:]
+        false           | ["unity.pkg": "ver", "otherpkg": "0.0.1"]
+        true            | ["unity.pkg": "ver", "otherpkg": "0.0.1"]
     }
 
 }

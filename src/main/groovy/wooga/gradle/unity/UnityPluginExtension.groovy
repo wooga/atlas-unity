@@ -21,6 +21,7 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
@@ -256,4 +257,16 @@ trait UnityPluginExtension implements UnitySpec,
         targets
     }
 
+    private final MapProperty<String, String> upmPackages = objects.mapProperty(String, String)
+
+    /**
+     * @return The UPM packages to add
+     */
+    MapProperty<String, String> getUpmPackages() {
+        upmPackages
+    }
+
+    void setUpmPackages(MapProperty<String, String> upmPackages) {
+        upmPackages.set(upmPackages)
+    }
 }

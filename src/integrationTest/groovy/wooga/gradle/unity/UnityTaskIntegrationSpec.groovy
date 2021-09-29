@@ -17,11 +17,9 @@
 
 package wooga.gradle.unity
 
-
 import org.gradle.api.logging.LogLevel
-import spock.lang.IgnoreIf
 import spock.lang.Unroll
-import spock.util.environment.RestoreSystemProperties
+import wooga.gradle.unity.testutils.GradleRunResult
 import wooga.gradle.utils.MapPropertyQueryTaskWriter
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Unity
@@ -71,8 +69,9 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
-        value == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        def stdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        stdOut.contains("Starting process 'command '")
+        value == stdOut.contains(" $expectedCommandlineSwitch")
 
         where:
         [testCase, useSetter, value] <<
@@ -103,8 +102,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
-        value == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        def stdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        stdOut.contains("Starting process 'command '")
         query.matches(result, value)
 
         where:
@@ -142,9 +141,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
+        def stdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        stdOut.contains("Starting process 'command '")
         def shouldContain = value != ""
-        shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
+        shouldContain == stdOut.contains(" $expectedCommandlineSwitch")
 
         where:
         [testCase, useSetter, value] <<
@@ -179,10 +179,11 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         result.wasExecuted(subjectUnderTestName)
-        result.standardOutput.contains("Starting process 'command '")
+        def subjectStdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        subjectStdOut.contains("Starting process 'command '")
         def shouldContain = value != ""
-        shouldContain == result.standardOutput.contains(" $expectedCommandlineSwitch")
-        query.matches(result, value)
+        shouldContain == subjectStdOut.contains(" $expectedCommandlineSwitch")
+        query.matches(GradleRunResult.taskLog(query.taskName, result.standardOutput), value)
 
         where:
         [testCase, useSetter, value] <<
@@ -393,7 +394,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasks(subjectUnderTestName)
 
         then:
-        !result.standardOutput.contains(mockUnityStartupMessage)
+        def stdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        !stdOut.contains(mockUnityStartupMessage)
 
         when:
         appendToSubjectTask("""
@@ -402,7 +404,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         result = runTasks(subjectUnderTestName)
 
         then:
-        result.standardOutput.contains(mockUnityStartupMessage)
+        def taskLog = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
+        taskLog.contains(mockUnityStartupMessage)
     }
 
     def "redirects unity log to stdout and custom logfile if provided"() {

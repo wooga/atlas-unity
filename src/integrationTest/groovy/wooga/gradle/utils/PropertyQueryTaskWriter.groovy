@@ -66,7 +66,14 @@ class PropertyQueryTaskWriter extends BasePropertyQueryTaskWriter {
      * @return True if the property's toString() matches the given value
      */
     Boolean matches(ExecutionResult result, Object value) {
-        result.standardOutput.contains("${path}${separator}${value}")
+        matches(result.standardOutput, value)
+    }
+
+    /**
+     * @return True if the property's toString() matches the given value
+     */
+    Boolean matches(String stdOut, Object value) {
+        stdOut.contains("${path}${separator}${value}")
     }
 }
 
