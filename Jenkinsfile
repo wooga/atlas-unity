@@ -29,6 +29,5 @@ withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', var
     buildGradlePlugin platforms: ['macos','windows','linux'],
                       coverallsToken: coveralls_token,
                       sonarToken: sonar_token,
-                      testEnvironment: testEnvironment,
-                      labels: 'primary'
+                      testEnvironment: testEnvironment
 }
