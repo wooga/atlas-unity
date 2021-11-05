@@ -16,6 +16,7 @@
 
 package wooga.gradle.unity.traits
 
+import com.wooga.gradle.BaseSpec
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
@@ -25,7 +26,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import wooga.gradle.unity.models.APICompatibilityLevel
 
-trait APICompatibilityLevelSpec extends UnityBaseSpec {
+trait APICompatibilityLevelSpec extends BaseSpec {
 
     MapProperty<String, APICompatibilityLevel> apiCompatibilityLevel = objects.mapProperty(String, APICompatibilityLevel)
 

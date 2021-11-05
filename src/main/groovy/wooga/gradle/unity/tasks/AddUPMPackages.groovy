@@ -1,5 +1,6 @@
 package wooga.gradle.unity.tasks
 
+import com.wooga.gradle.BaseSpec
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
@@ -11,9 +12,8 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.process.ExecResult
 import wooga.gradle.unity.UnityTask
-import wooga.gradle.unity.traits.UnityBaseSpec
 
-class AddUPMPackages extends UnityTask implements UnityBaseSpec {
+class AddUPMPackages extends UnityTask implements BaseSpec {
 
     final RegularFileProperty manifestPath = objects.fileProperty()
     final MapProperty<String, String> upmPackages = objects.mapProperty(String, String)

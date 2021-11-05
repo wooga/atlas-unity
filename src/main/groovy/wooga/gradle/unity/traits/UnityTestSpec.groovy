@@ -16,6 +16,7 @@
 
 package wooga.gradle.unity.traits
 
+import com.wooga.gradle.BaseSpec
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.InputFiles
 
@@ -28,4 +29,7 @@ trait UnityTestSpec extends UnityBaseSpec {
         return inputFiles
     }
 
+}
+
+trait UnityBaseSpec extends BaseSpec {
 }

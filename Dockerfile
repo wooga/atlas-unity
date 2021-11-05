@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk
+FROM openjdk:8-jdk-buster
 
 
 RUN mkdir -p /home/ci
