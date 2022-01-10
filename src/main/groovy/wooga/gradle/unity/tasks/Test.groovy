@@ -32,6 +32,7 @@ abstract class Test extends UnityTask implements UnityTestSpec {
 
     @Inject
     Test() {
+        inputFiles = project.objects.fileCollection()
         description = "Executes Unity in batch mode and executes specified method"
         reports = instantiator.newInstance(UnityTestTaskReportsImpl.class, this)
         reports.xml.enabled = true
