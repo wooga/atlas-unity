@@ -16,7 +16,16 @@
 
 package wooga.gradle.unity.traits
 
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.InputFiles
+
 trait UnityTestSpec extends UnityBaseSpec {
 
+    private final ConfigurableFileCollection inputFiles = objects.fileCollection()
+
+    @InputFiles
+    ConfigurableFileCollection getInputFiles() {
+        return inputFiles
+    }
 
 }
