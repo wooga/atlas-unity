@@ -20,6 +20,21 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
         res.standardOutput.contains("-executeMethod UnityEditor.SyncVS.SyncSolution")
     }
 
+
+    @UnityPluginTestOptions(addMockTask = false, disableAutoActivateAndLicense = false)
+    def "generateSolution task is never up-to-date"() {
+        given: "applied atlas-unity plugin"
+
+        when: "generateSolution task is called"
+        def firstRes = runTasksSuccessfully("generateSolution")
+        and: "generateSolution task is called again"
+        def secondRes = runTasksSuccessfully("generateSolution")
+
+        then: "neither of ran tasks were up-to-date"
+        !firstRes.wasUpToDate(":generateSolution")
+        !secondRes.wasUpToDate(":generateSolution")
+    }
+
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.24f1", cleanup = false)
