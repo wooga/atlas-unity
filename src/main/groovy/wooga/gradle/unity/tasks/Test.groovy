@@ -1,7 +1,12 @@
 package wooga.gradle.unity.tasks
 
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.Directory
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
@@ -29,6 +34,13 @@ abstract class Test extends UnityTask implements UnityTestSpec {
 
     void setReports(UnityTestTaskReport value) {
         reports = value
+    }
+
+    private final ConfigurableFileCollection inputFiles
+
+    @InputFiles
+    ConfigurableFileCollection getInputFiles() {
+        inputFiles
     }
 
     @Inject

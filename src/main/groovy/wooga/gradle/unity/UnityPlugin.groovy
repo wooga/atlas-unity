@@ -21,6 +21,7 @@ package wooga.gradle.unity
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.FileTreeElement
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.provider.Provider
@@ -28,6 +29,7 @@ import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import wooga.gradle.unity.internal.InputFileTreeFactory
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
@@ -197,7 +199,6 @@ class UnityPlugin implements Plugin<Project> {
 
         // Override the batchmode property for edit/playmode test tasks by that of the extension
         project.tasks.withType(Test.class).configureEach({ Test t ->
-
             Provider<Boolean> testBatchModeProvider = project.provider {
                 def tp = t.testPlatform.getOrNull()
                 try {
@@ -215,6 +216,8 @@ class UnityPlugin implements Plugin<Project> {
                 }
                 true
             }
+
+            t.inputFiles.from({ ->  InputFileTreeFactory.inputFilesForUnityTask(project, extension, t) })
             t.batchMode.set(testBatchModeProvider)
             t.reports.xml.outputLocation.convention(extension.reportsDir.file(t.name + "/" + t.name + "." + reports.xml.name))
             t.enableCodeCoverage.convention(extension.enableTestCodeCoverage)
