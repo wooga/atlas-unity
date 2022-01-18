@@ -407,5 +407,4 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
                 taskResult.args.contains("-debugCodeOptimization")
 
     }
-
 }
