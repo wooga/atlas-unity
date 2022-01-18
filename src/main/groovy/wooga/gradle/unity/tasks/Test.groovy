@@ -1,6 +1,5 @@
 package wooga.gradle.unity.tasks
 
-import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.internal.reflect.Instantiator

@@ -18,8 +18,8 @@
 package wooga.gradle.unity.tasks
 
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
-import kotlin.Unit
 import nebula.test.functional.ExecutionResult
+import spock.lang.Shared
 import spock.lang.Unroll
 import wooga.gradle.unity.UnityPlugin
 import wooga.gradle.unity.UnityTaskIntegrationSpec
@@ -256,7 +256,7 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
             enableTestCodeCoverage.set(false)
         }
         """
-        
+
         and: "a mocked unity project with enabled playmode tests"
         setProjectSettingsFile(ProjectSettingsFile.TEMPLATE_CONTENT_ENABLED)
 
@@ -268,6 +268,132 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
         !playModeResult.args.contains("-enableCodeCoverage")
         def editModeResult = new GradleRunResult(":testEditModeAndroid", result.standardOutput)
         !editModeResult.args.contains("-enableCodeCoverage")
+    }
+
+    @Shared
+    def mockProjectFiles = [
+            [new File("Assets/Plugins.meta"), false],
+            [new File("Library/SomeCache.asset"), true],
+            [new File("ProjectSettings/SomeSettings.asset"), false],
+            [new File("UnityPackageManager/manifest.json"), false],
+            [new File("Assets/Plugins/iOS.meta"), true],
+            [new File("Assets/Plugins/iOS/somefile.m"), true],
+            [new File("Assets/Plugins/iOS/somefile.m.meta"), true],
+            [new File("Assets/Nested.meta"), false],
+            [new File("Assets/Nested/Plugins.meta"), false],
+            [new File("Assets/Nested/Plugins/iOS.meta"), true],
+            [new File("Assets/Nested/Plugins/iOS/somefile.m"), true],
+            [new File("Assets/Nested/Plugins/iOS/somefile.m.meta"), true],
+            [new File("Assets/Plugins/WebGL.meta"), true],
+            [new File("Assets/Plugins/WebGL/somefile.ts"), true],
+            [new File("Assets/Plugins/WebGL/somefile.ts.meta"), true],
+            [new File("Assets/Nested/Plugins/WebGL.meta"), true],
+            [new File("Assets/Nested/Plugins/WebGL/somefile.ts"), true],
+            [new File("Assets/Nested/Plugins/WebGL/somefile.ts.meta"), true],
+            [new File("Assets/Editor.meta"), false],
+            [new File("Assets/Editor/somefile.cs"), false],
+            [new File("Assets/Editor/somefile.cs.meta"), false],
+            [new File("Assets/Nested/Editor/somefile.cs"), false],
+            [new File("Assets/Source.cs"), false],
+            [new File("Assets/Source.cs.meta"), false],
+            [new File("Assets/Nested/LevelEditor.meta"), false],
+            [new File("Assets/Nested/LevelEditor/somefile.cs"), false],
+            [new File("Assets/Nested/LevelEditor/somefile.cs.meta"), false],
+            [new File("Assets/Plugins/Android.meta"), false],
+            [new File("Assets/Plugins/Android/somefile.java"), false],
+            [new File("Assets/Plugins/Android/somefile.java.meta"), false],
+            [new File("Assets/Nested/Plugins/Android.meta"), false],
+            [new File("Assets/Nested/Plugins/Android/s.java"), false],
+            [new File("Assets/Nested/Plugins/Android/s.java.meta"), false],
+    ]
+
+    @Unroll
+    def "task #statusMessage up-to-date when #file changed with default inputFiles"() {
+        given: "a mocked unity project"
+        //need to convert the relative files to absolute files
+        def (_, File testFile) = prepareMockedProject(projectDir, files as Iterable<File>, file as File)
+        and: "a unity test task"
+        buildFile << """
+            tasks.register("unityTest", wooga.gradle.unity.tasks.Test) {
+                it.buildTarget = "${buildTarget}"
+            }
+        """.stripIndent()
+
+        and: "a up-to-date project state"
+        def result = runTasksSuccessfully("unityTest")
+        assert !result.wasUpToDate('unityTest')
+
+        result = runTasksSuccessfully("unityTest")
+        assert result.wasUpToDate('unityTest')
+
+        when: "change content of one source file"
+        testFile.text = "new content"
+
+        result = runTasksSuccessfully("unityTest")
+
+        then:
+        result.wasUpToDate('unityTest') == upToDate
+
+        where:
+        files = mockProjectFiles.collect { it[0] }
+        [file, upToDate] << mockProjectFiles
+        buildTarget = "android"
+        statusMessage = upToDate ? "is" : "is not"
+    }
+
+    @Unroll
+    def "can set custom inputFiles for up-to-date check #type"() {
+        given: "a mocked unity project"
+        //need to convert the relative files to absolute files
+        def (_, File testFile) = prepareMockedProject(projectDir, files as Iterable<File>, file as File)
+
+        and: "a custom inputCollection"
+        buildFile << """
+            tasks.register("unityTest", wooga.gradle.unity.tasks.Test) {
+                it.inputFiles.setFrom(${value})
+            }
+        """.stripIndent()
+
+        and: "a up-to-date project state"
+        def result = runTasksSuccessfully("unityTest")
+        assert !result.wasUpToDate('unityTest')
+
+        result = runTasksSuccessfully("unityTest")
+        assert result.wasUpToDate('unityTest')
+
+        when: "change content of one source file"
+        testFile.text = "new content"
+
+        result = runTasksSuccessfully("unityTest")
+
+        then:
+        result.wasUpToDate('unityTest') == upToDate
+
+        where:
+        file                                          | upToDate | type             | value
+        new File("Assets/Plugins/iOS/somefile.m")     | true     | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/iOS/**")}'
+        new File("Assets/Plugins/Android/somefile.m") | false    | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/iOS/**")}'
+        new File("Assets/Source.cs")                  | false    | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/iOS/**")}'
+        new File("Assets/Plugins/iOS/somefile.m")     | false    | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/Android/**")}'
+        new File("Assets/Plugins/Android/somefile.m") | true     | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/Android/**")}'
+        new File("Assets/Source.cs")                  | false    | 'FileTree'       | 'project.fileTree(project.projectDir){include("Assets/**"); exclude("**/Plugins/Android/**")}'
+        new File("Assets/Editor/somefile.cs")         | true     | 'FileCollection' | 'project.files("Assets/Editor/anyfile.cs","Assets/Source.cs")'
+        new File("Assets/Source.cs")                  | false    | 'FileCollection' | 'project.files("Assets/Editor/anyfile.cs","Assets/Source.cs")'
+
+        files = mockProjectFiles.collect { it[0] }
+        statusMessage = (upToDate) ? "is" : "is not"
+    }
+
+    Tuple prepareMockedProject(File projectDir, Iterable<File> files, File testFile) {
+        files = files.collect { new File(projectDir, it.path) }
+        testFile = new File(projectDir, testFile.path)
+
+        //create directory structure
+        files.each { f ->
+            f.parentFile.mkdirs()
+            f.text = "some content"
+        }
+        new Tuple(files, testFile)
     }
 
     boolean matchesExpectedCoverageArgs(GradleRunResult taskResult) {
