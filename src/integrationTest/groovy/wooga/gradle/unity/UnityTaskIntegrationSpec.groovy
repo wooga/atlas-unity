@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import com.wooga.gradle.PlatformUtils
 import org.gradle.api.logging.LogLevel
 import spock.lang.Unroll
 import wooga.gradle.unity.testutils.GradleRunResult
@@ -204,43 +205,6 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     }
 
     @Unroll
-    def "can configure arguments with #method #message"() {
-        given: "a custom archive task"
-        buildFile << """
-            ${subjectUnderTestName} {
-                arguments(["--test", "value"])
-            }
-        """.stripIndent()
-
-        and: "a set property"
-        buildFile << """
-            ${subjectUnderTestName}.${method}($value)
-        """.stripIndent()
-
-        when:
-        def query = new PropertyQueryTaskWriter("${subjectUnderTestName}.${property}")
-        query.write(buildFile)
-        def result = runTasksSuccessfully(query.taskName)
-
-        then:
-        query.matches(result, expectedValue)
-
-        where:
-        method                    | rawValue         | type                      | append | expectedValue
-        "argument"                | "--foo"          | "String"                  | true   | ["--test", "value", "--foo"]
-        "arguments"               | ["--foo", "bar"] | "List<String>"            | true   | ["--test", "value", "--foo", "bar"]
-        "arguments"               | ["--foo", "bar"] | "String[]"                | true   | ["--test", "value", "--foo", "bar"]
-        "setAdditionalArguments"  | ["--foo", "bar"] | "List<String>"            | false  | ["--foo", "bar"]
-        "setAdditionalArguments"  | ["--foo", "bar"] | "Provider<List<String>>"  | false  | ["--foo", "bar"]
-        "additionalArguments.set" | ["--foo", "bar"] | "List<String>"            | false  | ["--foo", "bar"]
-        "additionalArguments.set" | ["--foo", "bar"] | "Provider<List<String>>>" | false  | ["--foo", "bar"]
-
-        property = "additionalArguments"
-        value = wrapValueBasedOnType(rawValue, type)
-        message = (append) ? "which appends arguments" : "which replaces arguments"
-    }
-
-    @Unroll
     def "can set unityPath with #method"() {
         given: "a build file with custom test task"
         appendToSubjectTask("$method(file('$value'))")
@@ -253,7 +217,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def result = runTasksSuccessfully(subjectUnderTestName)
 
         then:
-        if (windows) {
+        if (PlatformUtils.windows) {
             value = value.replace('/', '\\')
         }
         result.standardOutput.contains(value)
@@ -295,81 +259,6 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         value = rawValue != null ? wrapValueBasedOnType(rawValue, String) : null
         method = (useSetter) ? "setLogCategory" : "logCategory.set"
-    }
-
-    @Unroll
-    def "set environment variable #rawValue for task exec"() {
-        given: "some clean environment variables"
-        if (!windows) {
-            def envNames = System.getenv().keySet().toArray()
-            environmentVariables.clear(*envNames)
-        }
-
-        and: "a test value in system env"
-        initialValue.each { key, value ->
-            environmentVariables.set(key, value)
-        }
-
-        and: "an overridden environment"
-        appendToSubjectTask("$method($value)")
-
-        and: "some values in the user environment"
-        environmentVariables.set("USER_A", "foo")
-
-        when:
-        def query = new MapPropertyQueryTaskWriter(propertyPath)
-        query.write(buildFile)
-        def result = runTasksSuccessfully(subjectUnderTestName, query.taskName)
-
-        then:
-        query.contains(result, rawValue)
-
-        where:
-        property      | useSetter | rawValue
-        "environment" | true      | ["A": "foo"]
-        "environment" | false     | ["A": "bar"]
-        "environment" | true      | ["A": 7]
-        "environment" | false     | ["A": 7]
-        "environment" | true      | ["A": file("foo.bar")]
-        "environment" | false     | ["A": file("foo.bar")]
-        "environment" | true      | ["A": true]
-        "environment" | false     | ["A": false]
-
-        initialValue = ["B": "5", "C": "7"]
-        method = (useSetter) ? "set${property.capitalize()}" : "${property}.set"
-        value = wrapValueBasedOnType(rawValue, Map)
-        propertyPath = "${subjectUnderTestName}.environment"
-
-    }
-
-    def "adds environment for task exec"() {
-        given: "some clean environment variables"
-        if (!windows) {
-            def envNames = System.getenv().keySet().toArray()
-            environmentVariables.clear(*envNames)
-        }
-
-        and: "a test value in system env"
-        initialValue.each { key, value ->
-            environmentVariables.set(key, value)
-        }
-
-        appendToSubjectTask("$method(${wrapValueBasedOnType(rawValue, Map)})")
-
-        when:
-        def query = new MapPropertyQueryTaskWriter(propertyPath)
-        query.write(buildFile)
-        def result = runTasksSuccessfully(subjectUnderTestName, query.taskName)
-
-        then:
-        query.contains(result, initialValue, rawValue)
-
-        where:
-        method               | rawValue   | initialValue
-        "environment.putAll" | ["A": "7"] | ["B": "5"]
-
-        value = wrapValueBasedOnType(rawValue, Map)
-        propertyPath = "${subjectUnderTestName}.environment"
     }
 
     def "task executes without output when set to quiet"() {
@@ -414,7 +303,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         and: "a custom build task"
         appendToSubjectTask("""
                 logToStdout = true
-                unityLogFile = file('${escapedPath(logFile.path)}')
+                unityLogFile = file('${PlatformUtils.escapedPath(logFile.path)}')
         """.stripIndent())
 
         when:
@@ -437,7 +326,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
             def logFile = File.createTempFile("log", "out")
             expectedValue = expectedValue.replace("#path", logFile.path)
             // The escaped path has two \\ dir separators
-            appendToSubjectTask("unityLogFile = file('${escapedPath(logFile.path)}')")
+            appendToSubjectTask("unityLogFile = file('${PlatformUtils.escapedPath(logFile.path)}')")
         }
 
         and: "mocked unity version"

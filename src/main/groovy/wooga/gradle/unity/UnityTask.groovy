@@ -17,37 +17,33 @@
 
 package wooga.gradle.unity
 
+import com.wooga.gradle.ArgumentsSpec
+import com.wooga.gradle.io.FileUtils
+import com.wooga.gradle.io.OutputStreamSpec
 import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.io.LineBufferingOutputStream
-import org.gradle.internal.io.TextStream
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import sun.reflect.misc.FieldUtil
 import wooga.gradle.unity.models.UnityCommandLineOption
-import wooga.gradle.unity.traits.ArgumentsSpec
 import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnitySpec
-import wooga.gradle.unity.utils.FileUtils
-import wooga.gradle.unity.utils.ForkTextStream
 import wooga.gradle.unity.utils.UnityVersionManager
 
 abstract class UnityTask extends DefaultTask
         implements UnitySpec,
                 UnityCommandLineSpec,
-                ArgumentsSpec {
+                ArgumentsSpec,
+                OutputStreamSpec {
 
     UnityTask() {
         // When this task is executed, we query the arguments to pass
         // onto the Unity process here. We generate a sequence of Unity's command line options
         // and also an additional one for our custom use
-        wooga_gradle_unity_traits_ArgumentsSpec__arguments = project.provider({ getUnityCommandLineOptions() })
-        wooga_gradle_unity_traits_ArgumentsSpec__additionalArguments = project.objects.listProperty(String)
-        wooga_gradle_unity_traits_ArgumentsSpec__environment =  project.objects.mapProperty(String, Object)
+        internalArguments = project.provider({ getUnityCommandLineOptions() })
     }
 
     @TaskAction
@@ -63,9 +59,9 @@ abstract class UnityTask extends DefaultTask
                 preExecute()
 
                 def unityPath = unityPath.get().asFile.absolutePath
-                def unityArgs = getAllArguments()
+                def unityArgs = arguments.get()
                 def unityEnvironment = environment.get()
-                def outputStream = getOutputStream()
+                def outputStream = getOutputStream(unityLogFile.asFile.get())
 
                 exec.with {
                     executable unityPath
@@ -124,22 +120,4 @@ abstract class UnityTask extends DefaultTask
         // If no file was found
         return null
     }
-
-    private OutputStream getOutputStream() {
-        OutputStream outputStream
-        if (logToStdout.get()) {
-            TextStream handler = new ForkTextStream()
-            outputStream = new LineBufferingOutputStream(handler)
-
-            if (unityLogFile.present) {
-                handler.addWriter(unityLogFile.get().asFile.newPrintWriter())
-            }
-            handler.addWriter(System.out.newPrintWriter())
-        } else {
-            outputStream = new ByteArrayOutputStream()
-        }
-        return outputStream
-    }
-
-
 }

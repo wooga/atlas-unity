@@ -128,15 +128,5 @@ trait UnitySpec extends UnityBaseSpec {
     void setLogCategory(String value) {
         logCategory.set(value)
     }
-
-    private final Property<Boolean> logToStdout = objects.property(Boolean)
-    /**
-     * @return Whether the Unity Editor process should also log to stdout
-     */
-    @Internal
-    Property<Boolean> getLogToStdout() {
-        logToStdout
-    }
-
 }
 

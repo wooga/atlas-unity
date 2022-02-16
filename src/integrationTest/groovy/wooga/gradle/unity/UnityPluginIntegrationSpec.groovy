@@ -17,6 +17,8 @@
 
 package wooga.gradle.unity
 
+import com.wooga.gradle.PlatformUtils
+import com.wooga.gradle.PropertyUtils
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
@@ -90,7 +92,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
                 break
 
             case PropertyLocation.environment:
-                def envKey = envNameFromProperty(extensionKey)
+                def envKey = PropertyUtils.envNameFromProperty(extensionKey)
                 environmentVariables.set(envKey, useBatchMode.toString())
                 break
 
@@ -150,7 +152,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
                 propertiesFile << "${extensionName}.${property} = ${escapedValue}"
                 break
             case PropertyLocation.environment:
-                def envPropertyKey = envNameFromProperty(extensionName, property)
+                def envPropertyKey = PropertyUtils.envNameFromProperty(extensionName, property)
                 environmentVariables.set(envPropertyKey, value)
                 break
             default:
@@ -159,7 +161,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
         and: "the test value with replace placeholders"
         if (testValue instanceof String) {
-            testValue = testValue.replaceAll("#projectDir#", escapedPath(projectDir.path))
+            testValue = testValue.replaceAll("#projectDir#", PlatformUtils.escapedPath(projectDir.path))
         }
 
         when:
@@ -204,7 +206,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         providedValue = (location == PropertyLocation.script) ? type : value
         testValue = (expectedValue == _) ? rawValue : expectedValue
         reason = location.reason() + ((location == PropertyLocation.none) ? "" : "  with '$providedValue' ")
-        escapedValue = (value instanceof String) ? escapedPath(value) : value
+        escapedValue = (value instanceof String) ? PlatformUtils.escapedPath(value) : value
         invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
     }
 

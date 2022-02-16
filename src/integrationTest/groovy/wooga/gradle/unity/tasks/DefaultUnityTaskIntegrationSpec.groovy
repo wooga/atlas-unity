@@ -26,7 +26,7 @@ import wooga.gradle.unity.UnityTaskIntegrationSpec
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
 
-    @Requires({ os.macOs })
+    @Requires({  os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.27f1", cleanup = false)
     def "creates unity project"(Installation unity) {
