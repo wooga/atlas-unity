@@ -17,18 +17,15 @@
 
 package wooga.gradle
 
-
+import com.wooga.gradle.PlatformUtils
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.ProvideSystemProperty
-import wooga.gradle.unity.utils.PlatformUtilsImpl
-import wooga.gradle.utils.PropertyUtilsImpl
 
 import static java.lang.System.lineSeparator
 
-class IntegrationSpec extends nebula.test.IntegrationSpec
-        implements PropertyUtilsImpl, PlatformUtilsImpl {
+class IntegrationSpec extends nebula.test.IntegrationSpec {
 
     @Rule
     ProvideSystemProperty properties = new ProvideSystemProperty("ignoreDeprecations", "true")
@@ -42,7 +39,7 @@ class IntegrationSpec extends nebula.test.IntegrationSpec
     }
 
     static String osPath(String path) {
-        if (isWindows()) {
+        if (PlatformUtils.windows) {
             path = path.startsWith('/') ? "c:" + path : path
         }
         new File(path).path
@@ -98,13 +95,13 @@ class IntegrationSpec extends nebula.test.IntegrationSpec
                 }
                 break
             case "String":
-                value = "${escapedPath(rawValueEscaped.toString())}"
+                value = "${PlatformUtils.escapedPath(rawValueEscaped.toString())}"
                 break
             case "String[]":
                 value = "'${rawValue.collect { it }.join(",")}'.split(',')"
                 break
             case "File":
-                value = "new File('${escapedPath(rawValue.toString())}')"
+                value = "new File('${PlatformUtils.escapedPath(rawValue.toString())}')"
                 break
             case "String...":
                 value = "${rawValue.collect { '"' + it + '"' }.join(", ")}"

@@ -17,6 +17,7 @@
 
 package wooga.gradle.unity
 
+import com.wooga.gradle.PlatformUtils
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
@@ -135,7 +136,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory)
         mockUnityFile.executable = true
-        if (windows) {
+        if (PlatformUtils.windows) {
             mockUnityFile << """
                 @echo off
                 echo [ENVIRONMENT]:
@@ -163,7 +164,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         createFile("testLicense", licenseDir)
         buildFile << """
         unity {
-            licenseDirectory.set(new File("${escapedPath(licenseDir.path)}"))
+            licenseDirectory.set(new File("${PlatformUtils.escapedPath(licenseDir.path)}"))
         }
         """.stripIndent()
     }
@@ -176,7 +177,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     }
 
     protected void addUnityPathToExtension(String path) {
-        buildFile << "unity.unityPath = file(\"${escapedPath(path)}\")"
+        buildFile << "unity.unityPath = file(\"${PlatformUtils.escapedPath(path)}\")"
     }
 
     void addMockTask(Boolean force, Boolean clearActions, String... lines) {

@@ -1,8 +1,11 @@
 package wooga.gradle.utils
 
+import com.wooga.gradle.PropertyUtils
 import groovy.transform.InheritConstructors
 import nebula.test.Integration
 import nebula.test.functional.ExecutionResult
+
+// TODO: Replace with test library
 
 /**
  * Writes a task for querying the value in a task

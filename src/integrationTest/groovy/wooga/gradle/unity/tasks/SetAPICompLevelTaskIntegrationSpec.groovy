@@ -16,6 +16,7 @@
 
 package wooga.gradle.unity.tasks
 
+import com.wooga.gradle.PlatformUtils
 import spock.lang.Unroll
 
 import wooga.gradle.unity.UnityIntegrationSpec
@@ -70,7 +71,7 @@ class SetAPICompLevelTaskIntegrationSpec extends UnityIntegrationSpec {
         expectedAPICompatibilityLevel = (expectedValue != _) ? expectedValue : rawValue
         defaultAPICompatibilityLevel = APICompatibilityLevel.defaultLevel
         testValue = (expectedValue == _) ? rawValue : expectedValue
-        escapedValue = (value instanceof String) ? escapedPath(value) : value
+        escapedValue = (value instanceof String) ? PlatformUtils.escapedPath(value) : value
         invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
     }
 
