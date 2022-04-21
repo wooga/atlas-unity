@@ -16,7 +16,10 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '2.2.3'
+    id 'net.wooga.plugins' version '2.3.0'
+    id 'net.wooga.snyk' version '0.10.0'
+    id "net.wooga.snyk-gradle-plugin" version "0.2.0"
+    id "net.wooga.cve-dependency-resolution" version "0.4.0"
 }
 
 group 'net.wooga.gradle'
@@ -36,6 +39,10 @@ pluginBundle {
     }
 }
 
+cveHandler {
+    configurations("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRuntimeClasspath", "integrationTestCompileClasspath", "integrationTestRuntimeClasspath")
+}
+
 github {
     repositoryName = "wooga/atlas-unity"
 }
@@ -45,20 +52,14 @@ dependencies {
     implementation 'com.wooga.gradle:gradle-commons:[1,2['
     implementation 'org.apache.maven:maven-artifact:3.8.5'
     implementation "org.yaml:snakeyaml:1.30"
-    implementation('net.wooga:unity-version-manager-jni') {
-        version {
-            strictly "1.5.2"
-        }
-    }
+    implementation 'net.wooga:unity-version-manager-jni:[1,2['
 
     testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:+') {
         exclude module: 'logback-classic'
     }
 
-    testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.3.0") {
-        exclude module: 'groovy-all'
-    }
+    testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.3.0")
 
-    testImplementation 'com.github.stefanbirkner:system-rules:1.18.0'
+    testImplementation 'com.github.stefanbirkner:system-rules:[1.18['
 
 }
