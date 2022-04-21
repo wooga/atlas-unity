@@ -16,7 +16,7 @@
 
 package wooga.gradle.unity.traits
 
-
+import com.wooga.gradle.BaseSpec
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -31,7 +31,7 @@ import wooga.gradle.unity.UnityPluginConventions
 import wooga.gradle.unity.utils.ProjectSettingsFile
 import wooga.gradle.unity.utils.UnityFileTree
 
-trait UnitySpec extends UnityBaseSpec {
+trait UnitySpec extends BaseSpec {
 
     private DirectoryProperty projectDirectory = objects.directoryProperty()
     /**

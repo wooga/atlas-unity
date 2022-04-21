@@ -16,13 +16,14 @@
 
 package wooga.gradle.unity.traits
 
+import com.wooga.gradle.BaseSpec
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 
-trait UnityLicenseSpec extends UnityBaseSpec {
+trait UnityLicenseSpec extends BaseSpec {
 
     private DirectoryProperty licenseDirectory = objects.directoryProperty()
     /**
