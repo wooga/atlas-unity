@@ -37,6 +37,7 @@ import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
+import wooga.gradle.unity.tasks.GenerateUpmPackage
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
@@ -105,6 +106,7 @@ class UnityPlugin implements Plugin<Project> {
         configureExtension(extension, project)
         addTasks(extension, project)
         configureUnityTasks(extension, project)
+        configurePackageTasks(extension, project)
     }
 
     private static void configureExtension(UnityPluginExtension extension, Project project) {
@@ -354,4 +356,11 @@ class UnityPlugin implements Plugin<Project> {
             }
         }
     }
+
+    private static void configurePackageTasks(UnityPluginExtension extension, final Project project) {
+        // TODO: Perhaps hook the task to generate meta files
+        project.tasks.withType(GenerateUpmPackage).configureEach({ t ->
+        })
+    }
+
 }

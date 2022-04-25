@@ -19,6 +19,7 @@ package wooga.gradle
 
 import com.wooga.gradle.PlatformUtils
 import nebula.test.functional.ExecutionResult
+import org.apache.commons.io.FileUtils
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.contrib.java.lang.system.ProvideSystemProperty
@@ -46,7 +47,17 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
     }
 
     Boolean fileExists(String... path) {
-        fileExists(path.join("/"))
+        fileExists(path.join(File.separator))
+        // TODO: Use this instead, but doesnt have the same behavior on macos as windows?
+        //FileUtils.getFile(path).exists()
+    }
+
+    def file(String... path) {
+        file(path.join(File.separator), projectDir)
+    }
+
+    def directory(String... path) {
+        directory(path.join(File.separator), projectDir)
     }
 
     Boolean outputContains(ExecutionResult result, String message) {
@@ -112,6 +123,9 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
             case "Map":
                 value = "[" + rawValue.collect { k, v -> "${wrapValueBasedOnType(k, k.getClass(), fallback)} : ${wrapValueBasedOnType(v, v.getClass(), fallback)}" }.join(", ") + "]"
                 value = value == "[]" ? "[:]" : value
+                break
+            case "Directory":
+                value = "project.layout.projectDirectory.dir(${wrapValueBasedOnType(rawValue, String, fallback)})"
                 break
             default:
                 value = (fallback) ? fallback.call(type) : rawValue

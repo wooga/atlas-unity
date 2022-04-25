@@ -20,7 +20,6 @@ class AddUPMPackagesTaskIntegrationSpec extends UnityTaskIntegrationSpec<AddUPMP
         def projectPath = "build/test_project"
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
 
-
         //Test using the extension
         and: "a setup AddUPMPackageTask"
         appendToSubjectTask("""

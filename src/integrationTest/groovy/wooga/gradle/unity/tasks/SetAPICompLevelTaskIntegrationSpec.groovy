@@ -20,6 +20,7 @@ import com.wooga.gradle.PlatformUtils
 import spock.lang.Unroll
 
 import wooga.gradle.unity.UnityIntegrationSpec
+import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
@@ -140,3 +141,4 @@ class SetAPICompLevelTaskIntegrationSpec extends UnityIntegrationSpec {
         expectedAPICompatibilityLevel = APICompatibilityLevel.defaultLevel
     }
 }
+
