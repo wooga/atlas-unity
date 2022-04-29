@@ -19,7 +19,8 @@
 withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', variable: 'artifactory_publish'),
                  usernameColonPassword(credentialsId: 'artifactory_deploy', variable: 'artifactory_deploy'),
                  string(credentialsId: 'atlas_unity_coveralls_token', variable: 'coveralls_token'),
-                 string(credentialsId: 'atlas_plugins_sonar_token', variable: 'sonar_token')]) {
+                 string(credentialsId: 'atlas_plugins_sonar_token', variable: 'sonar_token'),
+                 string(credentialsId: 'atlas_plugins_snyk_token', variable: 'SNYK_TOKEN')]) {
 
     def testEnvironment = [
                             "artifactoryCredentials=${artifactory_publish}",
