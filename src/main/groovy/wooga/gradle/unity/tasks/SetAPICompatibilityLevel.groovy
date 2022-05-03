@@ -19,6 +19,7 @@ package wooga.gradle.unity.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.specs.Spec
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.traits.APICompatibilityLevelSpec
@@ -30,6 +31,7 @@ class SetAPICompatibilityLevel extends DefaultTask implements APICompatibilityLe
 
     private MapProperty<String, APICompatibilityLevel> previousAPICompatibilityLevel
 
+    @Internal
     MapProperty<String, APICompatibilityLevel> getPreviousAPICompatibilityLevel(){
         previousAPICompatibilityLevel
     }

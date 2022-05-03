@@ -28,4 +28,4 @@ pluginManagement {
   }
 }
 
-rootProject.name = 'atlas-unity'
+rootProject.name = 'unity'
