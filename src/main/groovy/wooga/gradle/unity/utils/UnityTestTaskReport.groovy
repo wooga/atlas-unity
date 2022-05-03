@@ -20,6 +20,8 @@ package wooga.gradle.unity.utils
 import org.gradle.api.reporting.Report
 import org.gradle.api.reporting.ReportContainer
 import org.gradle.api.reporting.SingleFileReport
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 
 /**
  * Container type for Unity test task result reports.
@@ -30,5 +32,6 @@ interface UnityTestTaskReport extends ReportContainer<Report>{
      * Returns a {@link org.gradle.api.reporting.SingleFileReport} object.
      * @return the xml report object.
      */
+    @Internal
     SingleFileReport getXml()
 }

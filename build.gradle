@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '2.3.0'
+    id 'net.wooga.plugins' version '3.2.0'
     id 'net.wooga.snyk' version '0.10.0'
     id "net.wooga.snyk-gradle-plugin" version "0.2.0"
     id "net.wooga.cve-dependency-resolution" version "0.4.0"
@@ -29,12 +29,15 @@ pluginBundle {
     website = 'https://wooga.github.io/atlas-unity/'
     vcsUrl = 'https://github.com/wooga/atlas-unity'
     tags = ['Unity3D']
+}
 
+gradlePlugin {
     plugins {
         unity {
             id = 'net.wooga.unity'
             displayName = 'Gradle Unity plugin'
             description = 'This plugin provides tasks for working with Unity3D projects'
+            implementationClass = 'wooga.gradle.unity.UnityPlugin'
         }
     }
 }
@@ -48,7 +51,6 @@ github {
 }
 
 dependencies {
-
     implementation 'com.wooga.gradle:gradle-commons:[1,2['
     implementation 'org.apache.maven:maven-artifact:3.8.5'
     implementation "org.yaml:snakeyaml:1.30"
@@ -59,7 +61,4 @@ dependencies {
     }
 
     testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.3.0")
-
-    testImplementation 'com.github.stefanbirkner:system-rules:[1.18['
-
 }
