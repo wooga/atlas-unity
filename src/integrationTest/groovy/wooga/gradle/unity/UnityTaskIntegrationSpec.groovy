@@ -18,14 +18,13 @@
 package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
+import com.wooga.gradle.test.PropertyQueryTaskWriter
 import org.gradle.api.logging.LogLevel
 import spock.lang.Unroll
 import wooga.gradle.unity.testutils.GradleRunResult
-import wooga.gradle.utils.MapPropertyQueryTaskWriter
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.utils.MethodQueryTaskWriter
-import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Files

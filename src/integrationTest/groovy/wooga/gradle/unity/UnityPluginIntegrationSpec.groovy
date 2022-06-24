@@ -19,14 +19,13 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.PropertyUtils
+import com.wooga.gradle.test.PropertyLocation
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
-import wooga.gradle.utils.PropertyLocation
-import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import static wooga.gradle.unity.UnityPluginConventions.getUnityFileTree
 import static wooga.gradle.unity.UnityPluginConventions.getPlatformUnityPath
@@ -165,7 +164,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         }
 
         when:
-        def query = new PropertyQueryTaskWriter("${extensionName}.${property}")
+        def query = new com.wooga.gradle.test.PropertyQueryTaskWriter("${extensionName}.${property}")
         query.write(buildFile)
         def result = runTasksSuccessfully(query.taskName)
 
@@ -236,7 +235,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         def path = new File(projectDir, expectedPath)
 
         when:
-        def query = new PropertyQueryTaskWriter("unity.${property}")
+        def query = new com.wooga.gradle.test.PropertyQueryTaskWriter("unity.${property}")
         query.write(buildFile)
         def result = runTasks(query.taskName)
 
