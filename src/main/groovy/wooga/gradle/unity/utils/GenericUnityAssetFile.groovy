@@ -32,7 +32,6 @@ import groovy.transform.InheritConstructors
  * }
  * </pre>
  */
-@InheritConstructors
 class GenericUnityAssetFile extends UnityAssetFile implements Map<String, Object> {
 
     @Override
@@ -93,5 +92,21 @@ class GenericUnityAssetFile extends UnityAssetFile implements Map<String, Object
     @Override
     Set<Map.Entry<String, Object>> entrySet() {
         return getContent().entrySet()
+    }
+
+    String rootPropertyName
+    @Override
+    String getRootPropertyName() {
+        rootPropertyName
+    }
+
+    GenericUnityAssetFile(File assetFile, String rootPropertyName) {
+        super(assetFile)
+        this.rootPropertyName = rootPropertyName
+    }
+
+    GenericUnityAssetFile(String content, String rootPropertyName) {
+        super(content)
+        this.rootPropertyName = rootPropertyName
     }
 }

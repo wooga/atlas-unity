@@ -18,6 +18,7 @@
 package wooga.gradle.unity.utils
 
 import groovyjarjarcommonscli.MissingArgumentException
+import org.gradle.api.Action
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.yaml.snakeyaml.DumperOptions
@@ -92,11 +93,13 @@ abstract class UnityAssetFile {
         content
     }
 
+    abstract String getRootPropertyName()
+
     boolean write() {
         write(null)
     }
 
-    boolean write(File assetFile, indent = 2){
+    boolean write(File assetFile, Action<Yaml> onWrite, indent = 2){
 
         if (assetFile == null){
             if (isSerialized()){
@@ -119,7 +122,7 @@ abstract class UnityAssetFile {
         lines.addAll(assetFileText.instructions)
 
         // Add the main map
-        def property = ["PlayerSettings" : content]
+        def property = [rootPropertyName  : content]
         def contentAsYaml = parser.dump(property)
         contentAsYaml = contentAsYaml.replaceAll(": null\n", ": \n")
         lines.add(contentAsYaml)

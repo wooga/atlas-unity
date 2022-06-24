@@ -23,7 +23,20 @@ import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.SupportedBuildTargetGroup
 
 @InheritConstructors
+class PackageManagerSettingsFile extends UnityAssetFile {
+    @Override
+    String getRootPropertyName() {
+        "MonoBehaviour"
+    }
+}
+
+@InheritConstructors
 class ProjectSettingsFile extends UnityAssetFile {
+
+    @Override
+    String getRootPropertyName() {
+        "PlayerSettings"
+    }
 
     static String DEFAULT_TEMPLATE_CONTENT = """      
     %YAML 1.1
