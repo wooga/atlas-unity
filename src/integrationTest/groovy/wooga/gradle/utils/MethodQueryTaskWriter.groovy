@@ -1,11 +1,8 @@
 package wooga.gradle.utils
 
-import com.wooga.gradle.PropertyUtils
-import com.wooga.gradle.test.writers.BasePropertyQueryTaskWriter
-import groovy.transform.InheritConstructors
-import nebula.test.Integration
-import nebula.test.functional.ExecutionResult
 
+import com.wooga.gradle.test.writers.BasePropertyQueryTaskWriter
+import nebula.test.functional.ExecutionResult
 /**
  * Writes a task for querying the value of a method
  * from a given path with the specified invocation.

@@ -15,7 +15,7 @@ import wooga.gradle.utils.DirectoryComparer
 
 class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
-    @Requires({  os.macOs })
+    @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.38f1", cleanup = false)
     def "generates unity package"(Installation unity) {
@@ -45,28 +45,33 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
         and: "a task to create the project"
         def createProjectTaskName = "createProject"
-        def createProjectTask = addTask("createProject", CreateProject.class.name, false, "")
+        def createProjectTask = writeTask("createProject", CreateProject.class.name, {
+            it.register()
+        })
 
         and: "a task to add additional files to the project 2"
         def addFilesTaskName = "addPackageFiles"
-        def addFilesTask = addTask(addFilesTaskName, SetupProjectLayoutTestTask.class.name, false, """
-        dependsOn ${createProjectTask}
-        """.stripIndent())
+        def addFilesTask = writeTask(addFilesTaskName, SetupProjectLayoutTestTask.class.name, {
+            it.dependsOn(createProjectTask)
+                .register()
+        })
 
         and: "a task to generate meta files"
         def generateMetaFilesTaskName = "metatron"
-        def generateMetaFilesTask = addTask(generateMetaFilesTaskName, Unity.class.name, false, """
-        dependsOn ${addFilesTask}
-        """.stripIndent())
+        def generateMetaFilesTask = writeTask(generateMetaFilesTaskName, Unity.class.name, {
+            it.dependsOn(addFilesTask)
+                .register()
+        })
 
         and: "a task to generate the upm package"
         def generateUpmPackageTaskName = "upmPack"
-        addTask(generateUpmPackageTaskName, GenerateUpmPackage.class.name, false, """
-        packageDirectory.set(${wrapValueBasedOnType(packageDirRel, Directory)})
-        packageName = ${wrapValueBasedOnType(packageName, String)}
-        archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})
-        dependsOn ${generateMetaFilesTask}
-        """.stripIndent())
+        writeTask(generateUpmPackageTaskName, GenerateUpmPackage.class.name, {
+            it.register()
+                .dependsOn(generateMetaFilesTask)
+                .withLines("packageDirectory.set(${wrapValueBasedOnType(packageDirRel, Directory)})",
+                    "packageName = ${wrapValueBasedOnType(packageName, String)}",
+                    "archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})")
+        })
 
         and: "a task to extract the upm package so we can compare, okay?"
         def extractUpmPackageName = "upmUnpack"

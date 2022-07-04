@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.TaskIntegrationSpec
 import org.gradle.api.logging.LogLevel
 import spock.lang.Unroll
 import wooga.gradle.unity.testutils.GradleRunResult
@@ -30,31 +31,9 @@ import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec {
-
-    Class<T> getSubjectUnderTestClass() {
-        if (!_sutClass) {
-            try {
-                this._sutClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
-                        .getActualTypeArguments()[0];
-            }
-            catch (Exception e) {
-                this._sutClass = (Class<T>) Unity
-            }
-        }
-        _sutClass
-    }
-    private Class<T> _sutClass
-
-    @Override
-    String getSubjectUnderTestName() {
-        "${subjectUnderTestClass.simpleName.uncapitalize()}Test"
-    }
-
-    @Override
-    String getSubjectUnderTestTypeName() {
-        subjectUnderTestClass.getTypeName()
-    }
+abstract class UnityTaskIntegrationSpec<T extends UnityTask>
+    extends UnityIntegrationSpec
+    implements TaskIntegrationSpec<T> {
 
     @Unroll
     def "can set option '#property' (#value) with #method"() {

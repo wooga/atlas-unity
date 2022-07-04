@@ -221,31 +221,6 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         addTask(name, typeName, force, lines)
     }
 
-    // TODO: Consider adding to gradle-commons-test
-    /**
-     * @return The name of the variable of type TaskProvider
-     */
-    def addTask(String name, String typeName, Boolean force, String... lines) {
-        lines = lines ?: []
-        String variableName = "${name}Task"
-        buildFile << """
-        def ${variableName} = tasks.register(\"${name}\"${typeName != null ? ", ${typeName}": ""}) {                       
-            ${force ? "onlyIf = {true}\n" : ""}${lines.join('\n')}
-        }
-        """.stripIndent()
-        variableName
-    }
-
-    // TODO: Consider adding to gradle-commons-test
-    /**
-     * Set a task dependency where A depends on B
-     */
-    void setTaskDependency(String a, String b) {
-        buildFile << """
-${a} dependsOn ${b}
-"""
-    }
-
     void appendToPluginExtension(String... lines) {
         StringBuilder builder = new StringBuilder()
         builder.append("unity {")
