@@ -2,9 +2,9 @@ package wooga.gradle.unity.tasks
 
 import com.wooga.gradle.BaseSpec
 import groovy.json.JsonSlurper
-import groovyjarjarcommonscli.MissingArgumentException
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -12,6 +12,7 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.bundling.Compression
 import org.gradle.api.tasks.bundling.Tar
@@ -21,13 +22,11 @@ import org.gradle.api.tasks.bundling.Tar
  */
 class GenerateUpmPackage extends Tar implements BaseSpec {
 
-    enum Failure {
+    enum Message {
         packageDirectoryNotSet("No package directory was set"),
         packageManifestFileNotFound("No package manifest file (package.json) was found"),
         packageNameNotSet("No package name was set"),
         versionNotSet("No version was set for the package by the archive")
-        // TODO: Add if the gradle error for it isnt enough
-        //packageManifestNotFound("No package manifest (package.json) was found in the package directory"),
 
         String message
 
@@ -35,7 +34,7 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
             message
         }
 
-        Failure(String message) {
+        Message(String message) {
             this.message = message
         }
     }
@@ -43,7 +42,6 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
     /**
      * @return The directory where the package source files are located
      */
-    @SkipWhenEmpty
     @InputDirectory
     DirectoryProperty getPackageDirectory() {
         packageDirectory
@@ -57,6 +55,15 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
 
     void setPackageDirectory(File value) {
         packageDirectory.set(value)
+    }
+
+    @SkipWhenEmpty
+    @InputFiles
+    FileCollection getPackageFiles() {
+        if (packageDirectory.present) {
+            return project.fileTree(packageDirectory)
+        }
+        project.files()
     }
 
     /**
@@ -90,24 +97,25 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
 
     public static final packageManifestFileName = "package.json"
 
+    @Override
+    protected void copy() {
+        if (!packageDirectory.present) {
+            logger.warn(Message.packageDirectoryNotSet.message)
+        }
+        from(packageDirectory)
+        super.copy()
+    }
 
     GenerateUpmPackage() {
 
         setCompression(Compression.GZIP)
 
-        // Gathers the sources of the package. (We have to wrap it like this in case package directory is never set)
-        from(providers.provider({
-            if (!packageDirectory.present) {
-                throw new MissingArgumentException(Failure.packageDirectoryNotSet.message)
-            }
-            packageDirectory
-        }))
         // Creates a root directory inside the package
         into("package")
         // The name of the package, in reverse domain name notation
         Provider<String> packageNameOnFile = packageManifestFile.map({
             def slurper = new JsonSlurper()
-            if (!it.asFile.exists()){
+            if (!it.asFile.exists()) {
                 return null
             }
             slurper.parse(it.asFile)["name"].toString()
@@ -122,16 +130,20 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
         onlyIf(new Spec<GenerateUpmPackage>() {
             @Override
             boolean isSatisfiedBy(GenerateUpmPackage t) {
-                if (!t.archiveVersion.present) {
-                    logger.error(Failure.versionNotSet.message)
+                if (!packageDirectory.present) {
+                    logger.warn(Message.packageDirectoryNotSet.message)
                     return false
                 }
-                if (t.packageManifestFile.present && !t.packageManifestFile.get().asFile.exists()){
-                    logger.error(Failure.packageManifestFileNotFound.message)
+                if (!t.archiveVersion.present) {
+                    logger.warn(Message.versionNotSet.message)
+                    return false
+                }
+                if (t.packageManifestFile.present && !t.packageManifestFile.get().asFile.exists()) {
+                    logger.warn(Message.packageManifestFileNotFound.message)
                     return false
                 }
                 if (!t.packageName.present || t.packageName.get().empty) {
-                    logger.error(Failure.packageNameNotSet.message)
+                    logger.warn(Message.packageNameNotSet.message)
                     return false
                 }
                 true

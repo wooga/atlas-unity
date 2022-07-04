@@ -130,13 +130,13 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         and:
         def generateUpmPackageTaskName = "upmPack"
         List<String> taskStatements = new ArrayList<String>()
-        if (failure != GenerateUpmPackage.Failure.packageDirectoryNotSet) {
+        if (predicate != GenerateUpmPackage.Message.packageDirectoryNotSet) {
             taskStatements.add("packageDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})")
         }
-        if (failure != GenerateUpmPackage.Failure.versionNotSet) {
+        if (predicate != GenerateUpmPackage.Message.versionNotSet) {
             taskStatements.add("archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})")
         }
-        if (failure != GenerateUpmPackage.Failure.packageNameNotSet) {
+        if (predicate != GenerateUpmPackage.Message.packageNameNotSet) {
             taskStatements.add("packageName = ${wrapValueBasedOnType(packageName, String)}")
         }
 
@@ -146,14 +146,17 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         def result = runTasks(generateUpmPackageTaskName)
 
         then:
-        result.failure || result.wasSkipped(generateUpmPackageTaskName)
+        // TODO: Utility method to check either skip reason (NO-SOURCES, etc)
+        result.wasSkipped(generateUpmPackageTaskName) || outputContains(result, "${generateUpmPackageTaskName} NO-SOURCE")
         outputContains(result, reason)
 
         where:
-        packageName        | packageVersion | failure
-        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Failure.packageDirectoryNotSet
-        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Failure.versionNotSet
-        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Failure.packageNameNotSet
-        reason = failure.message
+        packageName        | packageVersion | predicate
+        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Message.packageDirectoryNotSet
+        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Message.versionNotSet
+        "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Message.packageNameNotSet
+        reason = predicate.message
     }
+
+
 }
