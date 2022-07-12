@@ -27,6 +27,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import wooga.gradle.unity.traits.APICompatibilityLevelSpec
 import wooga.gradle.unity.traits.UnityAuthenticationSpec
+import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnityLicenseSpec
 import wooga.gradle.unity.traits.UnitySpec
 import wooga.gradle.unity.traits.UnityTestSpec

@@ -137,6 +137,8 @@ class UnityPlugin implements Plugin<Project> {
             def file = new File(extension.projectDirectory.get().asFile.path, "ProjectSettings/ProjectSettings.asset")
             return new ProjectSettingsFile(file)
         }))
+
+        // Command line options
         extension.enableTestCodeCoverage.convention(UnityPluginConventions.enableTestCodeCoverage.getBooleanValueProvider(project))
     }
 
@@ -228,6 +230,7 @@ class UnityPlugin implements Plugin<Project> {
             })
             t.coverageOptions.convention(extension.enableTestCodeCoverage.map { it ? "generateAdditionalMetrics" : null })
             t.debugCodeOptimization.convention(extension.enableTestCodeCoverage) //needed from 2020.1 and on for coverage
+            t.testFilter.convention(UnityPluginConventions.testFilter.getStringValueProvider(project))
         })
 
         // Make sure the lifecycle check task depends on our test task

@@ -26,6 +26,8 @@ import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.testutils.GradleRunResult
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.utils.PropertyLocation
+import wooga.gradle.utils.PropertyQueryTaskWriter
 
 class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
@@ -222,9 +224,9 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
         setProjectSettingsFile(ProjectSettingsFile.TEMPLATE_CONTENT_ENABLED)
 
         when:
-        ExecutionResult result = unityVersion?
-                runTasksSuccessfully("test", "-PdefaultUnityTestVersion=${unityVersion}") :
-                runTasksSuccessfully("test")
+        ExecutionResult result = unityVersion ?
+            runTasksSuccessfully("test", "-PdefaultUnityTestVersion=${unityVersion}") :
+            runTasksSuccessfully("test")
 
         then:
         def playModeResult = new GradleRunResult(":testPlayModeAndroid", result.standardOutput)
@@ -272,39 +274,39 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
     @Shared
     def mockProjectFiles = [
-            [new File("Assets/Plugins.meta"), false],
-            [new File("Library/SomeCache.asset"), true],
-            [new File("ProjectSettings/SomeSettings.asset"), false],
-            [new File("UnityPackageManager/manifest.json"), false],
-            [new File("Assets/Plugins/iOS.meta"), true],
-            [new File("Assets/Plugins/iOS/somefile.m"), true],
-            [new File("Assets/Plugins/iOS/somefile.m.meta"), true],
-            [new File("Assets/Nested.meta"), false],
-            [new File("Assets/Nested/Plugins.meta"), false],
-            [new File("Assets/Nested/Plugins/iOS.meta"), true],
-            [new File("Assets/Nested/Plugins/iOS/somefile.m"), true],
-            [new File("Assets/Nested/Plugins/iOS/somefile.m.meta"), true],
-            [new File("Assets/Plugins/WebGL.meta"), true],
-            [new File("Assets/Plugins/WebGL/somefile.ts"), true],
-            [new File("Assets/Plugins/WebGL/somefile.ts.meta"), true],
-            [new File("Assets/Nested/Plugins/WebGL.meta"), true],
-            [new File("Assets/Nested/Plugins/WebGL/somefile.ts"), true],
-            [new File("Assets/Nested/Plugins/WebGL/somefile.ts.meta"), true],
-            [new File("Assets/Editor.meta"), false],
-            [new File("Assets/Editor/somefile.cs"), false],
-            [new File("Assets/Editor/somefile.cs.meta"), false],
-            [new File("Assets/Nested/Editor/somefile.cs"), false],
-            [new File("Assets/Source.cs"), false],
-            [new File("Assets/Source.cs.meta"), false],
-            [new File("Assets/Nested/LevelEditor.meta"), false],
-            [new File("Assets/Nested/LevelEditor/somefile.cs"), false],
-            [new File("Assets/Nested/LevelEditor/somefile.cs.meta"), false],
-            [new File("Assets/Plugins/Android.meta"), false],
-            [new File("Assets/Plugins/Android/somefile.java"), false],
-            [new File("Assets/Plugins/Android/somefile.java.meta"), false],
-            [new File("Assets/Nested/Plugins/Android.meta"), false],
-            [new File("Assets/Nested/Plugins/Android/s.java"), false],
-            [new File("Assets/Nested/Plugins/Android/s.java.meta"), false],
+        [new File("Assets/Plugins.meta"), false],
+        [new File("Library/SomeCache.asset"), true],
+        [new File("ProjectSettings/SomeSettings.asset"), false],
+        [new File("UnityPackageManager/manifest.json"), false],
+        [new File("Assets/Plugins/iOS.meta"), true],
+        [new File("Assets/Plugins/iOS/somefile.m"), true],
+        [new File("Assets/Plugins/iOS/somefile.m.meta"), true],
+        [new File("Assets/Nested.meta"), false],
+        [new File("Assets/Nested/Plugins.meta"), false],
+        [new File("Assets/Nested/Plugins/iOS.meta"), true],
+        [new File("Assets/Nested/Plugins/iOS/somefile.m"), true],
+        [new File("Assets/Nested/Plugins/iOS/somefile.m.meta"), true],
+        [new File("Assets/Plugins/WebGL.meta"), true],
+        [new File("Assets/Plugins/WebGL/somefile.ts"), true],
+        [new File("Assets/Plugins/WebGL/somefile.ts.meta"), true],
+        [new File("Assets/Nested/Plugins/WebGL.meta"), true],
+        [new File("Assets/Nested/Plugins/WebGL/somefile.ts"), true],
+        [new File("Assets/Nested/Plugins/WebGL/somefile.ts.meta"), true],
+        [new File("Assets/Editor.meta"), false],
+        [new File("Assets/Editor/somefile.cs"), false],
+        [new File("Assets/Editor/somefile.cs.meta"), false],
+        [new File("Assets/Nested/Editor/somefile.cs"), false],
+        [new File("Assets/Source.cs"), false],
+        [new File("Assets/Source.cs.meta"), false],
+        [new File("Assets/Nested/LevelEditor.meta"), false],
+        [new File("Assets/Nested/LevelEditor/somefile.cs"), false],
+        [new File("Assets/Nested/LevelEditor/somefile.cs.meta"), false],
+        [new File("Assets/Plugins/Android.meta"), false],
+        [new File("Assets/Plugins/Android/somefile.java"), false],
+        [new File("Assets/Plugins/Android/somefile.java.meta"), false],
+        [new File("Assets/Nested/Plugins/Android.meta"), false],
+        [new File("Assets/Nested/Plugins/Android/s.java"), false],
+        [new File("Assets/Nested/Plugins/Android/s.java.meta"), false],
     ]
 
     @Unroll
@@ -398,13 +400,45 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
     boolean matchesExpectedCoverageArgs(GradleRunResult taskResult) {
         return taskResult.args.contains("-enableCodeCoverage") &&
-                taskResult.args.contains("-coverageResultsPath") &&
-                taskResult.argValueMatches("-coverageResultsPath") { String value ->
-                    new File(value) == new File(projectDir, "build/reports/unity")
-                } &&
-                taskResult.args.contains("-coverageOptions") &&
-                taskResult.argValueMatches("-coverageOptions") { it == "generateAdditionalMetrics" } &&
-                taskResult.args.contains("-debugCodeOptimization")
+            taskResult.args.contains("-coverageResultsPath") &&
+            taskResult.argValueMatches("-coverageResultsPath") { String value ->
+                new File(value) == new File(projectDir, "build/reports/unity")
+            } &&
+            taskResult.args.contains("-coverageOptions") &&
+            taskResult.argValueMatches("-coverageOptions") { it == "generateAdditionalMetrics" } &&
+            taskResult.args.contains("-debugCodeOptimization")
+
+    }
+
+    @Unroll
+    def "can set command line option #option from #location"() {
+
+        given:
+        switch (location) {
+            case PropertyLocation.property:
+                createFile("gradle.properties") << "${propertyKey}=${value}"
+                break
+
+            case PropertyLocation.environment:
+                environmentVariables.set(envKey, value)
+                break
+        }
+
+        when:
+        def queryWriter = new PropertyQueryTaskWriter("${subjectUnderTestName}.${option}")
+        queryWriter.write(buildFile)
+        def result = runTasksSuccessfully(subjectUnderTestName, queryWriter.taskName)
+
+
+        then:
+        result.success
+        queryWriter.matches(result, value)
+
+
+        where:
+        option       | propertyKey        | envKey              | value            | type   | location
+        "testFilter" | "unity.testFilter" | "UNITY_TEST_FILTER" | "Wooga.Pancakes" | String | PropertyLocation.property
+        "testFilter" | "unity.testFilter" | "UNITY_TEST_FILTER" | "Wooga.Pancakes" | String | PropertyLocation.environment
 
     }
 }
