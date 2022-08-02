@@ -118,6 +118,11 @@ class UnityPluginConventions {
      * Targets to generate tests for
      */
     static final PropertyLookup enableTestCodeCoverage = new PropertyLookup("UNITY_ENABLE_TEST_COVERAGE", "unity.enableTestCodeCoverage", false)
+    /**
+     * Test filtering
+     */
+    static final PropertyLookup testFilter  = new PropertyLookup("UNITY_TEST_FILTER", "unity.testFilter", null)
+
 
     /**
      * The path to the Unity license directory
