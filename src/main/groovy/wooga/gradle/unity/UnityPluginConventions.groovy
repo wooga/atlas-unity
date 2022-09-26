@@ -123,7 +123,6 @@ class UnityPluginConventions {
      */
     static final PropertyLookup testFilter  = new PropertyLookup("UNITY_TEST_FILTER", "unity.testFilter", null)
 
-
     /**
      * The path to the Unity license directory
      */

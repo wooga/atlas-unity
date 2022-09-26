@@ -17,11 +17,10 @@
 
 package wooga.gradle.unity
 
-
+import com.wooga.gradle.PropertyLookup
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.FileTreeElement
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.provider.Provider
@@ -34,6 +33,7 @@ import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.models.TestPlatform
+import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
@@ -143,13 +143,39 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void configureUnityTasks(UnityPluginExtension extension, final Project project) {
+
+        // Generate the environment/gradle.properties providers
+        Map<UnityCommandLineOption, Provider<String>> stringOptionProviders =
+            new HashMap<UnityCommandLineOption, Provider<String>>()
+        Map<UnityCommandLineOption, Provider<Boolean>> booleanOptionProviders =
+            new HashMap<UnityCommandLineOption, Provider<Boolean>>()
+        for (option in UnityCommandLineOption.values()) {
+            if (!option.map) {
+                continue
+            }
+            def propertyKey = "${EXTENSION_NAME}.${option}"
+            def lookup = PropertyLookup.WithEnvironmentKeyFromProperty(propertyKey, null)
+            // String
+            if (option.hasArguments) {
+                def provider = lookup.getStringValueProvider(project)
+                stringOptionProviders.put(option, provider)
+            }
+            // Boolean
+            else {
+                def provider = lookup.getBooleanValueProvider(project)
+                booleanOptionProviders.put(option, provider)
+            }
+        }
+
         project.tasks.withType(UnityTask).configureEach { t ->
             // Command-line options
             t.batchMode.convention(true)
             t.quit.convention(true)
-            t.logToStdout.convention(t.logger.infoEnabled || t.logger.debugEnabled)
-            t.toggleLogFile(true)
             t.buildTarget.convention(extension.defaultBuildTarget)
+            t.toggleLogFile(true)
+
+            // Logging
+            t.logToStdout.convention(t.logger.infoEnabled || t.logger.debugEnabled)
 
             // Properties used by tasks
             t.unityPath.convention(extension.unityPath)
@@ -161,6 +187,23 @@ class UnityPlugin implements Plugin<Project> {
                 t.logCategory.get().isEmpty() ? "${t.name}.log" : "${t.logCategory.get()}/${t.name}.log"
             }))
             t.environment.putAll(project.provider({ System.getenv() }))
+
+            // Set providers for all command line options that support them
+            for (instance in commandLineOptionInstances) {
+                if (!instance.option.map) {
+                    continue
+                }
+                // String
+                if (instance.option.hasArguments) {
+                    def provider = stringOptionProviders[instance.option]
+                    t.setCommandLineOptionConvention(instance.option, provider)
+                }
+                // Boolean
+                else {
+                    def provider = booleanOptionProviders[instance.option]
+                    t.setCommandLineOptionEnabledConvention(instance.option, provider)
+                }
+            }
         }
     }
 
@@ -221,7 +264,7 @@ class UnityPlugin implements Plugin<Project> {
                 true
             }
 
-            t.inputFiles.from({ ->  InputFileTreeFactory.inputFilesForUnityTask(project, extension, t) })
+            t.inputFiles.from({ -> InputFileTreeFactory.inputFilesForUnityTask(project, extension, t) })
             t.batchMode.set(testBatchModeProvider)
             t.reports.xml.outputLocation.convention(extension.reportsDir.file(t.name + "/" + t.name + "." + reports.xml.name))
             t.enableCodeCoverage.convention(extension.enableTestCodeCoverage)
@@ -230,7 +273,6 @@ class UnityPlugin implements Plugin<Project> {
             })
             t.coverageOptions.convention(extension.enableTestCodeCoverage.map { it ? "generateAdditionalMetrics" : null })
             t.debugCodeOptimization.convention(extension.enableTestCodeCoverage) //needed from 2020.1 and on for coverage
-            t.testFilter.convention(UnityPluginConventions.testFilter.getStringValueProvider(project))
         })
 
         // Make sure the lifecycle check task depends on our test task
@@ -241,11 +283,11 @@ class UnityPlugin implements Plugin<Project> {
 
     private static TaskProvider<Test> createTestTask(TestPlatform platform, final Project project, String name, String buildTarget) {
         def task = project.tasks.register(name, Test,
-                { t ->
-                    t.testPlatform.set(platform.toString().toLowerCase())
-                    t.group = GROUP
-                    t.buildTarget.set(buildTarget)
-                })
+            { t ->
+                t.testPlatform.set(platform.toString().toLowerCase())
+                t.group = GROUP
+                t.buildTarget.set(buildTarget)
+            })
         task
     }
 
@@ -258,18 +300,18 @@ class UnityPlugin implements Plugin<Project> {
         def setTask = project.tasks.register(Tasks.setAPICompatibilityLevel.toString(), SetAPICompatibilityLevel.class)
         def unsetTask = project.tasks.register(Tasks.unsetAPICompatibilityLevel.toString(), SetAPICompatibilityLevel.class)
         setTask.configure(
-                { t ->
-                    t.settingsFile.set(projectSettings)
-                    t.apiCompatibilityLevel.set(extension.apiCompatibilityLevel)
-                    t.finalizedBy(unsetTask)
-                })
+            { t ->
+                t.settingsFile.set(projectSettings)
+                t.apiCompatibilityLevel.set(extension.apiCompatibilityLevel)
+                t.finalizedBy(unsetTask)
+            })
 
         unsetTask.configure(
-                { t ->
-                    t.settingsFile.set(projectSettings)
-                    t.apiCompatibilityLevel.set(setTask.get().previousAPICompatibilityLevel)
-                    t.mustRunAfter(project.tasks.withType(UnityTask))
-                })
+            { t ->
+                t.settingsFile.set(projectSettings)
+                t.apiCompatibilityLevel.set(setTask.get().previousAPICompatibilityLevel)
+                t.mustRunAfter(project.tasks.withType(UnityTask))
+            })
 
         // Make other Unity tasks depend on these
         project.tasks.withType(UnityTask).configureEach({ ut ->
@@ -280,34 +322,34 @@ class UnityPlugin implements Plugin<Project> {
     private static void addActivateAndReturnLicenseTasks(final Project project, final UnityPluginExtension extension) {
 
         def activateTask = project.tasks.register(Tasks.activateUnity.toString(), Activate)
-                { t ->
-                    t.group = GROUP
-                    t.onlyIf(new Spec<Task>() {
-                        @Override
-                        boolean isSatisfiedBy(Task task) {
-                            def cliTasks = project.gradle.startParameter.taskNames
-                            Boolean cliActivateLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
-                            Boolean autoActivate = extension.autoActivateUnity.get()
-                            return cliActivateLicense || autoActivate
-                        }
-                    })
-                }
+            { t ->
+                t.group = GROUP
+                t.onlyIf(new Spec<Task>() {
+                    @Override
+                    boolean isSatisfiedBy(Task task) {
+                        def cliTasks = project.gradle.startParameter.taskNames
+                        Boolean cliActivateLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
+                        Boolean autoActivate = extension.autoActivateUnity.get()
+                        return cliActivateLicense || autoActivate
+                    }
+                })
+            }
 
         def returnLicenseTask = project.tasks.register(Tasks.returnUnityLicense.toString(), ReturnLicense)
-                { t ->
-                    t.group = GROUP
-                    t.onlyIf(new Spec<Task>() {
-                        @Override
-                        boolean isSatisfiedBy(Task task) {
-                            def cliTasks = project.gradle.startParameter.taskNames
-                            Boolean cliReturnLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
-                            Boolean activateDidWork = activateTask.get().didWork
-                            Boolean didRunUnityTasks = project.gradle.taskGraph.allTasks.any { UnityTask.isInstance(it) }
-                            Boolean autoReturn = extension.autoReturnLicense.get()
-                            return cliReturnLicense || (activateDidWork && didRunUnityTasks && autoReturn)
-                        }
-                    })
-                }
+            { t ->
+                t.group = GROUP
+                t.onlyIf(new Spec<Task>() {
+                    @Override
+                    boolean isSatisfiedBy(Task task) {
+                        def cliTasks = project.gradle.startParameter.taskNames
+                        Boolean cliReturnLicense = cliTasks.contains(Tasks.returnUnityLicense.toString())
+                        Boolean activateDidWork = activateTask.get().didWork
+                        Boolean didRunUnityTasks = project.gradle.taskGraph.allTasks.any { UnityTask.isInstance(it) }
+                        Boolean autoReturn = extension.autoReturnLicense.get()
+                        return cliReturnLicense || (activateDidWork && didRunUnityTasks && autoReturn)
+                    }
+                })
+            }
 
         activateTask.configure({ t ->
             t.finalizedBy(returnLicenseTask)
@@ -346,7 +388,7 @@ class UnityPlugin implements Plugin<Project> {
             task.manifestPath.convention(manifestFile)
             task.upmPackages.putAll(extension.upmPackages)
             task.upmPackages.putAll(extension.enableTestCodeCoverage.map {
-                it? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
+                it ? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
             })
         }
         project.tasks.withType(Test).configureEach { testTask ->

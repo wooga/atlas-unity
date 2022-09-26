@@ -1,5 +1,6 @@
 package wooga.gradle.unity.tasks
 
+import com.wooga.gradle.io.FileUtils
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import com.wooga.spock.extensions.uvm.UnityInstallation
@@ -15,7 +16,7 @@ import wooga.gradle.utils.DirectoryComparer
 
 class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
-    @Requires({  os.macOs })
+    @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.38f1", cleanup = false)
     def "generates unity package"(Installation unity) {
@@ -123,8 +124,8 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         // Add package files
-        file(projectPath, "README.MD")
-        def manifestFile = file(projectPath, GenerateUpmPackage.packageManifestFileName)
+        projectFile(projectPath, "README.MD")
+        def manifestFile = projectFile(projectPath, GenerateUpmPackage.packageManifestFileName)
         manifestFile.write(new PackageManifestBuilder().build())
 
         and:

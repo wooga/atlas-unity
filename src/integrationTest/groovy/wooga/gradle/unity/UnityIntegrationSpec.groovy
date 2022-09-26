@@ -18,12 +18,10 @@
 package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
+import com.wooga.gradle.test.IntegrationSpec
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
-import nebula.test.functional.ExecutionResult
-import org.gradle.internal.impldep.com.amazonaws.transform.MapEntry
-import wooga.gradle.IntegrationSpec
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
@@ -35,7 +33,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     File unityMainDirectory
     File projectSettingsFile
 
-    final String extensionName = UnityPlugin.EXTENSION_NAME
+    static final String extensionName = UnityPlugin.EXTENSION_NAME
     final String groupName = "integrationTest"
     final String unityPathOverrideEnvVariable = "UNITY_PATH_TEST"
 
@@ -176,6 +174,13 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         }
     }
 
+    /**
+     * @return Generates a file in the test project directory
+     */
+    def projectFile(String... path) {
+        file(path.join(File.separator), projectDir)
+    }
+
     protected void addUnityPathToExtension(String path) {
         buildFile << "unity.unityPath = file(\"${PlatformUtils.escapedPath(path)}\")"
     }
@@ -219,21 +224,6 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
             }
             """.stripIndent()
         addTask(name, typeName, force, lines)
-    }
-
-    // TODO: Consider adding to gradle-commons-test
-    /**
-     * @return The name of the variable of type TaskProvider
-     */
-    def addTask(String name, String typeName, Boolean force, String... lines) {
-        lines = lines ?: []
-        String variableName = "${name}Task"
-        buildFile << """
-        def ${variableName} = tasks.register(\"${name}\"${typeName != null ? ", ${typeName}": ""}) {                       
-            ${force ? "onlyIf = {true}\n" : ""}${lines.join('\n')}
-        }
-        """.stripIndent()
-        variableName
     }
 
     // TODO: Consider adding to gradle-commons-test

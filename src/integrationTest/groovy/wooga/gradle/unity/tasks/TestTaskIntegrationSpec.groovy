@@ -17,6 +17,11 @@
 
 package wooga.gradle.unity.tasks
 
+import com.wooga.gradle.PropertyUtils
+import com.wooga.gradle.test.PropertyLocation
+import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetterWriter
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import nebula.test.functional.ExecutionResult
 import spock.lang.Shared
@@ -26,8 +31,6 @@ import wooga.gradle.unity.UnityTaskIntegrationSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.testutils.GradleRunResult
 import wooga.gradle.unity.utils.ProjectSettingsFile
-import wooga.gradle.utils.PropertyLocation
-import wooga.gradle.utils.PropertyQueryTaskWriter
 
 class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
 
@@ -439,6 +442,5 @@ class TestTaskIntegrationSpec extends UnityTaskIntegrationSpec<Test> {
         option       | propertyKey        | envKey              | value            | type   | location
         "testFilter" | "unity.testFilter" | "UNITY_TEST_FILTER" | "Wooga.Pancakes" | String | PropertyLocation.property
         "testFilter" | "unity.testFilter" | "UNITY_TEST_FILTER" | "Wooga.Pancakes" | String | PropertyLocation.environment
-
     }
 }
