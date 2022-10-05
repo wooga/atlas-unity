@@ -19,14 +19,14 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.PropertyUtils
+import com.wooga.gradle.test.PropertyLocation
+import com.wooga.gradle.test.PropertyQueryTaskWriter
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
-import wooga.gradle.utils.PropertyLocation
-import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import static wooga.gradle.unity.UnityPluginConventions.getUnityFileTree
 import static wooga.gradle.unity.UnityPluginConventions.getPlatformUnityPath

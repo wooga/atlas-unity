@@ -30,5 +30,6 @@ class ReturnLicense extends UnityTask implements UnityLicenseSpec {
     ReturnLicense() {
         description = "Return the currently active license to the license server."
         returnLicense = true
+        cacheServerEnableUpload.set(false)
     }
 }

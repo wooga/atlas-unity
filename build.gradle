@@ -52,7 +52,7 @@ github {
 
 dependencies {
 
-    api 'com.wooga.gradle:gradle-commons:[1,2['
+    api 'com.wooga.gradle:gradle-commons:[1.6.3,2['
     implementation 'org.apache.maven:maven-artifact:3.8.5'
     implementation "org.yaml:snakeyaml:1.30"
     implementation 'net.wooga:unity-version-manager-jni:[1,2['
@@ -61,5 +61,6 @@ dependencies {
         exclude module: 'logback-classic'
     }
 
+    testImplementation 'com.wooga.gradle:gradle-commons-test:[1.9.0,2['
     testImplementation("com.wooga.spock.extensions:spock-unity-version-manager-extension:0.3.0")
 }

@@ -16,6 +16,7 @@
  */
 
 package wooga.gradle.unity.models
+
 /**
  * You can run the Unity Editor and build Unity applications with additional commands and information on startup.
  * These are some of the command line options available.
@@ -34,12 +35,11 @@ enum UnityCommandLineOption {
      * Opening a project in batch mode while the Editor has the same project open is not supported;
      * only a single instance of Unity can run at a time.
      */
-    batchMode("-batchmode"),
+    batchMode("-batchmode", false, false),
     /**
      * Open the project at the given path.
      * <p>
-     * {code -projectPath <pathname>}
-     */
+     *{code -projectPath <pathname>}*/
     projectPath("-projectPath", true),
 
     /**
@@ -47,7 +47,7 @@ enum UnityCommandLineOption {
      * <p>
      * {@code -logFile <pathname>}
      */
-    logFile("-logFile", true),
+    logFile("-logFile", true, false),
 
     /**
      * Allows the selection of an active build target before a project is loaded.
@@ -55,14 +55,14 @@ enum UnityCommandLineOption {
      * {@code -buildTarget <name>}
      * @see BuildTarget
      */
-    buildTarget("-buildTarget", true),
+    buildTarget("-buildTarget", UnityCommandLineOptionType.Argument, false),
 
     /**
      * Quit the Unity Editor after other commands have finished executing.
      * <p>
      * Note that this can cause error messages to be hidden (however, they still appear in the Editor.log file).
      */
-    quit("-quit"),
+    quit("-quit", false, false),
     /**
      * When running in batch mode, do not initialize the graphics device at all.
      * <p>
@@ -160,7 +160,7 @@ enum UnityCommandLineOption {
      *   Equivalent to using the Run all tests (<target_platform>) dropdown in the PlayMode tab of the Test Runner window.
      * Note: If no value is specified for this argument, tests run in Edit Mode.
      */
-    testPlatform( "-testPlatform", true),
+    testPlatform("-testPlatform", true),
 
     /**
      * A semicolon-separated list of test assemblies to include in the run. A semi-colon separated list
@@ -247,13 +247,13 @@ enum UnityCommandLineOption {
     /**
      * Enables code coverage and allows access to the Coverage API.
      */
-    enableCodeCoverage("-enableCodeCoverage"),
+    enableCodeCoverage("-enableCodeCoverage", false, false),
     /**
      * Sets the location where the coverage results and report will be saved to.
      * The default location is the project's path.
      * https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@1.1/manual/CoverageBatchmode.html
      */
-    coverageResultsPath("-coverageResultsPath", true),
+    coverageResultsPath("-coverageResultsPath", true, false),
     /**
      * Sets the location where the coverage report history will be saved to.
      * The default location is the project's path.
@@ -264,19 +264,63 @@ enum UnityCommandLineOption {
      *  Passes extra options. This is semicolon separated.
      * https://docs.unity3d.com/Packages/com.unity.testtools.codecoverage@1.1/manual/CoverageBatchmode.html
      */
-    coverageOptions("-coverageOptions", true),
+    coverageOptions("-coverageOptions", true, false),
     /**
      * Enables debug code optimization mode, overriding the current default code optimization mode for the session.
      * Needed for code coverage on 2020.1 and older versions.
      */
-    debugCodeOptimization("-debugCodeOptimization")
+    debugCodeOptimization("-debugCodeOptimization", false, false),
+
+    /**
+     * Tells Unity to use the newer Accelerator Cache Server. You must also use -cacheServerEndpoint to specify the address.
+     * If you haven’t configured the Accelerator or cache server in Project Settings, you must add -adb2 on the command line.
+     */
+    enableCacheServer("-EnableCacheServer"),
+    /**
+     * Specifies the endpoint address if you are using the newer Accelerator Cache Server.
+     * <p>Example: -cacheServerEndpoint 127.0.0.1:10080. This overrides any configuration stored in the Editor Preferences.
+     * <p>Use this to connect multiple instances of Unity to different Cache Servers.
+     */
+    cacheServerEndPoint("-cacheServerEndpoint", true),
+    /**
+     * Set the namespace prefix for the newer Accelerator Cache Server. Used to group data together on the Cache Server.
+     * <p>Example: -cacheServerNamespacePrefix MyProject
+     */
+    cacheServerNamespacePrefix("-cacheServerNamespacePrefix", true),
+    /**
+     * Enable downloading from the newer Accelerator Cache Server.
+     * <p>Example:-cacheServerEnableDownload true
+     */
+    cacheServerEnableDownload("-cacheServerEnableDownload"),
+    /**
+     * Enable uploading to the newer Accelerator Cache Server.
+     * <p>Example:-cacheServerEnableUpload false
+     */
+    cacheServerEnableUpload("--cacheServerEnableUpload"),
+    /**
+     * Enables usage of the older (v1) Cache Server, and specifies the IP Address to connect to on startup.
+     * This overrides any configuration stored in the Editor Preferences.
+     * Use this to connect multiple instances of Unity to different v1 Cache Servers.
+     */
+    cacheServerIPAddress("-CacheServerIPAddress", true)
 
     private final String flag
-    private final Boolean hasArguments
     private final String environmentKey
+    private final Boolean map
+    private final UnityCommandLineOptionType type
 
+    /**
+     * @return The type of this option
+     */
+    UnityCommandLineOptionType getType() {
+        type
+    }
+
+    /**
+     * @return Whether this option has arguments
+     */
     Boolean getHasArguments() {
-        hasArguments
+        type == UnityCommandLineOptionType.Argument
     }
 
     /**
@@ -286,35 +330,62 @@ enum UnityCommandLineOption {
         flag
     }
 
-    String getEnvironmentKey(){
+    /**
+     * @return The name of the environment key, such as UNITY_FOOBAR
+     */
+    String getEnvironmentKey() {
         environmentKey
+    }
+
+    /**
+     * @return Whether this option should be automatically mapped to environment/gradle properties
+     */
+    Boolean getMap() {
+        map
     }
 
     /**
      * Options which require an argument
      */
-    static List<UnityCommandLineOption> argumentFlags = values().findAll {it -> it.hasArguments}
+    static List<UnityCommandLineOption> argumentFlags = values().findAll { it -> it.hasArguments }
     /**
      * Options which require no argument, act as switches when present
      */
-    static List<UnityCommandLineOption> flags = values().findAll{ it -> !it.hasArguments}
+    static List<UnityCommandLineOption> flags = values().findAll { it -> !it.hasArguments }
 
-    UnityCommandLineOption(String flag, Boolean hasArguments) {
+    UnityCommandLineOption(String flag, Boolean hasArguments, Boolean map = true) {
         this.flag = flag
-        this.hasArguments = hasArguments
+        this.type = hasArguments
+            ? UnityCommandLineOptionType.Argument
+            : UnityCommandLineOptionType.Flag
         this.environmentKey = null
+        this.map = map
     }
 
     UnityCommandLineOption(String flag) {
         this.flag = flag
-        this.hasArguments = false
+        this.type = UnityCommandLineOptionType.Flag
         this.environmentKey = null
+        this.map = true
     }
 
     UnityCommandLineOption(String flag, String environmentKey) {
         this.flag = flag
-        this.hasArguments = false
+        this.type = UnityCommandLineOptionType.Flag
         this.environmentKey = environmentKey
     }
+
+    UnityCommandLineOption(String flag, UnityCommandLineOptionType type, Boolean map) {
+        this.flag = flag
+        this.type = type
+        this.map = map
+    }
+}
+/**
+ * The type of command line option
+ */
+enum UnityCommandLineOptionType {
+    Argument,
+    Flag
 }
 

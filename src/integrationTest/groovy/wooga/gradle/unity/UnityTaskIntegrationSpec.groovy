@@ -18,14 +18,14 @@
 package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
+import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetterWriter
 import org.gradle.api.logging.LogLevel
 import spock.lang.Unroll
 import wooga.gradle.unity.testutils.GradleRunResult
-import wooga.gradle.utils.MapPropertyQueryTaskWriter
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Unity
-import wooga.gradle.utils.MethodQueryTaskWriter
-import wooga.gradle.utils.PropertyQueryTaskWriter
 
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
@@ -37,7 +37,7 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         if (!_sutClass) {
             try {
                 this._sutClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
-                        .getActualTypeArguments()[0];
+                    .getActualTypeArguments()[0];
             }
             catch (Exception e) {
                 this._sutClass = (Class<T>) Unity
@@ -76,15 +76,15 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         where:
         [testCase, useSetter, value] <<
-                [
-                        // For each option that is a flag (with a boolean value)
-                        UnityCommandLineOption.flags.collect(
-                                { it -> ["${it}", it.flag] }),
-                        // Test with and without the setter
-                        [true, false],
-                        // Test both true and false values
-                        [true, false]
-                ].combinations()
+            [
+                // For each option that is a flag (with a boolean value)
+                UnityCommandLineOption.flags.collect(
+                    { it -> ["${it}", it.flag] }),
+                // Test with and without the setter
+                [true, false],
+                // Test both true and false values
+                [true, false]
+            ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -109,15 +109,15 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         where:
         [testCase, useGetter, value] <<
-                [
-                        // For each option that is a flag (with a boolean value)
-                        UnityCommandLineOption.flags.collect(
-                                { it -> ["${it}", it.flag] }),
-                        // Test with and without the setter
-                        [true, false],
-                        // Test both true and false values
-                        [true, false]
-                ].combinations()
+            [
+                // For each option that is a flag (with a boolean value)
+                UnityCommandLineOption.flags.collect(
+                    { it -> ["${it}", it.flag] }),
+                // Test with and without the setter
+                [true, false],
+                // Test both true and false values
+                [true, false]
+            ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -149,15 +149,15 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         where:
         [testCase, useSetter, value] <<
-                [
-                        // For each option that requires an argument (with a string value)
-                        UnityCommandLineOption.argumentFlags.collect(
-                                { it -> ["${it}", it.flag] }),
-                        // Test with and without the setter
-                        [true, false],
-                        // Test a valid string and an empty one (which will lead to the option being ignored)
-                        ["foobar", ""]
-                ].combinations()
+            [
+                // For each option that requires an argument (with a string value)
+                UnityCommandLineOption.argumentFlags.collect(
+                    { it -> ["${it}", it.flag] }),
+                // Test with and without the setter
+                [true, false],
+                // Test a valid string and an empty one (which will lead to the option being ignored)
+                ["foobar", ""]
+            ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -184,19 +184,21 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         subjectStdOut.contains("Starting process 'command '")
         def shouldContain = value != ""
         shouldContain == subjectStdOut.contains(" $expectedCommandlineSwitch")
-        query.matches(GradleRunResult.taskLog(query.taskName, result.standardOutput), value)
+        // GradleRunResult.taskLog(query.taskName, result.standardOutput)
+        query.filterTaskOutput()
+        query.matches(result, value)
 
         where:
         [testCase, useSetter, value] <<
-                [
-                        // For each option that requires an argument (with a string value)
-                        UnityCommandLineOption.argumentFlags.collect(
-                                { it -> ["${it}", it.flag] }),
-                        // Test with and without the setter
-                        [true, false],
-                        // Test a valid string and an empty one (which will lead to the option being ignored)
-                        ["foobar", ""]
-                ].combinations()
+            [
+                // For each option that requires an argument (with a string value)
+                UnityCommandLineOption.argumentFlags.collect(
+                    { it -> ["${it}", it.flag] }),
+                // Test with and without the setter
+                [true, false],
+                // Test a valid string and an empty one (which will lead to the option being ignored)
+                ["foobar", ""]
+            ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -324,25 +326,29 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         if (logFilePathSet) {
             def logFile = File.createTempFile("log", "out")
-            expectedValue = expectedValue.replace("#path", logFile.path)
             // The escaped path has two \\ dir separators
             appendToSubjectTask("unityLogFile = file('${PlatformUtils.escapedPath(logFile.path)}')")
+
+            if (expectedValue != null) {
+                expectedValue = expectedValue.replace("#path", logFile.path)
+            }
         }
 
         and: "mocked unity version"
         setUnityTestVersion(unityVersion)
 
         when:
-        def query = new MethodQueryTaskWriter("${subjectUnderTestName}.resolveLogFilePath")
-        query.write(buildFile)
-        def result = runTasks(subjectUnderTestName, query.taskName)
+        def get = new PropertyGetterTaskWriter(subjectUnderTestName, ".resolveLogFilePath()")
+        get.write(this)
+        def result = runTasks(subjectUnderTestName, get.taskName)
 
         then:
         result.wasExecuted(subjectUnderTestName)
         result.standardOutput.contains("Starting process 'command '")
         flagPresent == result.standardOutput.contains(flag)
-        if (flagPresent){
-            query.matches(result, expectedValue)
+        if (flagPresent) {
+            def query = get.generateQuery(this, result)
+            query.matches(expectedValue, String)
         }
 
         where:
@@ -355,8 +361,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         // "2019"       | false          | false       | false              | ""            | false
 
         "2018"       | true           | false       | true               | "#path"       | true
-        "2018"       | true           | true        | true               | ""            | true
-        "2018"       | false          | true        | false              | ""            | true
+        "2018"       | true           | true        | true               | null          | true
+        "2018"       | false          | true        | false              | null          | true
         // TODO: Log file path is enabled by default on the plugin
         // "2018"       | false          | false       | false              | ""            | false
 

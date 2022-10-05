@@ -16,7 +16,7 @@
 
 package wooga.gradle.unity.traits
 
-
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -47,6 +47,14 @@ trait UnityCommandLineSpec extends UnitySpec {
     private Map<UnityCommandLineOption, UnityCommandLineOptionSetting> commandLineOptions = UnityCommandLineOption.values().collectEntries(
             { [it, new UnityCommandLineOptionSetting(it, objects)] }
     )
+
+    /**
+     * @return All command line option instances
+     */
+    @Internal
+    UnityCommandLineOptionSetting[] getCommandLineOptionInstances() {
+        commandLineOptions.collect { it -> it.value }
+    }
 
     /**
      * @return Returns the instanced configuration of a command line option
@@ -110,6 +118,15 @@ trait UnityCommandLineSpec extends UnitySpec {
      */
     void setCommandLineOptionConvention(UnityCommandLineOption option, String args) {
         setCommandLineOptionConvention(option, providerFactory.provider({ args }))
+    }
+
+    /**
+     * Sets a convention for a command line option with the given argument (while enabling it)
+     */
+    void setCommandLineOptionEnabledConvention(UnityCommandLineOption option, Provider<Boolean> provider) {
+        if (provider) {
+            commandLineOptions[option].enabled.convention(provider)
+        }
     }
 
     /**
@@ -579,5 +596,77 @@ trait UnityCommandLineSpec extends UnitySpec {
 
     void setRunSynchronously(Boolean value) {
         toggleCommandLineOption(UnityCommandLineOption.runSynchronously, value)
+    }
+
+    // Cache Server
+    @Internal
+    Property<Boolean> getEnableCacheServer() {
+        getCommandLineOption(UnityCommandLineOption.enableCacheServer).enabled
+    }
+    void setEnableCacheServer(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.enableCacheServer, value)
+    }
+    void setEnableCacheServer(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.enableCacheServer, value)
+    }
+
+    @Internal
+    Property<String> getCacheServerEndPoint() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerEndPoint).arguments
+    }
+    void setCacheServerEndPoint(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEndPoint, value)
+    }
+
+    void setCacheServerEndPoint(String value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEndPoint, value)
+    }
+
+    @Internal
+    Property<String> getCacheServerNamespacePrefix() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerNamespacePrefix).arguments
+    }
+    void setCacheServerNamespacePrefix(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerNamespacePrefix, value)
+    }
+
+    void setCacheServerNamespacePrefix(String value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerNamespacePrefix, value)
+    }
+
+    @Internal
+    Property<Boolean> getCacheServerEnableDownload() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload).enabled
+    }
+    void setCacheServerEnableDownload(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
+    }
+
+    void setCacheServerEnableDownload(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
+    }
+
+    @Internal
+    Property<Boolean> getCacheServerEnableUpload() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload).enabled
+    }
+    void setCacheServerEnableUpload(Provider<Boolean> value) {
+        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
+    }
+
+    void setCacheServerEnableUpload(Boolean value) {
+        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
+    }
+
+    @Internal
+    Property<String> getCacheServerIPAddress() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerIPAddress).arguments
+    }
+    void setCacheServerIPAddress(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerIPAddress, value)
+    }
+
+    void setCacheServerIPAddress(String value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerIPAddress, value)
     }
 }
