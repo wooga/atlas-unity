@@ -291,12 +291,12 @@ enum UnityCommandLineOption {
      * Enable downloading from the newer Accelerator Cache Server.
      * <p>Example:-cacheServerEnableDownload true
      */
-    cacheServerEnableDownload("-cacheServerEnableDownload"),
+    cacheServerEnableDownload("-cacheServerEnableDownload", true),
     /**
      * Enable uploading to the newer Accelerator Cache Server.
      * <p>Example:-cacheServerEnableUpload false
      */
-    cacheServerEnableUpload("--cacheServerEnableUpload"),
+    cacheServerEnableUpload("--cacheServerEnableUpload", true),
     /**
      * Enables usage of the older (v1) Cache Server, and specifies the IP Address to connect to on startup.
      * This overrides any configuration stored in the Editor Preferences.

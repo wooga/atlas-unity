@@ -136,8 +136,6 @@ class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
                     UnityCommandLineOption.disableAssemblyUpdater,
                     UnityCommandLineOption.deepProfiling,
                     UnityCommandLineOption.enableCacheServer,
-                    UnityCommandLineOption.cacheServerEnableDownload,
-                    UnityCommandLineOption.cacheServerEnableUpload,
                 ]
                     .collect({ it -> [it.toString()] }),
                 [true, false],
@@ -156,6 +154,44 @@ class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
             .withPropertyKey(propertyKey)
             .withEnvironmentKey(envKey)
             .to(location)
+        getter = new PropertyGetterTaskWriter(setter)
+    }
+
+    // Options that are (boolean) flags but need to be passed as arguments
+    @Unroll
+    def "can set command line argument boolean option #option when #location with key #keyString to #value"() {
+
+        when:
+        def query = runPropertyQuery(getter, setter)
+
+        then:
+        query.success
+        query.matches(value, String)
+
+        where:
+        [testCase, value, location] <<
+            [
+                [
+                    UnityCommandLineOption.cacheServerEnableDownload,
+                    UnityCommandLineOption.cacheServerEnableUpload,
+                ]
+                    .collect({ it -> [it.toString()] }),
+                [true, false],
+                [PropertyLocation.property, PropertyLocation.environment, PropertyLocation.script]
+            ].combinations()
+
+        option = testCase[0]
+        propertyKey = "${extensionName}." + option
+        envKey = PropertyUtils.envNameFromProperty(propertyKey)
+        keyString = location == PropertyLocation.property
+            ? propertyKey : envKey
+
+        setter = new PropertySetterWriter(subjectUnderTestName, option)
+            .set(value, Boolean)
+            .withPropertyKey(propertyKey)
+            .withEnvironmentKey(envKey)
+            .to(location)
+
         getter = new PropertyGetterTaskWriter(setter)
     }
 }
