@@ -20,7 +20,7 @@ class AddUPMPackages extends UnityTask implements BaseSpec {
 
     AddUPMPackages() {
         description = "Adds UPM packages to Unity project"
-        cacheServerEnableUpload.set(false)
+        setCacheServerEnableUpload(false)
     }
 
     @Override

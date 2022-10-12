@@ -39,7 +39,7 @@ class Activate extends UnityTask implements UnityAuthenticationSpec {
     Activate() {
         description = " Activates a Unity installation with unity account and a serial number"
         authentication = new DefaultUnityAuthentication(project.objects)
-        cacheServerEnableUpload.set(false)
+        setCacheServerEnableUpload(false)
         onlyIf({
 
             // If all 3 haven't been assigned, don't throw since this is optional

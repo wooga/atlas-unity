@@ -623,7 +623,7 @@ trait UnityCommandLineSpec extends UnitySpec {
     }
 
     @Internal
-    Property<String> getCacheServerNamespacePrefix() {
+    Property<Boolean> getCacheServerNamespacePrefix() {
         return getCommandLineOption(UnityCommandLineOption.cacheServerNamespacePrefix).arguments
     }
     void setCacheServerNamespacePrefix(Provider<String> value) {
@@ -634,28 +634,40 @@ trait UnityCommandLineSpec extends UnitySpec {
         setCommandLineOption(UnityCommandLineOption.cacheServerNamespacePrefix, value)
     }
 
+    // Special case because this is a boolean option but needs to be set as a string
     @Internal
-    Property<Boolean> getCacheServerEnableDownload() {
-        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload).enabled
+    Property<String> getCacheServerEnableDownload() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload).arguments
     }
-    void setCacheServerEnableDownload(Provider<Boolean> value) {
-        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
+
+    void setCacheServerEnableDownload(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
+    }
+
+    void setCacheServerEnableDownload(String value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
     }
 
     void setCacheServerEnableDownload(Boolean value) {
-        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value)
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableDownload, value.toString())
     }
 
+    // Special case because this is a boolean option but needs to be set as a string
     @Internal
-    Property<Boolean> getCacheServerEnableUpload() {
-        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload).enabled
+    Property<String> getCacheServerEnableUpload() {
+        return getCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload).arguments
     }
-    void setCacheServerEnableUpload(Provider<Boolean> value) {
-        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
+
+    void setCacheServerEnableUpload(Provider<String> value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
+    }
+
+    void setCacheServerEnableUpload(String value) {
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
     }
 
     void setCacheServerEnableUpload(Boolean value) {
-        toggleCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value)
+        setCommandLineOption(UnityCommandLineOption.cacheServerEnableUpload, value.toString())
     }
 
     @Internal
