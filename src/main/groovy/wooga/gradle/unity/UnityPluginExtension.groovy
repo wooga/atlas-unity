@@ -134,7 +134,7 @@ trait UnityPluginExtension implements UnitySpec,
         autoReturnLicense
     }
 
-    final Provider<Boolean> shouldReturnLicense = providerFactory.provider({ getAutoActivateUnity().get() && getAutoReturnLicense().get() })
+    final Provider<Boolean> shouldReturnLicense = providerFactory.provider({ getAutoActivate().get() && getAutoReturnLicense().get() })
 
     void setAutoReturnLicense(Provider<Boolean> value) {
         autoReturnLicense.set(value)
@@ -144,24 +144,37 @@ trait UnityPluginExtension implements UnitySpec,
         autoReturnLicense.set(value)
     }
 
-    private final Property<Boolean> autoActivateUnity = objects.property(Boolean)
+    @Deprecated
+    Property<Boolean> getAutoActivateUnity() {
+        autoActivate
+    }
+
+    @Deprecated
+    void setAutoActivateUnity(Boolean value) {
+        setAutoActivate(value)
+    }
+
+    @Deprecated
+    void setAutoActivateUnity(Provider<Boolean> value) {
+        setAutoActivate(value)
+    }
 
     /**
      * @return Whether a task to activate the Unity license should be executed before any task of type {@code UnityTask}
      */
-    Property<Boolean> getAutoActivateUnity() {
-        autoActivateUnity
+    Property<Boolean> getAutoActivate() {
+        autoActivate
     }
 
-    void setAutoActivateUnity(Boolean value) {
-        autoActivateUnity.set(value)
+    private final Property<Boolean> autoActivate = objects.property(Boolean)
+
+    void setAutoActivate(Provider<Boolean> value) {
+        autoActivate.set(value)
     }
 
-    void setAutoActivateUnity(Provider<Boolean> value) {
-        autoActivateUnity.set(value)
+    void setAutoActivate(Boolean value) {
+        autoActivate.set(value)
     }
-
-    private Property<String> defaultBuildTarget = objects.property(String)
 
     /**
      * @return If assigned, what the build target will be assigned to by convention
@@ -169,6 +182,8 @@ trait UnityPluginExtension implements UnitySpec,
     Property<String> getDefaultBuildTarget() {
         defaultBuildTarget
     }
+
+    private Property<String> defaultBuildTarget = objects.property(String)
 
     void setDefaultBuildTarget(Provider<String> value) {
         defaultBuildTarget.set(value)

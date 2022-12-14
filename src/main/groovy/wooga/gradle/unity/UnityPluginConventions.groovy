@@ -73,7 +73,8 @@ class UnityPluginConventions {
     /**
      * The path to the Unity Editor executable
      */
-    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH", "UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })    /**
+    static final PropertyLookup unityPath = new PropertyLookup(["UNITY_UNITY_PATH", "UNITY_PATH"], "unity.unityPath", { getPlatformUnityPath().absolutePath })
+
     /**
      * Used for authentication with Unity's servers
      */
@@ -86,9 +87,9 @@ class UnityPluginConventions {
      * Used for authentication with Unity's servers
      */
     static final PropertyLookup serial = new PropertyLookup("UNITY_AUTHENTICATION_SERIAL", "unity.authentication.serial", null)
+
     /**
      * Used in specifying the directory where unity logs are written to
-     *
      * @environmentVariable "XCODEBUILD_LOGS_DIR"
      * @propertyName "xcodebuild.logsDir"
      * @defaultValue "logs"
@@ -121,7 +122,11 @@ class UnityPluginConventions {
     /**
      * Test filtering
      */
-    static final PropertyLookup testFilter  = new PropertyLookup("UNITY_TEST_FILTER", "unity.testFilter", null)
+    static final PropertyLookup testFilter = new PropertyLookup("UNITY_TEST_FILTER", "unity.testFilter", null)
+    /**
+     * Automatic unity activation (get/return license)
+     */
+    static final PropertyLookup autoActivate = new PropertyLookup("UNITY_AUTO_ACTIVATE", "unity.autoActivate", true)
 
     /**
      * The path to the Unity license directory
@@ -163,7 +168,7 @@ class UnityPluginConventions {
 
     static UnityFileTree getUnityFileTree(File unityExec) {
         return UnityFileTree.fromUnityExecutable(unityExec)
-     }
+    }
 
 }
 
