@@ -37,7 +37,7 @@ import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
-import wooga.gradle.unity.tasks.GenerateUpmPackage
+import wooga.gradle.unity.tasks.SetupProject
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
@@ -79,7 +79,8 @@ class UnityPlugin implements Plugin<Project> {
         setAPICompatibilityLevel(APICompatibilityLevel),
         unsetAPICompatibilityLevel(APICompatibilityLevel),
         generateSolution(GenerateSolution),
-        addUPMPackages(AddUPMPackages)
+        addUPMPackages(AddUPMPackages),
+        setupProject(SetupProject)
 
         private final Class taskClass
 
@@ -405,9 +406,9 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void configurePackageTasks(UnityPluginExtension extension, final Project project) {
-        // TODO: Perhaps hook the task to generate meta files
-        project.tasks.withType(GenerateUpmPackage).configureEach({ t ->
-        })
+        project.tasks.register(Tasks.setupProject.toString(), Tasks.setupProject.taskClass) {
+            it.group = GROUP
+        }
     }
 
 }

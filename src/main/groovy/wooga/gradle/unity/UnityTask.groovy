@@ -20,12 +20,14 @@ package wooga.gradle.unity
 import com.wooga.gradle.ArgumentsSpec
 import com.wooga.gradle.io.FileUtils
 import com.wooga.gradle.io.OutputStreamSpec
+import com.wooga.gradle.io.TextStream
 import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.io.WriterTextStream
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
 import wooga.gradle.unity.models.UnityCommandLineOption
@@ -34,10 +36,10 @@ import wooga.gradle.unity.traits.UnitySpec
 import wooga.gradle.unity.utils.UnityVersionManager
 
 abstract class UnityTask extends DefaultTask
-        implements UnitySpec,
-                UnityCommandLineSpec,
-                ArgumentsSpec,
-                OutputStreamSpec {
+    implements UnitySpec,
+        UnityCommandLineSpec,
+        ArgumentsSpec,
+        OutputStreamSpec {
 
     UnityTask() {
         // When this task is executed, we query the arguments to pass
@@ -48,6 +50,9 @@ abstract class UnityTask extends DefaultTask
 
     @TaskAction
     void exec() {
+
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream()
+
         ExecResult execResult = project.exec(new Action<ExecSpec>() {
             @Override
             void execute(ExecSpec exec) {
@@ -67,11 +72,18 @@ abstract class UnityTask extends DefaultTask
                     executable unityPath
                     args = unityArgs
                     standardOutput = outputStream
+                    errorOutput = errorStream
                     ignoreExitValue = true
                     environment = unityEnvironment
                 }
             }
         })
+
+        if (execResult.exitValue != 0) {
+            if (unityLogFile.present) {
+                logger.error(errorStream.toString())
+            }
+        }
 
         execResult.assertNormalExitValue()
         postExecute(execResult)
@@ -112,7 +124,7 @@ abstract class UnityTask extends DefaultTask
         // If there's a provided log file path
         // AND we don't want to log to std out
         if (unityLogFile.present
-                && !(logToStdout.present && logToStdout.get())) {
+            && !(logToStdout.present && logToStdout.get())) {
             FileUtils.ensureFile(unityLogFile)
             return unityLogFile.get().asFile.path
         }
