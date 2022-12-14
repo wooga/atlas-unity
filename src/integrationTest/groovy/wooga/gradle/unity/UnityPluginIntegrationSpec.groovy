@@ -136,7 +136,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @UnityPluginTestOptions(unityPath = UnityPathResolution.None, addPluginTestDefaults = false,
-            disableAutoActivateAndLicense = false)
+        disableAutoActivateAndLicense = false)
     @Unroll
     def "extension property :#property returns '#testValue' if #reason"() {
         given: "an applied plugin"
@@ -183,7 +183,9 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         "unityRootDir"             | _                            | _                         | getUnityFileTree(getPlatformUnityPath()).unityRoot.absolutePath | "Provider<Directory>"   | PropertyLocation.none
 
         "defaultBuildTarget"       | _                            | _                         | null                                                            | _                       | PropertyLocation.none
-        "autoActivateUnity"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "autoActivate"             | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "autoActivate"             | _                            | false                     | false                                                           | Boolean                 | PropertyLocation.property
+        "autoActivate"             | _                            | false                     | false                                                           | Boolean                 | PropertyLocation.environment
         "autoReturnLicense"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
         "logCategory"              | _                            | _                         | "unity"                                                         | "Property<String>"      | PropertyLocation.none
         "batchModeForEditModeTest" | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
@@ -360,8 +362,8 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         shouldRun ?
-                result.wasExecuted("addUPMPackages") :
-                result.standardOutput.contains("Task :addUPMPackages SKIPPED")
+            result.wasExecuted("addUPMPackages") :
+            result.standardOutput.contains("Task :addUPMPackages SKIPPED")
 
         where:
         testCoverageEnabled | packagesToInstall  | shouldRun

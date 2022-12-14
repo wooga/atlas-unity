@@ -120,8 +120,8 @@ class UnityPlugin implements Plugin<Project> {
         extension.reportsDir.convention(project.layout.buildDirectory.dir(project.provider({ reportingExtension.file("unity").path })))
 
         extension.licenseDirectory.convention(project.layout.buildDirectory.dir(project.provider({ UnityPluginConventions.licenseDirectory.path })))
-        extension.autoActivateUnity.convention(true)
-        extension.autoReturnLicense.convention(extension.autoActivateUnity)
+        extension.autoActivate.convention(UnityPluginConventions.autoActivate.getBooleanValueProvider(project))
+        extension.autoReturnLicense.convention(extension.autoActivate)
 
         extension.unityPath.convention(UnityPluginConventions.unityPath.getFileValueProvider(project))
 
@@ -366,7 +366,9 @@ class UnityPlugin implements Plugin<Project> {
             t.onlyIf { extension.autoReturnLicense.get() }
         })
 
+        // Have all tasks return the license
         project.tasks.withType(UnityTask).configureEach({ t ->
+            // If it's neither the activate/return license task
             if (!Activate.isInstance(t) && !ReturnLicense.isInstance(t)) {
                 t.dependsOn(activateTask)
                 t.finalizedBy(returnLicenseTask)
