@@ -30,7 +30,7 @@ class UnityPluginTestExtension implements IAnnotationDrivenExtension<UnityPlugin
         spec.addSetupInterceptor({ invocation ->
             def unitySpec = invocation.instance as UnityIntegrationSpec
             if (unitySpec) {
-                unitySpec.options = annotation
+                applyAnnotation(annotation, unitySpec)
             }
             invocation.proceed()
         })
@@ -42,7 +42,7 @@ class UnityPluginTestExtension implements IAnnotationDrivenExtension<UnityPlugin
             def unitySpec = invocation.instance as UnityIntegrationSpec
             if (invocation.feature == feature) {
                 if (unitySpec) {
-                    unitySpec.options = annotation
+                    applyAnnotation(annotation, unitySpec)
                 }
             }
             invocation.proceed()
@@ -60,5 +60,10 @@ class UnityPluginTestExtension implements IAnnotationDrivenExtension<UnityPlugin
 
     @Override
     void visitSpec(SpecInfo spec) {
+    }
+
+    static void applyAnnotation(UnityPluginTestOptions annotation, UnityIntegrationSpec spec) {
+        spec.options = annotation
+
     }
 }
