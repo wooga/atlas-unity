@@ -25,7 +25,7 @@ class CreateProjectTaskIntegrationSpec extends UnityTaskIntegrationSpec<CreatePr
         def projectPath = "Wooga.Foobar"
         buildFile << """
         unity {
-        projectDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
+            projectDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
         }
         """.stripIndent()
 

@@ -21,9 +21,12 @@ import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.PropertyUtils
 import com.wooga.gradle.test.PropertyLocation
 import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetterWriter
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
+import wooga.gradle.unity.models.ResolutionStrategy
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
@@ -374,4 +377,42 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         true                | ["package": "ver"] | true
     }
 
+    @Unroll
+    def "sets extension resolution strategy #value #location"() {
+
+        when:
+        def query = runPropertyQuery(getter, setter)
+
+        then:
+        query.matches(expected != _ ? expected : value)
+
+        where:
+        value                           | expected | location
+        ResolutionStrategy.lowest       | _        | PropertyLocation.script
+        ResolutionStrategy.highest      | _        | PropertyLocation.script
+        ResolutionStrategy.lowest       | _        | PropertyLocation.property
+        ResolutionStrategy.highestMinor | _        | PropertyLocation.environment
+        ""                              | null     | PropertyLocation.environment
+
+        setter = new PropertySetterWriter("unity", "resolutionStrategy")
+            .set(value, String)
+            .withKeyComposedFrom("unity")
+            .to(location)
+        getter = new PropertyGetterTaskWriter(setter)
+    }
+
+    @UnityPluginTestOptions(forceMockTaskRun = false)
+    @Unroll
+    def "task to ensure the project manifest is invoked before running #taskName"() {
+
+        when:
+        def result = runTasks(taskName)
+
+        then:
+        result.wasExecuted(ensureTaskName)
+
+        where:
+        taskName << ["setResolutionStrategy", "addUPMPackages"]
+        ensureTaskName = "ensureProjectManifest"
+    }
 }

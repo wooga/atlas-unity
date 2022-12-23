@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.PropertyLookup
+import wooga.gradle.unity.models.ResolutionStrategy
 import wooga.gradle.unity.utils.UnityFileTree
 
 class UnityPluginConventions {
@@ -127,6 +128,11 @@ class UnityPluginConventions {
      * Automatic unity activation (get/return license)
      */
     static final PropertyLookup autoActivate = new PropertyLookup("UNITY_AUTO_ACTIVATE", "unity.autoActivate", true)
+    /**
+     * For customizing how the Package Manager selects indirect dependencies based on Semantic Versioning rules.
+     * (https://docs.unity3d.com/Manual/upm-manifestPrj.html#resolutionStrategy)
+     */
+    static final PropertyLookup resolutionStrategy = new PropertyLookup(["UNITY_RESOLUTION_STRATEGY", "UPM_RESOLUTION_STRATEGY"], "unity.resolutionStrategy", null)
 
     /**
      * The path to the Unity license directory

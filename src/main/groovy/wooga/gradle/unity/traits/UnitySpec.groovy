@@ -17,6 +17,7 @@
 package wooga.gradle.unity.traits
 
 import com.wooga.gradle.BaseSpec
+import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -30,6 +31,7 @@ import org.gradle.api.tasks.OutputFile
 import wooga.gradle.unity.UnityPluginConventions
 import wooga.gradle.unity.utils.ProjectSettingsFile
 import wooga.gradle.unity.utils.UnityFileTree
+import wooga.gradle.unity.utils.UnityVersionManager
 
 trait UnitySpec extends BaseSpec {
 

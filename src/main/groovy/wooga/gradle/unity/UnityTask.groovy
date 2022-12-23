@@ -20,6 +20,9 @@ package wooga.gradle.unity
 import com.wooga.gradle.ArgumentsSpec
 import com.wooga.gradle.io.FileUtils
 import com.wooga.gradle.io.OutputStreamSpec
+import com.wooga.gradle.io.ProcessExecutor
+import com.wooga.gradle.io.TextStream
+import groovy.transform.InheritConstructors
 import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -33,11 +36,17 @@ import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnitySpec
 import wooga.gradle.unity.utils.UnityVersionManager
 
+import javax.annotation.Nullable
+
+@InheritConstructors
+class UnityExecutionException extends Exception {
+}
+
 abstract class UnityTask extends DefaultTask
-        implements UnitySpec,
-                UnityCommandLineSpec,
-                ArgumentsSpec,
-                OutputStreamSpec {
+    implements UnitySpec,
+        UnityCommandLineSpec,
+        ArgumentsSpec,
+        OutputStreamSpec {
 
     UnityTask() {
         // When this task is executed, we query the arguments to pass
@@ -48,32 +57,35 @@ abstract class UnityTask extends DefaultTask
 
     @TaskAction
     void exec() {
-        ExecResult execResult = project.exec(new Action<ExecSpec>() {
-            @Override
-            void execute(ExecSpec exec) {
 
-                if (!unityPath.present) {
-                    throw new GradleException("Unity path is not set")
-                }
+        preExecute()
 
-                preExecute()
+        def logFile = unityLogFile.asFile.get()
+        def _arguments = arguments.get()
+        def stdoutStream = getOutputStream(logFile)
+        def stderrStream = new ByteArrayOutputStream()
 
-                def unityPath = unityPath.get().asFile.absolutePath
-                def unityArgs = arguments.get()
-                def unityEnvironment = environment.get()
-                def outputStream = getOutputStream(unityLogFile.asFile.get())
+        def executor = ProcessExecutor.from(project)
+            .withExecutable(unityPath.get().asFile)
+            .withArguments(_arguments)
+            .withEnvironment(environment.get())
+            .withStandardOutput(stdoutStream)
+            .withStandardError(stderrStream)
+            .ignoreExitValue()
 
-                exec.with {
-                    executable unityPath
-                    args = unityArgs
-                    standardOutput = outputStream
-                    ignoreExitValue = true
-                    environment = unityEnvironment
-                }
+        ExecResult execResult = executor.execute()
+
+        if (execResult.exitValue != 0) {
+            String message = ""
+            // Only write out the message if not already set to --info
+            if (!logger.infoEnabled) {
+                def stdout = logFile.text
+                def stderr = new String(stderrStream.toByteArray())
+                message = stderr ? stderr : stdout
             }
-        })
+            throw new UnityExecutionException("Failed during execution of the Unity process with arguments:\n${_arguments}\n${message}")
+        }
 
-        execResult.assertNormalExitValue()
         postExecute(execResult)
     }
 
@@ -112,7 +124,7 @@ abstract class UnityTask extends DefaultTask
         // If there's a provided log file path
         // AND we don't want to log to std out
         if (unityLogFile.present
-                && !(logToStdout.present && logToStdout.get())) {
+            && !(logToStdout.present && logToStdout.get())) {
             FileUtils.ensureFile(unityLogFile)
             return unityLogFile.get().asFile.path
         }
