@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.TaskIntegrationSpec
 import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
 import com.wooga.gradle.test.writers.PropertySetterWriter
 import org.gradle.api.logging.LogLevel
@@ -31,30 +32,12 @@ import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec {
-
-    Class<T> getSubjectUnderTestClass() {
-        if (!_sutClass) {
-            try {
-                this._sutClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
-                    .getActualTypeArguments()[0];
-            }
-            catch (Exception e) {
-                this._sutClass = (Class<T>) Unity
-            }
-        }
-        _sutClass
-    }
-    private Class<T> _sutClass
-
+abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec
+implements TaskIntegrationSpec<T>
+{
     @Override
     String getSubjectUnderTestName() {
         "${subjectUnderTestClass.simpleName.uncapitalize()}Test"
-    }
-
-    @Override
-    String getSubjectUnderTestTypeName() {
-        subjectUnderTestClass.getTypeName()
     }
 
     @Unroll
@@ -275,10 +258,11 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     }
 
     @Unroll
-    def "redirects unity log to stdout when redirectStdOut is set to true for #taskType"() {
-        given: "a custom build task"
+    def "redirects ? (#value) unity log to stdout when #propertyName is set to #value"() {
+
+        given: "the property is set"
         appendToSubjectTask("""
-                logToStdout = false 
+                ${propertyName} = ${wrapValueBasedOnType(value, Boolean)} 
         """.stripIndent())
 
         when:
@@ -286,17 +270,11 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
         then:
         def stdOut = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
-        !stdOut.contains(mockUnityStartupMessage)
+        value == stdOut.contains(mockUnityStartupMessage)
 
-        when:
-        appendToSubjectTask("""
-                logToStdout = true 
-        """.stripIndent())
-        result = runTasks(subjectUnderTestName)
-
-        then:
-        def taskLog = GradleRunResult.taskLog(subjectUnderTestName, result.standardOutput)
-        taskLog.contains(mockUnityStartupMessage)
+        where:
+        propertyName = "logToStdout"
+        value << [true, false]
     }
 
     def "redirects unity log to stdout and custom logfile if provided"() {

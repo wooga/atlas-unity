@@ -18,6 +18,7 @@
 package wooga.gradle.unity
 
 import com.wooga.gradle.PropertyLookup
+import org.apache.maven.artifact.versioning.ArtifactVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -32,16 +33,20 @@ import wooga.gradle.unity.internal.InputFileTreeFactory
 import wooga.gradle.unity.models.APICompatibilityLevel
 import wooga.gradle.unity.models.DefaultUnityAuthentication
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
+import wooga.gradle.unity.models.ResolutionStrategy
 import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.AddUPMPackages
 import wooga.gradle.unity.tasks.GenerateSolution
-import wooga.gradle.unity.tasks.GenerateUpmPackage
+import wooga.gradle.unity.tasks.ProjectManifestTask
+import wooga.gradle.unity.tasks.SetResolutionStrategy
 import wooga.gradle.unity.tasks.ReturnLicense
 import wooga.gradle.unity.tasks.SetAPICompatibilityLevel
 import wooga.gradle.unity.tasks.Test
+import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
+import wooga.gradle.unity.utils.UnityVersionManager
 
 /**
  * A {@link org.gradle.api.Plugin} which provides tasks to run unity batch-mode commands.
@@ -79,7 +84,9 @@ class UnityPlugin implements Plugin<Project> {
         setAPICompatibilityLevel(APICompatibilityLevel),
         unsetAPICompatibilityLevel(APICompatibilityLevel),
         generateSolution(GenerateSolution),
-        addUPMPackages(AddUPMPackages)
+        ensureProjectManifest(Unity),
+        addUPMPackages(AddUPMPackages),
+        setResolutionStrategy(SetResolutionStrategy)
 
         private final Class taskClass
 
@@ -137,6 +144,12 @@ class UnityPlugin implements Plugin<Project> {
             def file = new File(extension.projectDirectory.get().asFile.path, "ProjectSettings/ProjectSettings.asset")
             return new ProjectSettingsFile(file)
         }))
+
+        // Packages
+        extension.packagesDir.convention(extension.projectDirectory.dir("Packages"))
+        extension.projectManifestFile.convention(extension.packagesDir.file(ProjectManifestTask.manifestFileName))
+        extension.projectLockFile.convention(extension.packagesDir.file(ProjectManifestTask.lockFileName))
+        extension.resolutionStrategy.convention(UnityPluginConventions.resolutionStrategy.getEnumValueProvider(project, ResolutionStrategy))
 
         // Command line options
         extension.enableTestCodeCoverage.convention(UnityPluginConventions.enableTestCodeCoverage.getBooleanValueProvider(project))
@@ -382,10 +395,9 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void addAddUPMPackagesTask(Project project, final UnityPluginExtension extension) {
-        def manifestFile = project.layout.projectDirectory.file("Packages/manifest.json")
         def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) { task ->
             task.group = GROUP
-            task.manifestPath.convention(manifestFile)
+            task.projectManifestFile.convention(extension.projectManifestFile)
             task.upmPackages.putAll(extension.upmPackages)
             task.upmPackages.putAll(extension.enableTestCodeCoverage.map {
                 it ? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
@@ -403,9 +415,53 @@ class UnityPlugin implements Plugin<Project> {
     }
 
     private static void configurePackageTasks(UnityPluginExtension extension, final Project project) {
-        // TODO: Perhaps hook the task to generate meta files
-        project.tasks.withType(GenerateUpmPackage).configureEach({ t ->
-        })
+
+        // Only execute for >= 2018.3
+        def upmIsSupported = new Spec<Task>() {
+            @Override
+            boolean isSatisfiedBy(Task o) {
+                def deducedUnityVersion = getUnityVersion(extension, project)
+                Boolean supported = deducedUnityVersion.majorVersion > 2018 ||
+                    (deducedUnityVersion.majorVersion == 2018 && deducedUnityVersion.minorVersion > 3)
+                if (!supported) {
+                    project.logger.warn("The unity version (${deducedUnityVersion.majorVersion}.${deducedUnityVersion.minorVersion}) " +
+                        "does not support UPM packages, skipping")
+                }
+                supported
+            }
+        }
+
+        // This task will ensure there's an unity project manifest if none are present
+        // It will be depended on by other tasks that need to modify the manifest
+        def ensureProjectManifest = project.tasks.register(Tasks.ensureProjectManifest.toString(), Unity) { t ->
+            t.setCacheServerEnableUpload(false)
+            t.batchMode.set(true)
+            t.onlyIf(new Spec<Unity>() {
+                @Override
+                boolean isSatisfiedBy(Unity task) {
+                    !extension.projectManifestFile.get().asFile.exists()
+                }
+            })
+        }
+
+        // Make sure the tasks that depend on a project manifest have it
+        project.tasks.withType(ProjectManifestTask).configureEach { t ->
+            t.dependsOn(ensureProjectManifest)
+            t.projectManifestFile.convention(extension.projectManifestFile)
+            t.projectLockFile.convention(extension.projectLockFile)
+            t.onlyIf upmIsSupported
+        }
+
+        // Create a task to set the resolution strategy
+        project.tasks.register(Tasks.setResolutionStrategy.toString(), SetResolutionStrategy) {
+            it.description = "Sets the project package resolution strategy"
+            it.resolutionStrategy.convention(extension.resolutionStrategy)
+        }
+    }
+
+    protected static ArtifactVersion getUnityVersion(UnityPluginExtension extension, Project project) {
+        File file = extension.unityPath.present ? extension.unityPath.get().asFile : null
+        UnityVersionManager.retrieveUnityVersion(file, UnityPluginConventions.defaultUnityTestVersion.getValue(project).toString())
     }
 
 }

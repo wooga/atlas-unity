@@ -26,17 +26,23 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import wooga.gradle.unity.traits.APICompatibilityLevelSpec
+import wooga.gradle.unity.traits.AddUnityPackagesSpec
+import wooga.gradle.unity.traits.ResolutionStrategySpec
 import wooga.gradle.unity.traits.UnityAuthenticationSpec
 import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnityLicenseSpec
+import wooga.gradle.unity.traits.UnityPackageSpec
 import wooga.gradle.unity.traits.UnitySpec
 import wooga.gradle.unity.traits.UnityTestSpec
 
 trait UnityPluginExtension implements UnitySpec,
-        UnityTestSpec,
-        APICompatibilityLevelSpec,
-        UnityLicenseSpec,
-        UnityAuthenticationSpec {
+    UnityTestSpec,
+    APICompatibilityLevelSpec,
+    UnityLicenseSpec,
+    UnityAuthenticationSpec,
+    UnityPackageSpec,
+    AddUnityPackagesSpec,
+    ResolutionStrategySpec {
 
     private final DirectoryProperty logsDir = objects.directoryProperty()
 
@@ -82,6 +88,24 @@ trait UnityPluginExtension implements UnitySpec,
 
     void setAssetsDir(Provider<Directory> value) {
         assetsDir.set(value)
+    }
+
+    private final DirectoryProperty packagesDir = objects.directoryProperty()
+
+    /**
+     * @return The Packages directory, where all resolved packages by an Unity project are recorded
+     */
+    @Internal
+    DirectoryProperty getPackagesDir() {
+        packagesDir
+    }
+
+    void setPackagesDir(Provider<Directory> value) {
+        packagesDir.set(value)
+    }
+
+    void setPackagesDir(File value) {
+        packagesDir.set(value)
     }
 
     private final DirectoryProperty pluginsDir = objects.directoryProperty()
@@ -255,7 +279,7 @@ trait UnityPluginExtension implements UnitySpec,
                 return project.properties.get("unity.testBuildTargets").toString().split(",").collect({
                     it
                 })
-            } else if (!defaultBuildTarget.isPresent() ) {
+            } else if (!defaultBuildTarget.isPresent()) {
                 return new HashSet<String>()
             }
         }
@@ -271,18 +295,5 @@ trait UnityPluginExtension implements UnitySpec,
         }
 
         targets
-    }
-
-    private final MapProperty<String, String> upmPackages = objects.mapProperty(String, String)
-
-    /**
-     * @return The UPM packages to add
-     */
-    MapProperty<String, String> getUpmPackages() {
-        upmPackages
-    }
-
-    void setUpmPackages(MapProperty<String, String> upmPackages) {
-        upmPackages.set(upmPackages)
     }
 }

@@ -19,7 +19,6 @@ package wooga.gradle.unity
 
 import nebula.test.ProjectSpec
 import org.gradle.api.DefaultTask
-import org.gradle.api.Task
 import spock.lang.Unroll
 import wooga.gradle.unity.internal.DefaultUnityPluginExtension
 import wooga.gradle.unity.tasks.AddUPMPackages
@@ -81,8 +80,8 @@ class UnityPluginTest extends ProjectSpec {
         def task = project.tasks.findByName(UnityPlugin.Tasks.addUPMPackages.toString()) as AddUPMPackages
         def packages = task.upmPackages.get()
         and: "task has a manifest file"
-        task.manifestPath.present
-        task.manifestPath.get().asFile == new File(projectDir, "Packages/manifest.json")
+        task.projectManifestFile.present
+        task.projectManifestFile.get().asFile == new File(projectDir, "Packages/manifest.json")
         and: "task contains expected packages"
         packages.entrySet().containsAll(extUPMPackages.entrySet())
         if (coverageEnabled) {
