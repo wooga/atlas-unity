@@ -1,6 +1,7 @@
 package wooga.gradle.unity.tasks
 
 import com.wooga.gradle.BaseSpec
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -13,6 +14,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.bundling.Compression
 import org.gradle.api.tasks.bundling.Tar
@@ -66,26 +69,28 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
         project.files()
     }
 
+    private final Provider<RegularFile> packageManifestFile = packageDirectory.file(packageManifestFileName)
+
     /**
      * @return The package manifest file, `package.json`, which defines the package dependencies and other metadata.
      */
-    @InputFile
+    @Internal("part of packageFiles")
     Provider<RegularFile> getPackageManifestFile() {
         packageManifestFile
     }
 
-    private final Provider<RegularFile> packageManifestFile = packageDirectory.file(packageManifestFileName)
+
+    private final Property<String> packageName = objects.property(String)
 
     /**
      * @return The officially registered package name. This name must conform to the Unity Package Manager naming convention,
      * which uses reverse domain name notation.
      */
     @Input
+    @Optional
     Provider<String> getPackageName() {
         packageName
     }
-
-    private final Property<String> packageName = objects.property(String)
 
     void setPackageName(Provider<String> value) {
         packageName.set(value)
@@ -97,17 +102,45 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
 
     public static final packageManifestFileName = "package.json"
 
+    protected void adjustManifestFile() {
+        def manifest = new File(temporaryDir, packageManifestFileName)
+        if(manifest.exists()) {
+            def j = new JsonSlurper()
+            def manifestContent = j.parse(manifest)
+
+            if(packageName.present) {
+                manifestContent['name'] = packageName.get()
+            }
+
+            if(archiveVersion.present) {
+                manifestContent['version'] = archiveVersion.get()
+            }
+
+            String json = JsonOutput.toJson(manifestContent)
+            manifest.text = JsonOutput.prettyPrint(json)
+        }
+    }
+
     @Override
     protected void copy() {
         if (!packageDirectory.present) {
             logger.warn(Message.packageDirectoryNotSet.message)
         }
+
+        project.copy {
+            from(packageDirectory)
+            include(packageManifestFileName)
+            into(temporaryDir)
+        }
+
+        adjustManifestFile()
+
+        from(temporaryDir)
         from(packageDirectory)
         super.copy()
     }
 
     GenerateUpmPackage() {
-
         setCompression(Compression.GZIP)
 
         // Creates a root directory inside the package
@@ -120,11 +153,25 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
             }
             slurper.parse(it.asFile)["name"].toString()
         })
+
+        Provider<String> packageVersionOnFile = packageManifestFile.map({
+            def slurper = new JsonSlurper()
+            if (!it.asFile.exists()) {
+                return null
+            }
+            slurper.parse(it.asFile)["version"].toString()
+        })
+
         packageName.convention(packageNameOnFile)
+        archiveVersion.set(packageVersionOnFile)
         archiveBaseName.set(packageName)
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+
         filesMatching(packageManifestFileName) {
-            filter { it.replaceAll(/"name" : ".*?"/, "\"name\" : \"${packageName.get()}\"") }
-            filter { it.replaceAll(/"version" : ".*?"/, "\"version\" : \"${archiveVersion.get()}\"") }
+            if(it.getFile().absolutePath.startsWith(packageDirectory.get().asFile.absolutePath)) {
+                it.exclude()
+            }
         }
 
         onlyIf(new Spec<GenerateUpmPackage>() {

@@ -1,8 +1,15 @@
 package wooga.gradle.unity.utils
 
+import groovy.json.JsonOutput
+
 class PackageManifestBuilder {
 
-    String packageName = ""
+    String name = ""
+
+    String getPackageName() {
+        name
+    }
+
     String version = ""
     String displayName = ""
     String description = ""
@@ -11,17 +18,11 @@ class PackageManifestBuilder {
     }
 
     PackageManifestBuilder(String packageName, String version) {
-        this.packageName = packageName
+        this.name = packageName
         this.version = version
     }
 
     String build() {
-        """{
-    "name" : "${packageName}",
-    "version" : "${version}",
-    "displayName" : "${displayName}",
-    "description" : "${description}"
-}
-"""
+        JsonOutput.toJson(this)
     }
 }
