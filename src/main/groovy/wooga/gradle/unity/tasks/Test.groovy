@@ -48,7 +48,7 @@ abstract class Test extends UnityTask implements UnityTestSpec {
     protected void preExecute() {
         super.preExecute()
         if ((unityVersion.majorVersion == 5 && unityVersion.minorVersion == 6)
-                || unityVersion.majorVersion <= 2021) {
+                || unityVersion.majorVersion <= 2022) {
 
             // BatchMode for tests was broken for unity 2017 and below
             if (unityVersion.majorVersion < 2018) {
