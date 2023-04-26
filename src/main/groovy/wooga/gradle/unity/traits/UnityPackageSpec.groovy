@@ -5,6 +5,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
+import wooga.gradle.unity.models.UnityProjectManifest
 
 trait UnityPackageSpec extends BaseSpec {
 
@@ -42,6 +43,11 @@ trait UnityPackageSpec extends BaseSpec {
 
     void setProjectLockFile(File value) {
         projectLockFile.set(value)
+    }
+
+    @Internal
+    Provider<UnityProjectManifest> getProjectManifest() {
+        projectManifestFile.map({UnityProjectManifest.deserialize(it.asFile)})
     }
 
 }
