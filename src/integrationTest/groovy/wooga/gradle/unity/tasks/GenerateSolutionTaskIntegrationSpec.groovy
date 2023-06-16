@@ -35,10 +35,13 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
         !secondRes.wasUpToDate(":generateSolution")
     }
 
+    @UnityInstallation(version = "2019.4.24f1", cleanup = false)
+    Installation unity
+
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    @UnityInstallation(version = "2019.4.24f1", cleanup = false)
-    def "generates .sln file when running generateSolution task"(Installation unity) {
+
+    def "generates .sln file when running generateSolution task"() {
         given: "an unity3D project"
         def project_path = "build/test_project"
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())

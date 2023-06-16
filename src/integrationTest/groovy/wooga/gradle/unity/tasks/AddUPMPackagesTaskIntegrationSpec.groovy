@@ -31,11 +31,12 @@ class AddUPMPackagesTaskIntegrationSpec extends ProjectManifestTaskSpec<AddUPMPa
         getter = new PropertyGetterTaskWriter(setter)
     }
 
+    @UnityInstallation(version = "2019.4.19f1", cleanup = false)
+    Installation unity
+
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    @UnityInstallation(version = "2019.4.19f1", cleanup = false)
-    def "creates unity manifest and adds package to it when running AddUPMTask task"(Installation unity) {
-
+    def "creates unity manifest and adds package to it when running AddUPMTask task"() {
         given: "an unity3D project"
         def projectPath = "test_project"
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())

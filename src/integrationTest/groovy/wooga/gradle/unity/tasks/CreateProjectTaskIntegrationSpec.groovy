@@ -13,10 +13,12 @@ import static org.apache.commons.io.FileUtils.getFile
 
 class CreateProjectTaskIntegrationSpec extends UnityTaskIntegrationSpec<CreateProject> {
 
+    @UnityInstallation(version = "2019.4.38f1", cleanup = false)
+    Installation unity
+
     @Requires({  os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    @UnityInstallation(version = "2019.4.38f1", cleanup = false)
-    def "creates unity project"(Installation unity) {
+    def "creates unity project"() {
 
         given: "a pre installed unity editor"
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
