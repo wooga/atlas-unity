@@ -32,12 +32,10 @@ import wooga.gradle.unity.models.UnityCommandLineOption
 
 class DefaultUnityTaskIntegrationSpec extends UnityTaskIntegrationSpec<Unity> {
 
-    @UnityInstallation(version = "2019.4.27f1", cleanup = false)
-    Installation unity
-
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
-    def "creates unity project"() {
+    @UnityInstallation(version = "2019.4.27f1", cleanup = false)
+    def "creates unity project"(Installation unity) {
         given: "path to future project"
         def project_path = "build/test_project"
 
