@@ -4,7 +4,6 @@ import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import com.wooga.spock.extensions.uvm.UnityInstallation
 import net.wooga.uvm.Installation
-import org.apache.commons.io.FileUtils
 import org.gradle.api.file.Directory
 import spock.lang.Requires
 import wooga.gradle.unity.UnityTaskIntegrationSpec
