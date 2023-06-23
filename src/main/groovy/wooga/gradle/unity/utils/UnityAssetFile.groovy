@@ -17,7 +17,6 @@
 
 package wooga.gradle.unity.utils
 
-import groovyjarjarcommonscli.MissingArgumentException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.yaml.snakeyaml.DumperOptions
@@ -103,7 +102,7 @@ abstract class UnityAssetFile {
                 assetFile = this.assetFile
             }
             else{
-                throw new MissingArgumentException("No asset file was either set or provided to write to")
+                throw new IllegalArgumentException("No asset file was either set or provided to write to")
             }
         }
 

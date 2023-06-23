@@ -60,8 +60,8 @@ class SetAPICompLevelTaskIntegrationSpec extends UnityIntegrationSpec {
         property = 'apiCompatibilityLevel'
         testTaskName = "setAPICompatibilityLevel"
 
-        value = (type != _) ? wrapValueBasedOnType(rawValue, type.toString(), { String type ->
-            switch (type) {
+        value = (type != _) ? wrapValueBasedOnType(rawValue, type.toString(), { String _type ->
+            switch (_type) {
                 case "APICompatibilityLevel":
                     return "wooga.gradle.unity.models.APICompatibilityLevel.${rawValue}"
                     break
