@@ -235,7 +235,11 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
             }
 
             if (dependencies.present) {
-                manifestContent['dependencies'] = dependencies.get()
+                Map additions = dependencies.get()
+                if (additions.size() > 0) {
+                    Map previous = manifestContent['dependencies'] as Map
+                    manifestContent['dependencies'] = merge(previous, additions)
+                }
             }
 
             def _patches = patches.get().collectEntries {
@@ -291,8 +295,8 @@ class GenerateUpmPackage extends Tar implements BaseSpec {
                 Object value = null
                 // Unwrap Provider if needed
                 if (entry.value instanceof Provider) {
-                    value = ((Provider)entry.value).get()
-                } else{
+                    value = ((Provider) entry.value).get()
+                } else {
                     value = entry.value
                 }
                 map[entry.key] = value

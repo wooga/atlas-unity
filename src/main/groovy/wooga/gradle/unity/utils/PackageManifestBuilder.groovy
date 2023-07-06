@@ -13,6 +13,7 @@ class PackageManifestBuilder {
     String version = ""
     String displayName = ""
     String description = ""
+    Map<String, String> dependencies = new HashMap<String, String>()
 
     PackageManifestBuilder() {
     }
