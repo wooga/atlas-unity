@@ -16,6 +16,8 @@ import wooga.gradle.unity.testutils.SetupProjectLayoutTestTask
 import wooga.gradle.unity.utils.PackageManifestBuilder
 import wooga.gradle.utils.DirectoryComparer
 
+import java.security.Provider
+
 class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
     @Override
@@ -31,14 +33,14 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         runPropertyQuery(getter, setter).matches(value)
 
         where:
-        propertyName          | type                  | value
-        "packageDirectory"    | "File"                | osPath("/path/to/package/dir")
-        "packageDirectory"    | "Provider<Directory>" | osPath("/path/to/package/dir")
-        "packageName"         | "String"              | "testPackageA"
-        "packageName"         | "Provider<String>"    | "testPackageB"
+        propertyName       | type                  | value
+        "packageDirectory" | "File"                | osPath("/path/to/package/dir")
+        "packageDirectory" | "Provider<Directory>" | osPath("/path/to/package/dir")
+        "packageName"      | "String"              | "testPackageA"
+        "packageName"      | "Provider<String>"    | "testPackageB"
 
         setter = new PropertySetterWriter(subjectUnderTestName, propertyName)
-                .set(value, type)
+            .set(value, type)
         getter = new PropertyGetterTaskWriter(setter)
     }
 
@@ -46,14 +48,14 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2022.1.15f1", cleanup = false)
     def "generates unity package"(
-            String packageDisplayName,
-            String unityProjectPath,
-            String distributionsDirName,
-            String packageDirectory,
-            String packageName,
-            String packageVersion,
-            String expectedPackageFileName,
-            Installation unity
+        String packageDisplayName,
+        String unityProjectPath,
+        String distributionsDirName,
+        String packageDirectory,
+        String packageName,
+        String packageVersion,
+        String expectedPackageFileName,
+        Installation unity
     ) {
 
         given: "a pre installed unity editor"
@@ -115,12 +117,12 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
         where:
         packageDisplayName = "Foobar"
-        unityProjectPath = "Wooga.${packageDisplayName}"
+        unityProjectPath = "Wooga.${packageDisplayName}".toString()
         distributionsDirName = "build/distributions"
         packageDirectory = unityProjectPath + "/Assets/Wooga/Foobar"
         packageName = "com.wooga.foobar"
         packageVersion = "0.0.1"
-        expectedPackageFileName = "${packageName}-${packageVersion}.tgz"
+        expectedPackageFileName = "${packageName}-${packageVersion}.tgz".toString()
 
         and: "the injected unity installation"
         unity = null
@@ -130,14 +132,14 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.38f1", cleanup = false)
     def "uses package name and version from package.json when not specified"(
-            String packageDisplayName,
-            String unityProjectPath,
-            String distributionsDirName,
-            String packageDirectory,
-            String packageName,
-            String packageVersion,
-            String expectedPackageFileName,
-            Installation unity
+        String packageDisplayName,
+        String unityProjectPath,
+        String distributionsDirName,
+        String packageDirectory,
+        String packageName,
+        String packageVersion,
+        String expectedPackageFileName,
+        Installation unity
     ) {
 
         given: "a pre installed unity editor"
@@ -197,12 +199,12 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
         where:
         packageDisplayName = "Foobar"
-        unityProjectPath = "Wooga.${packageDisplayName}"
+        unityProjectPath = "Wooga.${packageDisplayName}".toString()
         distributionsDirName = "build/distributions"
         packageDirectory = unityProjectPath + "/Assets/Wooga/Foobar"
         packageName = "com.wooga.foobar-baz"
         packageVersion = "1.1.1"
-        expectedPackageFileName = "${packageName}-${packageVersion}.tgz"
+        expectedPackageFileName = "${packageName}-${packageVersion}.tgz".toString()
 
         and: "the injected unity installation"
         unity = null
@@ -253,6 +255,125 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Message.packageDirectoryNotSet
         "com.wooga.foobar" | "0.0.1"        | GenerateUpmPackage.Message.packageNameNotSet
         reason = predicate.message
+    }
+
+    @Unroll
+    def "generate package with patched property #property with value #value"() {
+
+        given:
+        directory(projectPath)
+        buildFile << """
+        unity {
+            projectDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
+        }
+        """.stripIndent()
+
+        projectFile(projectPath, "README.MD")
+        def manifestFile = projectFile(projectPath, GenerateUpmPackage.packageManifestFileName)
+        manifestFile.write(new PackageManifestBuilder().build())
+
+        and:
+        addTask(taskName, GenerateUpmPackage.class.name, false, """
+        packageDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
+        archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})
+        packageName = ${wrapValueBasedOnType(packageName, String)}
+        dependencies[${wrapValueBasedOnType(dependency1, String)}] = "0.0.0"
+
+        patch(${wrapValueBasedOnType(property, String)}, ${wrapValueBasedOnType(value, String)})        
+        """)
+
+        when:
+        def result = runTasks(taskName)
+
+        then:
+        result.success
+
+        and:
+        def manifest = parseManifestFromPackage(packageName, packageVersion)
+        manifest[property] == value
+
+        where:
+        taskName = "upmPack"
+        projectPath = "Wooga.Foobar"
+        packageName = projectPath
+        packageVersion = "1.2.3"
+        dependency1 = "com.wooga.pancakes"
+
+        property | value
+        "version" | "4.5.6"
+        "changelogUrl" | "www.pancakes.com"
+    }
+
+    @Unroll
+    def "patches version of dependency #dep to #input"() {
+
+        given:
+        directory(projectPath)
+        buildFile << """
+        unity {
+            projectDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
+        }
+        """.stripIndent()
+
+        projectFile(projectPath, "README.MD")
+        def manifestFile = projectFile(projectPath, GenerateUpmPackage.packageManifestFileName)
+        manifestFile.write(new PackageManifestBuilder().build())
+
+        and:
+        addTask(taskName, GenerateUpmPackage.class.name, false, """
+        packageDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
+        archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})
+        packageName = ${wrapValueBasedOnType(packageName, String)}
+
+        dependencies[${wrapValueBasedOnType(dependency1, String)}] = "0.0.0"
+        dependencies[${wrapValueBasedOnType(dependency2, String)}] = "0.0.0"
+
+        patchDependency(${wrapValueBasedOnType(dep, String)}, ${wrapValueBasedOnType(input, type)})
+
+        """)
+
+        when:
+        def result = runTasks(taskName)
+
+        then:
+        result.success
+
+        and:
+        def manifest = parseManifestFromPackage(packageName, packageVersion)
+        if (expected == _) {
+            expected = input
+        }
+        manifest["dependencies"][dep] == expected
+
+        where:
+        dep             | input   | type               | expected
+        "com.wooga.foo" | "2.4.6" | String             | _
+        "com.wooga.bar" | "5.2.3" | String             | _
+        "com.wooga.foo" | "1.1.1" | "Provider<String>" | "1.1.1"
+
+        taskName = "upmPack"
+        projectPath = "Wooga.Foobar"
+        packageName = projectPath
+        packageVersion = "1.2.3"
+
+        dependency1 = "com.wooga.foo"
+        dependency2 = "com.wooga.bar"
+    }
+
+    private File getPackageFile(String name, String version) {
+        def distributionsDirName = "build/distributions"
+        def expectedPackageFileName = "${name}-${version}.tgz"
+        def distributionsDir = new File(projectDir, distributionsDirName)
+        def packageFile = new File(distributionsDir, expectedPackageFileName)
+    }
+
+    private Object parseManifestFromPackage(String name, String version) {
+        def packageFile = getPackageFile(name, version)
+        def packageManifestUnpackDir = unpackPackage(packageFile)
+        def unpackedPackageDir = new File(packageManifestUnpackDir, "package")
+        def packageManifestFile = new File(unpackedPackageDir, GenerateUpmPackage.packageManifestFileName)
+        def json = new JsonSlurper().parse(packageManifestFile)
+        json
     }
 
     private static File unpackPackage(File packageFile) {
