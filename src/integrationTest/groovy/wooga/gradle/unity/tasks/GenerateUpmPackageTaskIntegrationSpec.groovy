@@ -316,17 +316,19 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         """.stripIndent()
 
         projectFile(projectPath, "README.MD")
+        def builder = new PackageManifestBuilder()
+        builder.dependencies.put(dependency1, "0.0.0")
+        builder.dependencies.put(dependency2, "0.0.0")
+        builder.dependencies.put(dependency3, "0.0.0")
+
         def manifestFile = projectFile(projectPath, GenerateUpmPackage.packageManifestFileName)
-        manifestFile.write(new PackageManifestBuilder().build())
+        manifestFile.write(builder.build())
 
         and:
         addTask(taskName, GenerateUpmPackage.class.name, false, """
         packageDirectory.set(${wrapValueBasedOnType(projectPath, Directory)})
         archiveVersion.set(${wrapValueBasedOnType(packageVersion, String)})
         packageName = ${wrapValueBasedOnType(packageName, String)}
-
-        dependencies[${wrapValueBasedOnType(dependency1, String)}] = "0.0.0"
-        dependencies[${wrapValueBasedOnType(dependency2, String)}] = "0.0.0"
 
         patchDependency(${wrapValueBasedOnType(dep, String)}, ${wrapValueBasedOnType(input, type)})
 
@@ -343,7 +345,10 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
         if (expected == _) {
             expected = input
         }
-        manifest["dependencies"][dep] == expected
+
+        def dependenciesMap = manifest["dependencies"] as Map
+        dependenciesMap.size() == 3
+        dependenciesMap[dep] == expected
 
         where:
         dep             | input   | type               | expected
@@ -358,6 +363,7 @@ class GenerateUpmPackageTaskIntegrationSpec extends UnityIntegrationSpec {
 
         dependency1 = "com.wooga.foo"
         dependency2 = "com.wooga.bar"
+        dependency3 = "com.wooga.foobar"
     }
 
     private File getPackageFile(String name, String version) {
