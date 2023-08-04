@@ -53,7 +53,7 @@ github {
 dependencies {
 
     api 'com.wooga.gradle:gradle-commons:[1.7.0,2['
-    implementation 'org.apache.maven:maven-artifact:3.8.5'
+    implementation 'org.apache.maven:maven-artifact:3.9.4'
     implementation "org.yaml:snakeyaml:1.30"
     implementation 'net.wooga:unity-version-manager-jni:[1,2['
 
