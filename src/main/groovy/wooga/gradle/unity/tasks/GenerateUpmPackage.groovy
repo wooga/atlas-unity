@@ -15,7 +15,6 @@ import org.gradle.api.tasks.*
 import org.gradle.api.tasks.bundling.Compression
 import org.gradle.api.tasks.bundling.Tar
 import wooga.gradle.unity.traits.GenerateUpmPackageSpec
-import org.apache.tools.ant.DirectoryScanner
 /**
  * A task that will generate an UPM package from a given Unity project
  */
@@ -123,9 +122,6 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
             logger.warn(Message.packageDirectoryNotSet.message)
         }
 
-        // We need this workaround - to clear the defaultExcludes, because of this gradle issue: https://issues.gradle.org/browse/GRADLE-1883
-        // ...because we have a Samples~ folder
-        DirectoryScanner.defaultExcludes.each { if (it.endsWith("~")) {DirectoryScanner.removeDefaultExclude it} }
         project.copy {
             from(packageDirectory)
             include(packageManifestFileName)
@@ -136,7 +132,6 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
 
         from(temporaryDir)
         from(packageDirectory)
-        DirectoryScanner.resetDefaultExcludes()
         super.copy()
     }
 

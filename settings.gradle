@@ -21,6 +21,8 @@ include 'shared'
 include 'api'
 include 'services:webservice'
 */
+import org.apache.tools.ant.DirectoryScanner
+
 pluginManagement {
   repositories {
     mavenCentral()
@@ -29,3 +31,6 @@ pluginManagement {
 }
 
 rootProject.name = 'unity'
+
+DirectoryScanner.defaultExcludes.each { if (it.endsWith("~")) {DirectoryScanner.removeDefaultExclude it} }
+
