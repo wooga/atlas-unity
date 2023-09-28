@@ -15,6 +15,7 @@ import org.gradle.api.tasks.*
 import org.gradle.api.tasks.bundling.Compression
 import org.gradle.api.tasks.bundling.Tar
 import wooga.gradle.unity.traits.GenerateUpmPackageSpec
+import org.apache.tools.ant.DirectoryScanner
 /**
  * A task that will generate an UPM package from a given Unity project
  */
@@ -58,6 +59,8 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
     public static final packageManifestFileName = "package.json"
 
     GenerateUpmPackage() {
+
+        DirectoryScanner.defaultExcludes.each { if (it.endsWith("~")) {DirectoryScanner.removeDefaultExclude it} }
 
         setCompression(Compression.GZIP)
 
