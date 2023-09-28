@@ -3,23 +3,30 @@ package wooga.gradle.unity.tasks
 import com.wooga.gradle.BaseSpec
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
+import org.gradle.api.internal.file.copy.CopyAction
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Compression
 import org.gradle.api.tasks.bundling.Tar
 import wooga.gradle.unity.traits.GenerateUpmPackageSpec
-import org.apache.tools.ant.DirectoryScanner
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
+
 /**
  * A task that will generate an UPM package from a given Unity project
  */
-class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec {
+class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, GenerateUpmPackageSpec {
 
     /**
      * A custom message that is presented when the packaging task fails
@@ -60,12 +67,10 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
 
     GenerateUpmPackage() {
 
-        DirectoryScanner.defaultExcludes.each { if (it.endsWith("~")) {DirectoryScanner.removeDefaultExclude it} }
-
-        setCompression(Compression.GZIP)
+        //setCompression(Compression.GZIP)
 
         // Creates a root directory inside the package
-        into("package")
+        //into("package")
         // The name of the package, in reverse domain name notation
         Provider<String> packageNameOnFile = packageManifestFile.map({
             def slurper = new JsonSlurper()
@@ -86,14 +91,15 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
         packageName.convention(packageNameOnFile)
         archiveVersion.set(packageVersionOnFile)
         archiveBaseName.set(packageName)
-        preserveFileTimestamps = false
-        reproducibleFileOrder = true
-
-        filesMatching(packageManifestFileName) {
-            if (it.getFile().absolutePath.startsWith(packageDirectory.get().asFile.absolutePath)) {
-                it.exclude()
-            }
-        }
+        archiveExtension.set("tgz")
+//        preserveFileTimestamps = false
+//        reproducibleFileOrder = true
+//
+//        filesMatching(packageManifestFileName) {
+//            if (it.getFile().absolutePath.startsWith(packageDirectory.get().asFile.absolutePath)) {
+//                it.exclude()
+//            }
+//        }
 
         onlyIf(new Spec<GenerateUpmPackage>() {
             @Override
@@ -120,6 +126,11 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
     }
 
     @Override
+    protected CopyAction createCopyAction() {
+        return null
+    }
+
+    @Override
     protected void copy() {
         if (!packageDirectory.present) {
             logger.warn(Message.packageDirectoryNotSet.message)
@@ -133,9 +144,40 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
 
         adjustManifestFile()
 
-        from(temporaryDir)
-        from(packageDirectory)
-        super.copy()
+        def tarFile = archiveFile.get().asFile
+        def tarOutputStream = new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(tarFile)))
+        tarOutputStream.longFileMode = TarArchiveOutputStream.LONGFILE_POSIX
+
+        processSourceDirs(tarOutputStream, temporaryDir, "package", null)
+        processSourceDirs(tarOutputStream,packageDirectory.asFile.get(), "package", "package.json")
+
+        tarOutputStream.close()
+    }
+
+    protected void processSourceDirs(TarArchiveOutputStream stream, File dir, String prefix, String exclude){
+        def sourceDirFile = dir
+        def files = sourceDirFile.listFiles().sort { it.name }
+
+        files.each { file ->
+            if(exclude && file.name == exclude) {
+                return
+            }
+            def entry = new TarArchiveEntry(file, "${prefix}/${file.name}")
+            entry.setModTime(System.currentTimeMillis())
+            stream.putArchiveEntry(entry)
+
+            if (file.isFile()) {
+                def inputStream = new FileInputStream(file)
+                inputStream.eachByte { b ->
+                    stream.write(b)
+                }
+                inputStream.close()
+                stream.closeArchiveEntry()
+            } else {
+                stream.closeArchiveEntry()
+                processSourceDirs(stream,file, "${prefix}/${file.name}".toString(),exclude)
+            }
+        }
     }
 
     /**
@@ -182,7 +224,6 @@ class GenerateUpmPackage extends Tar implements BaseSpec, GenerateUpmPackageSpec
             manifest.text = JsonOutput.prettyPrint(JsonOutput.toJson(manifestContent))
         }
     }
-
 
 
     /**
