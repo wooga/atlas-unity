@@ -4,21 +4,14 @@ import com.wooga.gradle.BaseSpec
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.RegularFile
 import org.gradle.api.internal.file.copy.CopyAction
-import org.gradle.api.provider.MapProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
-import org.gradle.api.tasks.bundling.Compression
-import org.gradle.api.tasks.bundling.Tar
 import wooga.gradle.unity.traits.GenerateUpmPackageSpec
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
