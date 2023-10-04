@@ -138,13 +138,14 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
         adjustManifestFile()
 
         def tarFile = archiveFile.get().asFile
-        def tarOutputStream = new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(tarFile)))
-        tarOutputStream.longFileMode = TarArchiveOutputStream.LONGFILE_POSIX
+        new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(tarFile))).withCloseable {
+            it.longFileMode = TarArchiveOutputStream.LONGFILE_POSIX
 
-        processSourceDir(tarOutputStream, temporaryDir, "package", null)
-        processSourceDir(tarOutputStream,packageDirectory.asFile.get(), "package", "package.json")
+            processSourceDir(it, temporaryDir, "package", null)
+            processSourceDir(it,packageDirectory.asFile.get(), "package", "package.json")
 
-        tarOutputStream.close()
+            it.close()
+        }
     }
 
     /**
@@ -160,17 +161,16 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
             }
             def entry = new TarArchiveEntry(file, "${prefix}/${file.name}")
             entry.setModTime(System.currentTimeMillis())
-            stream.putArchiveEntry(entry)
 
             if (file.isFile()) {
-                def inputStream = new FileInputStream(file)
-                inputStream.eachByte { b ->
-                    stream.write(b)
+                stream.putArchiveEntry(entry)
+                new FileInputStream(file).withCloseable {
+                    it.eachByte { b ->
+                        stream.write(b)
+                    }
                 }
-                inputStream.close()
                 stream.closeArchiveEntry()
             } else {
-                stream.closeArchiveEntry()
                 processSourceDir(stream,file, "${prefix}/${file.name}".toString(),exclude)
             }
         }
