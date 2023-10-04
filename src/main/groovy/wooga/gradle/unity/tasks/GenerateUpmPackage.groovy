@@ -141,13 +141,16 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
         def tarOutputStream = new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(tarFile)))
         tarOutputStream.longFileMode = TarArchiveOutputStream.LONGFILE_POSIX
 
-        processSourceDirs(tarOutputStream, temporaryDir, "package", null)
-        processSourceDirs(tarOutputStream,packageDirectory.asFile.get(), "package", "package.json")
+        processSourceDir(tarOutputStream, temporaryDir, "package", null)
+        processSourceDir(tarOutputStream,packageDirectory.asFile.get(), "package", "package.json")
 
         tarOutputStream.close()
     }
 
-    protected void processSourceDirs(TarArchiveOutputStream stream, File dir, String prefix, String exclude){
+    /**
+     * Adds files to the tar stream recursively.
+     */
+    protected void processSourceDir(TarArchiveOutputStream stream, File dir, String prefix, String exclude){
         def sourceDirFile = dir
         def files = sourceDirFile.listFiles().sort { it.name }
 
@@ -168,7 +171,7 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
                 stream.closeArchiveEntry()
             } else {
                 stream.closeArchiveEntry()
-                processSourceDirs(stream,file, "${prefix}/${file.name}".toString(),exclude)
+                processSourceDir(stream,file, "${prefix}/${file.name}".toString(),exclude)
             }
         }
     }
