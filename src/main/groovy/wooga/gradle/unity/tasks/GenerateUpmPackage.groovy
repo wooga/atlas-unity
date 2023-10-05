@@ -59,12 +59,6 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
     public static final packageManifestFileName = "package.json"
 
     GenerateUpmPackage() {
-
-        //setCompression(Compression.GZIP)
-
-        // Creates a root directory inside the package
-        //into("package")
-        // The name of the package, in reverse domain name notation
         Provider<String> packageNameOnFile = packageManifestFile.map({
             def slurper = new JsonSlurper()
             if (!it.asFile.exists()) {
@@ -85,14 +79,6 @@ class GenerateUpmPackage extends AbstractArchiveTask implements BaseSpec, Genera
         archiveVersion.set(packageVersionOnFile)
         archiveBaseName.set(packageName)
         archiveExtension.set("tgz")
-//        preserveFileTimestamps = false
-//        reproducibleFileOrder = true
-//
-//        filesMatching(packageManifestFileName) {
-//            if (it.getFile().absolutePath.startsWith(packageDirectory.get().asFile.absolutePath)) {
-//                it.exclude()
-//            }
-//        }
 
         onlyIf(new Spec<GenerateUpmPackage>() {
             @Override
