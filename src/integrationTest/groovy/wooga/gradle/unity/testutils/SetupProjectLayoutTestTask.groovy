@@ -62,20 +62,24 @@ class SetupProjectLayoutTestTask extends DefaultTask {
 
         def runtimeDirectory = new File(packageDir.path, "Runtime")
         runtimeDirectory.mkdir()
-        def runtimeSource = new File(runtimeDirectory.path, "${packageDisplayName}.cs")
-        runtimeSource.write("""\
+        [0..10000].each {
+            def runtimeSource = new File(runtimeDirectory.path, "${packageDisplayName}${it}.cs")
+            runtimeSource.write("""\
             using System;
-            public class ${packageDisplayName} {
+            public class ${packageDisplayName}${it} {
             }
         """.stripIndent())
+        }
 
         def editorDirectory = new File(packageDir.path, "Editor")
         editorDirectory.mkdir()
-        def editorSource = new File(editorDirectory.path, "${packageDisplayName}Editor.cs")
-        editorSource.write("""\
+        [0..10000].each {
+            def editorSource = new File(editorDirectory.path, "${packageDisplayName}${it}Editor.cs")
+            editorSource.write("""\
             using System;
-            public class ${packageDisplayName}Editor {
+            public class ${packageDisplayName}${it}Editor {
             }
         """.stripIndent())
+        }
     }
 }
