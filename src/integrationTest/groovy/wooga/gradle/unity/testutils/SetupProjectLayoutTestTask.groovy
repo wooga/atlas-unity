@@ -63,10 +63,10 @@ class SetupProjectLayoutTestTask extends DefaultTask {
         def runtimeDirectory = new File(packageDir.path, "Runtime")
         runtimeDirectory.mkdir()
         [0..10000].each {
-            def runtimeSource = new File(runtimeDirectory.path, "${packageDisplayName}${it}.cs")
+            def runtimeSource = new File(runtimeDirectory.path, "${packageDisplayName}${it.iterator()}.cs")
             runtimeSource.write("""\
             using System;
-            public class ${packageDisplayName}${it} {
+            public class ${packageDisplayName}${it.iterator()} {
             }
         """.stripIndent())
         }
@@ -74,10 +74,10 @@ class SetupProjectLayoutTestTask extends DefaultTask {
         def editorDirectory = new File(packageDir.path, "Editor")
         editorDirectory.mkdir()
         [0..10000].each {
-            def editorSource = new File(editorDirectory.path, "${packageDisplayName}${it}Editor.cs")
+            def editorSource = new File(editorDirectory.path, "${packageDisplayName}${it.iterator()}Editor.cs")
             editorSource.write("""\
             using System;
-            public class ${packageDisplayName}${it}Editor {
+            public class ${packageDisplayName}${it.iterator()}Editor {
             }
         """.stripIndent())
         }
