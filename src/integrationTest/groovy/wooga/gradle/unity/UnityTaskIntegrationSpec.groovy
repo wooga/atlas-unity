@@ -31,10 +31,11 @@ import wooga.gradle.unity.tasks.Unity
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.time.Duration
+import java.time.Instant
 
 abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegrationSpec
-implements TaskIntegrationSpec<T>
-{
+        implements TaskIntegrationSpec<T> {
     @Override
     String getSubjectUnderTestName() {
         "${subjectUnderTestClass.simpleName.uncapitalize()}Test"
@@ -59,15 +60,15 @@ implements TaskIntegrationSpec<T>
 
         where:
         [testCase, useSetter, value] <<
-            [
-                // For each option that is a flag (with a boolean value)
-                UnityCommandLineOption.flags.collect(
-                    { it -> ["${it}", it.flag] }),
-                // Test with and without the setter
-                [true, false],
-                // Test both true and false values
-                [true, false]
-            ].combinations()
+                [
+                        // For each option that is a flag (with a boolean value)
+                        UnityCommandLineOption.flags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test both true and false values
+                        [true, false]
+                ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -92,15 +93,15 @@ implements TaskIntegrationSpec<T>
 
         where:
         [testCase, useGetter, value] <<
-            [
-                // For each option that is a flag (with a boolean value)
-                UnityCommandLineOption.flags.collect(
-                    { it -> ["${it}", it.flag] }),
-                // Test with and without the setter
-                [true, false],
-                // Test both true and false values
-                [true, false]
-            ].combinations()
+                [
+                        // For each option that is a flag (with a boolean value)
+                        UnityCommandLineOption.flags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test both true and false values
+                        [true, false]
+                ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -132,15 +133,15 @@ implements TaskIntegrationSpec<T>
 
         where:
         [testCase, useSetter, value] <<
-            [
-                // For each option that requires an argument (with a string value)
-                UnityCommandLineOption.argumentFlags.collect(
-                    { it -> ["${it}", it.flag] }),
-                // Test with and without the setter
-                [true, false],
-                // Test a valid string and an empty one (which will lead to the option being ignored)
-                ["foobar", ""]
-            ].combinations()
+                [
+                        // For each option that requires an argument (with a string value)
+                        UnityCommandLineOption.argumentFlags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test a valid string and an empty one (which will lead to the option being ignored)
+                        ["foobar", ""]
+                ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -173,15 +174,15 @@ implements TaskIntegrationSpec<T>
 
         where:
         [testCase, useSetter, value] <<
-            [
-                // For each option that requires an argument (with a string value)
-                UnityCommandLineOption.argumentFlags.collect(
-                    { it -> ["${it}", it.flag] }),
-                // Test with and without the setter
-                [true, false],
-                // Test a valid string and an empty one (which will lead to the option being ignored)
-                ["foobar", ""]
-            ].combinations()
+                [
+                        // For each option that requires an argument (with a string value)
+                        UnityCommandLineOption.argumentFlags.collect(
+                                { it -> ["${it}", it.flag] }),
+                        // Test with and without the setter
+                        [true, false],
+                        // Test a valid string and an empty one (which will lead to the option being ignored)
+                        ["foobar", ""]
+                ].combinations()
 
         property = testCase[0]
         expectedCommandlineSwitch = testCase[1]
@@ -348,4 +349,44 @@ implements TaskIntegrationSpec<T>
 
     }
 
+    def "#message unity #maxRetries times with #retryWait wait times when line in log matches #retryRegex"() {
+        given:
+        def fakeUnity = createMockUnity(unityLog, 1)
+        addUnityPathToExtension(fakeUnity.absolutePath)
+        buildFile << """
+        $subjectUnderTestName {
+            maxRetries = ${wrapValueBasedOnType(maxRetries, Integer)}
+            retryWait = Duration.ofMillis(${wrapValueBasedOnType(retryWait.toMillis(), Integer)})
+            retryRegex = ${wrapValueBasedOnType(retryRegex, String)}
+        }
+        """
+
+        when:
+        def startTime = Instant.now()
+        def result = runTasks(subjectUnderTestName)
+        def endTime = Instant.now()
+
+        then:
+        def stdout = result.standardOutput
+        def duration = Duration.ofMillis(endTime.minusMillis(startTime.toEpochMilli()).toEpochMilli())
+        def expectedRunCount = shouldRetry ? maxRetries : 1
+
+        stdout.readLines().count { it.contains(mockUnityStartupMessage) } == expectedRunCount
+        shouldRetry ?
+                duration > retryWait.multipliedBy(maxRetries) :
+                duration < retryWait
+
+        where:
+        maxRetries | retryWait             | retryRegex                | shouldRetry
+        3          | Duration.ofSeconds(2) | /^\s*Pro License:\s*NO$/  | true
+        99         | Duration.ofSeconds(2) | /^\s*Pro License:\s*YES$/ | false
+        unityLog = """
+        Some very verbose stuff
+        Pro License: NO
+        more verbosity
+        """.readLines().collect { it.trim().stripIndent() }.findAll { !it.empty } join("\n")
+        message = shouldRetry ? "should retry" : "shouldn't retry"
+    }
 }
+
+

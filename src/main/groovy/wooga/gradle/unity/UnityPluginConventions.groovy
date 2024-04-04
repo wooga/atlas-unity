@@ -135,6 +135,19 @@ class UnityPluginConventions {
     static final PropertyLookup resolutionStrategy = new PropertyLookup(["UNITY_RESOLUTION_STRATEGY", "UPM_RESOLUTION_STRATEGY"], "unity.resolutionStrategy", null)
 
     /**
+     * Up to how many times should unity retry on error when an line matching with unity.retryRegex is found in log. Defaults to 3 times.
+     */
+    static final PropertyLookup maxRetries = new PropertyLookup("UNITY_MAX_RETRIES", 'unity.maxRetries', 3)
+    /**
+     * Unity will retry execution if a error execution matches this regex.
+     */
+    static final PropertyLookup retryRegex = new PropertyLookup("UNITY_RETRY_REGEX", 'unity.retryRegex', /^\s*Pro License:\s*NO$/) //30s
+    /**
+     * How long to wait wait between retries, in milliseconds. Defaults to 30s.
+     */
+    static final PropertyLookup retryWaitMs = new PropertyLookup("UNITY_RETRY_WAIT", 'unity.retryWait', 30000) //30s
+
+    /**
      * The path to the Unity license directory
      */
     static File getLicenseDirectory() {

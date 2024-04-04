@@ -19,6 +19,7 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.IntegrationSpec
+import com.wooga.gradle.test.executable.FakeExecutables
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
@@ -99,7 +100,8 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         switch (options.unityPath()) {
             case UnityPathResolution.Mock:
-                addMockUnityPath()
+                mockUnityFile = createMockUnity()
+                addUnityPathToExtension(mockUnityFile.path)
                 break
 
             case UnityPathResolution.Default:
@@ -130,9 +132,12 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         projectSettingsFile
     }
 
-    protected void addMockUnityPath() {
-
-        mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory)
+    protected File createMockUnity(String extraLog = null, int exitValue=0) {
+        def mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory).with {
+            delete()
+            createNewFile()
+            return it
+        }
         mockUnityFile.executable = true
         if (PlatformUtils.windows) {
             mockUnityFile << """
@@ -141,8 +146,11 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
                 set
                 echo [ARGUMENTS]:
                 echo %*
+                echo [LOG]:
                 echo ${mockUnityStartupMessage}
-            """.stripIndent()
+                ${extraLog? "echo '$extraLog'" : ""}
+                EXIT /b $exitValue
+            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
         } else {
             mockUnityFile << """
                 #!/usr/bin/env bash
@@ -150,10 +158,14 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
                 env
                 echo [ARGUMENTS]:
                 echo \$@
+                echo [LOG]:
                 echo ${mockUnityStartupMessage}
-            """.stripIndent()
+                ${extraLog? "echo '$extraLog'" : ""}
+                exit $exitValue
+            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
         }
-        addUnityPathToExtension(mockUnityFile.path)
+        return mockUnityFile
+
     }
 
     void setLicenseDirectory() {
