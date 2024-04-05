@@ -56,12 +56,13 @@ trait RetrySpec implements BaseSpec {
     }
 
     /**
-     * @param retryRegexes - Elements of this collection can be either String or Pattern. Strings will be converted to Pattern on set.
+     * @param retryRegexes - Elements of this collection can be either String or Pattern.
+     * Strings will be converted to Pattern on set, and the pattern will be created with the 'Pattern.MULTILINE' flag.
      */
     void setRetryRegexes(Collection<?> retryRegexes) {
         this.retryRegexes.set(retryRegexes.collect {regex ->
             if (regex instanceof String) {
-                return Pattern.compile(regex)
+                return Pattern.compile(regex, Pattern.MULTILINE)
             } else if (regex instanceof Pattern){
                 return regex
             } else {
@@ -69,37 +70,20 @@ trait RetrySpec implements BaseSpec {
             }
         })
     }
-
+    /**
+     * @param retryRegexes - Elements of the  collection in this provider can be either String or Pattern.
+     * Strings will be converted to Pattern on set, and the pattern will be created with the 'Pattern.MULTILINE' flag.
+     */
     void setRetryRegexes(Provider<? extends Iterable<?>> retryRegexes) {
         this.retryRegexes.set(retryRegexes.map { regexLst ->
         regexLst.collect {regex ->
             if (regex instanceof String) {
-                return Pattern.compile(regex)
+                return Pattern.compile(regex, Pattern.MULTILINE)
             } else if (regex instanceof Pattern){
                 return regex
             } else {
                 throw new IllegalStateException("retryRegex property should be a java.util.regex.Pattern or a String object")
             }
         }})
-    }
-
-    void setRetryRegex(Pattern retryRegex) {
-        retryRegexes.set([retryRegex])
-    }
-
-    void setRetryRegex(String retryRegex) {
-        retryRegexes.set([Pattern.compile(retryRegex)])
-    }
-
-    void setRetryRegex(Provider<?> retryRegex) {
-        this.retryRegex.set(retryRegex.map {
-            if (it instanceof String) {
-                return Pattern.compile(it)
-            } else if (it instanceof Pattern){
-                return it
-            } else {
-                throw new IllegalStateException("retryRegex property should be a java.util.regex.Pattern or a String object")
-            }
-        })
     }
 }

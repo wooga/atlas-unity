@@ -349,23 +349,23 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
 
     }
 
-    def "#message unity #maxRetries times with #retryWait wait times when line in log matches #retryRegex"() {
+    @Unroll
+    def "unity #message #maxRetries times with #retryWait wait times when line in log matches #retryRegexes"() {
         given:
         def fakeUnity = createMockUnity(unityLog, 1)
         addUnityPathToExtension(fakeUnity.absolutePath)
         buildFile << """
         $subjectUnderTestName {
-            maxRetries = ${wrapValueBasedOnType(maxRetries, Integer)}
-            retryWait = Duration.ofMillis(${wrapValueBasedOnType(retryWait.toMillis(), Integer)})
-            retryRegex = ${wrapValueBasedOnType(retryRegex, String)}
+            maxRetries = ${wrapValue(maxRetries, Integer)}
+            retryWait = Duration.ofMillis(${wrapValue(retryWait.toMillis(), Integer)})
+            retryRegexes = ${"[" + retryRegexes.collect { "/$it/" }.join(", ") + "]"}
         }
         """
 
         when:
         def startTime = Instant.now()
-        def result = runTasks(subjectUnderTestName)
+        def result = runTasks(subjectUnderTestName, "-xensureProjectManifest")
         def endTime = Instant.now()
-
         then:
         def stdout = result.standardOutput
         def duration = Duration.ofMillis(endTime.minusMillis(startTime.toEpochMilli()).toEpochMilli())
@@ -377,12 +377,13 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
                 duration < retryWait
 
         where:
-        maxRetries | retryWait             | retryRegex                | shouldRetry
-        3          | Duration.ofSeconds(2) | /^\s*Pro License:\s*NO$/  | true
-        99         | Duration.ofSeconds(2) | /^\s*Pro License:\s*YES$/ | false
+        maxRetries | retryWait             | retryRegexes                                             | shouldRetry
+        3          | Duration.ofSeconds(2) | [/^\s*TestPro License:\s*NO$/]                           | true
+        3          | Duration.ofSeconds(2) | [/^\s*Not Matching:\s*NO$/, /^\s*TestPro License:\s*NO/] | true
+        99         | Duration.ofSeconds(2) | [/^\s*Not matching:\s*$/]                                | false
         unityLog = """
         Some very verbose stuff
-        Pro License: NO
+        TestPro License: NO
         more verbosity
         """.readLines().collect { it.trim().stripIndent() }.findAll { !it.empty } join("\n")
         message = shouldRetry ? "should retry" : "shouldn't retry"

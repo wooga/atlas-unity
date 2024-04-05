@@ -66,9 +66,8 @@ abstract class UnityTask extends DefaultTask
         def _arguments = arguments.get()
         def retryCount = maxRetries.get();
         def retryWait = retryWait.get();
-        def retryPattern = retryRegex.get()
+        def retryPatterns = retryRegexes.get()
         ByteArrayOutputStream lastStdoutStream
-
 
         def execResult = retryOn(retryCount, retryWait, { ->
             lastStdoutStream = new ByteArrayOutputStream()
@@ -86,7 +85,9 @@ abstract class UnityTask extends DefaultTask
             }}
         }, {retries ->
             def stdout = new String(lastStdoutStream.toByteArray(), "UTF-8")
-            def licenseFailure = stdout.readLines().any {it.matches(retryPattern) }
+            def licenseFailure = retryPatterns.any {pattern ->
+                return pattern.asPredicate().test(stdout)
+            }
             if(licenseFailure) {
                 logger.info("Unity Editor failed to acquire license, will try again in ${retryWait}. " +
                         "There are ${retries-1} attempts left.")

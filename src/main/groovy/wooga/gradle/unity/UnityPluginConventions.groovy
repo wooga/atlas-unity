@@ -141,7 +141,7 @@ class UnityPluginConventions {
     /**
      * Unity will retry execution if a error execution matches this regex.
      */
-    static final PropertyLookup retryRegex = new PropertyLookup("UNITY_RETRY_REGEX", 'unity.retryRegex', /^\s*Pro License:\s*NO$/) //30s
+    static final PropertyLookup retryRegex = new PropertyLookup("UNITY_RETRY_REGEX", 'unity.retryRegex', /^\s*Pro License:\s*NO$/)
     /**
      * How long to wait wait between retries, in milliseconds. Defaults to 30s.
      */

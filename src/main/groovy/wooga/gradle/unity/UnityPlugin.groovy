@@ -163,7 +163,7 @@ class UnityPlugin implements Plugin<Project> {
         // getting around this means getting <<very>> creative with splitter token,
         // so its better to only allow a single regex here
         extension.retryRegexes.convention(UnityPluginConventions.retryRegex.getStringValueProvider(project).map {
-            [Pattern.compile(it)]
+            [Pattern.compile(it, Pattern.MULTILINE)]
         })
         extension.retryWait.convention(UnityPluginConventions.retryWaitMs.getIntegerValueProvider(project).map {
             Duration.ofMillis(it as long)
@@ -232,6 +232,10 @@ class UnityPlugin implements Plugin<Project> {
                     t.setCommandLineOptionEnabledConvention(instance.option, provider)
                 }
             }
+            //Retry properties
+            t.maxRetries.convention(extension.maxRetries)
+            t.retryWait.convention(extension.retryWait)
+            t.retryRegexes.convention(extension.retryRegexes)
         }
     }
 

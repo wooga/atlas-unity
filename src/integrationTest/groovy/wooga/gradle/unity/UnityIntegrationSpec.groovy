@@ -148,7 +148,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
                 echo %*
                 echo [LOG]:
                 echo ${mockUnityStartupMessage}
-                ${extraLog? "echo '$extraLog'" : ""}
+                ${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}
                 EXIT /b $exitValue
             """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
         } else {
