@@ -38,12 +38,32 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.24f1", cleanup = false)
-    def "generates .sln file when running generateSolution task"(Installation unity) {
+    def "generates .sln file when running generateSolution task for unity 2019.4"(Installation unity) {
         given: "an unity3D project"
         def project_path = "build/test_project"
         environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
         appendToSubjectTask("""createProject = "${project_path}" """,
                                   """buildTarget = "Android" """)
+
+        when:"generateSolution task is called"
+        def result = runTasksSuccessfully(subjectUnderTestName)
+
+        then:"solution file is generated"
+        result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
+        fileExists(project_path)
+        fileExists(project_path, "test_project.sln")
+    }
+
+
+    @Requires({ os.macOs })
+    @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
+    @UnityInstallation(version = "2022.3.18f1", cleanup = false)
+    def "generates .sln file when running generateSolution task for unity 2022.3"(Installation unity) {
+        given: "an unity3D project"
+        def project_path = "build/test_project"
+        environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
+        appendToSubjectTask("""createProject = "${project_path}" """,
+                """buildTarget = "Android" """)
 
         when:"generateSolution task is called"
         def result = runTasksSuccessfully(subjectUnderTestName)
