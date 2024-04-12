@@ -399,6 +399,8 @@ class UnityPlugin implements Plugin<Project> {
             task.group = GROUP
             task.projectManifestFile.convention(extension.projectManifestFile)
             task.upmPackages.putAll(extension.upmPackages)
+            //needed in order to be able to generate solutions
+            task.upmPackages.put("com.unity.ide.rider", "3.0.28")
             task.upmPackages.putAll(extension.enableTestCodeCoverage.map {
                 it ? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
             })
@@ -406,9 +408,12 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks.withType(Test).configureEach { testTask ->
             testTask.dependsOn(addUPMPackagesTask)
         }
+        project.tasks.withType(GenerateSolution).configureEach {genSolutionTask ->
+            genSolutionTask.dependsOn(addUPMPackagesTask)
+        }
         addUPMPackagesTask.configure { task ->
             task.onlyIf {
-                def upmPackageCount = task.upmPackages.forUseAtConfigurationTime().getOrElse([:]).size()
+                def upmPackageCount = task.upmPackages.getOrElse([:]).size()
                 upmPackageCount > 0
             }
         }
