@@ -28,6 +28,7 @@ import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
 import wooga.gradle.unity.models.ResolutionStrategy
 import wooga.gradle.unity.models.UnityCommandLineOption
+import wooga.gradle.unity.models.UnityProjectManifest
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
@@ -139,7 +140,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @UnityPluginTestOptions(unityPath = UnityPathResolution.None, addPluginTestDefaults = false,
-        disableAutoActivateAndLicense = false)
+            disableAutoActivateAndLicense = false)
     @Unroll
     def "extension property :#property returns '#testValue' if #reason"() {
         given: "an applied plugin"
@@ -353,8 +354,15 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     }
 
     @Unroll
-    def "runs addUPMPackages task if there are packages to add"() {
+    def "runs addUPMPackages task"() {
         given:
+        new File(projectDir, manifestFile).with {
+            delete()
+            if (hasManifest) {
+                parentFile.mkdirs()
+                text = new UnityProjectManifest([:]).serialize()
+            }
+        }
         buildFile << """
             unity {
                 enableTestCodeCoverage = ${testCoverageEnabled}
@@ -366,15 +374,19 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
 
         then:
         shouldRun ?
-            result.wasExecuted("addUPMPackages") :
-            result.standardOutput.contains("Task :addUPMPackages SKIPPED")
+                result.wasExecuted("addUPMPackages") :
+                result.standardOutput.contains("Task :addUPMPackages SKIPPED")
 
         where:
-        testCoverageEnabled | packagesToInstall  | shouldRun
-        false               | [:]                | false
-        false               | ["package": "ver"] | true
-        true                | [:]                | true
-        true                | ["package": "ver"] | true
+        hasManifest | testCoverageEnabled | packagesToInstall  | shouldRun
+        false       | false               | [:]                | false
+        true        | false               | [:]                | true
+        true        | false               | ["package": "ver"] | true
+        false       | false               | ["package": "ver"] | true
+        true        | true                | [:]                | true
+        true        | true                | ["package": "ver"] | true
+        false       | true                | ["package": "ver"] | true
+        manifestFile = "Packages/manifest.json"
     }
 
     @Unroll
@@ -395,9 +407,9 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         ""                              | null     | PropertyLocation.environment
 
         setter = new PropertySetterWriter("unity", "resolutionStrategy")
-            .set(value, String)
-            .withKeyComposedFrom("unity")
-            .to(location)
+                .set(value, String)
+                .withKeyComposedFrom("unity")
+                .to(location)
         getter = new PropertyGetterTaskWriter(setter)
     }
 
