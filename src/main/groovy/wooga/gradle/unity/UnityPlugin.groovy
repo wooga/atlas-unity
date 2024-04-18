@@ -48,6 +48,9 @@ import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 import wooga.gradle.unity.utils.UnityVersionManager
 
+import java.time.Duration
+import java.util.regex.Pattern
+
 /**
  * A {@link org.gradle.api.Plugin} which provides tasks to run unity batch-mode commands.
  * It runs and reports unity edit and play-mode test and is able to export `.unitypackage` files.
@@ -153,6 +156,18 @@ class UnityPlugin implements Plugin<Project> {
 
         // Command line options
         extension.enableTestCodeCoverage.convention(UnityPluginConventions.enableTestCodeCoverage.getBooleanValueProvider(project))
+
+        //Retry options
+        extension.maxRetries.convention(UnityPluginConventions.maxRetries.getIntegerValueProvider(project))
+        // getStringListValueProvider will fail here because the tokens used to split it will conflict with the regex,
+        // getting around this means getting <<very>> creative with splitter token,
+        // so its better to only allow a single regex here
+        extension.retryRegexes.convention(UnityPluginConventions.retryRegex.getStringValueProvider(project).map {
+            [Pattern.compile(it, Pattern.MULTILINE)]
+        })
+        extension.retryWait.convention(UnityPluginConventions.retryWaitMs.getIntegerValueProvider(project).map {
+            Duration.ofMillis(it as long)
+        })
     }
 
     private static void configureUnityTasks(UnityPluginExtension extension, final Project project) {
@@ -217,6 +232,10 @@ class UnityPlugin implements Plugin<Project> {
                     t.setCommandLineOptionEnabledConvention(instance.option, provider)
                 }
             }
+            //Retry properties
+            t.maxRetries.convention(extension.maxRetries)
+            t.retryWait.convention(extension.retryWait)
+            t.retryRegexes.convention(extension.retryRegexes)
         }
     }
 

@@ -21,15 +21,14 @@ package wooga.gradle.unity
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import wooga.gradle.unity.traits.APICompatibilityLevelSpec
 import wooga.gradle.unity.traits.AddUnityPackagesSpec
 import wooga.gradle.unity.traits.ResolutionStrategySpec
+import wooga.gradle.unity.traits.RetrySpec
 import wooga.gradle.unity.traits.UnityAuthenticationSpec
-import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnityLicenseSpec
 import wooga.gradle.unity.traits.UnityPackageSpec
 import wooga.gradle.unity.traits.UnitySpec
@@ -42,7 +41,8 @@ trait UnityPluginExtension implements UnitySpec,
     UnityAuthenticationSpec,
     UnityPackageSpec,
     AddUnityPackagesSpec,
-    ResolutionStrategySpec {
+    ResolutionStrategySpec,
+    RetrySpec {
 
     private final DirectoryProperty logsDir = objects.directoryProperty()
 

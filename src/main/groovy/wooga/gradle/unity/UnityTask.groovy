@@ -21,32 +21,34 @@ import com.wooga.gradle.ArgumentsSpec
 import com.wooga.gradle.io.FileUtils
 import com.wooga.gradle.io.OutputStreamSpec
 import com.wooga.gradle.io.ProcessExecutor
-import com.wooga.gradle.io.TextStream
 import groovy.transform.InheritConstructors
 import org.apache.maven.artifact.versioning.ArtifactVersion
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
-import org.gradle.process.ExecSpec
+import wooga.gradle.unity.internal.ForkedOutputStream
 import wooga.gradle.unity.models.UnityCommandLineOption
+import wooga.gradle.unity.traits.RetrySpec
 import wooga.gradle.unity.traits.UnityCommandLineSpec
 import wooga.gradle.unity.traits.UnitySpec
 import wooga.gradle.unity.utils.UnityVersionManager
 
-import javax.annotation.Nullable
+import java.time.Duration
+import java.util.function.Function
+import java.util.function.Supplier
 
 @InheritConstructors
 class UnityExecutionException extends Exception {
 }
 
+
 abstract class UnityTask extends DefaultTask
     implements UnitySpec,
-        UnityCommandLineSpec,
-        ArgumentsSpec,
-        OutputStreamSpec {
+            RetrySpec,
+            UnityCommandLineSpec,
+            ArgumentsSpec,
+            OutputStreamSpec {
 
     UnityTask() {
         // When this task is executed, we query the arguments to pass
@@ -62,18 +64,36 @@ abstract class UnityTask extends DefaultTask
 
         def logFile = unityLogFile.asFile.get()
         def _arguments = arguments.get()
-        def stdoutStream = getOutputStream(logFile)
-        def stderrStream = new ByteArrayOutputStream()
+        def retryCount = maxRetries.get();
+        def retryWait = retryWait.get();
+        def retryPatterns = retryRegexes.get()
+        ByteArrayOutputStream lastStdoutStream
 
-        def executor = ProcessExecutor.from(project)
-            .withExecutable(unityPath.get().asFile)
-            .withArguments(_arguments)
-            .withEnvironment(environment.get())
-            .withStandardOutput(stdoutStream)
-            .withStandardError(stderrStream)
-            .ignoreExitValue()
-
-        ExecResult execResult = executor.execute()
+        def execResult = retryOn(retryCount, retryWait, { ->
+            lastStdoutStream = new ByteArrayOutputStream()
+            def sout = new ForkedOutputStream(lastStdoutStream, getOutputStream(logFile))
+            def serr = new ByteArrayOutputStream()
+            sout.withStream { stdoutStream -> serr.withStream { stderrStream ->
+                return ProcessExecutor.from(project)
+                            .withExecutable(unityPath.get().asFile)
+                            .withArguments(_arguments)
+                            .withEnvironment(environment.get())
+                            .withStandardOutput(stdoutStream)
+                            .withStandardError(stderrStream)
+                            .ignoreExitValue()
+                       .execute()
+            }}
+        }, {retries ->
+            def stdout = new String(lastStdoutStream.toByteArray(), "UTF-8")
+            def licenseFailure = retryPatterns.any {pattern ->
+                return pattern.asPredicate().test(stdout)
+            }
+            if(licenseFailure) {
+                logger.info("Unity Editor failed to acquire license, will try again in ${retryWait}. " +
+                        "There are ${retries-1} attempts left.")
+            }
+            return licenseFailure
+        })
 
         if (execResult.exitValue != 0) {
             String message = ""
@@ -132,4 +152,26 @@ abstract class UnityTask extends DefaultTask
         // If no file was found
         return null
     }
+
+    static <T extends ExecResult> T retryOn(int maxRetries, Duration wait, Supplier<T> operation, Function<Integer, Boolean> condition) {
+        def remainingRetries = maxRetries
+        def shouldRetry = false
+        ExecResult result
+        do {
+            result = operation()
+            if(result.exitValue != 0) {
+                if(condition.apply(remainingRetries)) {
+                    shouldRetry = true
+                    Thread.yield()
+                    Thread.sleep(wait.toMillis())
+                } else {
+                    shouldRetry = false
+                }
+            }
+            remainingRetries--
+        } while(remainingRetries > 0 && shouldRetry)
+        return result
+    }
 }
+
+
