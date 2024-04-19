@@ -34,8 +34,8 @@ trait UnityCommandLineSpec extends UnitySpec {
      */
     static class UnityCommandLineOptionSetting {
         final UnityCommandLineOption option
-        Property<Boolean> enabled
-        Property<String> arguments
+        final Property<Boolean> enabled
+        final Property<String> arguments
 
         UnityCommandLineOptionSetting(UnityCommandLineOption option, ObjectFactory objects) {
             this.option = option

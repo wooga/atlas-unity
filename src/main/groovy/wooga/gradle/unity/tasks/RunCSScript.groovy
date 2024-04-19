@@ -57,12 +57,18 @@ class RunCSScript extends UnityTask {
     }
 
     RunCSScript() {
-//        finalizedBy(project.tasks.register("_${this.name}_cleanup") {
-//            onlyIf {
-//                destCsScript.present && destCsScript.get().asFile.file
-//            }
-//            doLast { generatorScript.get().asFile.delete() }
-//        })
+        finalizedBy(project.tasks.register("_${this.name}_cleanup") {
+            onlyIf {
+                destCsScript.present && destCsScript.get().asFile.file
+            }
+            doLast {
+                def baseFile = destCsScript.get().asFile
+                def metafile = new File(baseFile.absolutePath + ".meta")
+                baseFile.delete()
+                metafile.delete()
+
+            }
+        })
     }
 
     @Override

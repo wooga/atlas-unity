@@ -54,8 +54,11 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
 
         then:"solution file is generated"
         result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
+        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
         fileExists(project_path)
         fileExists(project_path, "test_project.sln")
+        !fileExists(project_path, "Assets/SolutionGenerator.cs")
+        !fileExists(project_path, "Assets/SolutionGenerator.cs.meta")
     }
 
 
@@ -78,5 +81,9 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
         then:"solution file is generated"
         result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
         projectDir.list().any{ it.endsWith(".sln") }
+        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
+        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs")
+        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs.meta")
+
     }
 }

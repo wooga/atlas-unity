@@ -53,7 +53,7 @@ class GradleRunResult {
             throw new IllegalArgumentException("couldn't find arguments list in stdout")
         }
         def lastExecTailString = stdOutput.substring(lastExecutionOffset)
-        def argsString = substringBetween(lastExecTailString, argumentsStartToken, "Mock Unity Started").
+        def argsString = substringBetween(lastExecTailString, argumentsStartToken, "[LOG]").
                 replace(argumentsStartToken, "")
         def parts = argsString.split(" ").
                 findAll {!StringUtils.isEmpty(it) }.collect{ it.trim() }

@@ -17,11 +17,13 @@
 
 package wooga.gradle.unity
 
-import com.wooga.gradle.PlatformUtils
+
 import com.wooga.gradle.PropertyUtils
 import com.wooga.gradle.test.PropertyLocation
 import com.wooga.gradle.test.PropertyQueryTaskWriter
+import com.wooga.gradle.test.serializers.PropertyTypeSerializer
 import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
+import com.wooga.gradle.test.writers.PropertySetInvocation
 import com.wooga.gradle.test.writers.PropertySetterWriter
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
@@ -32,6 +34,13 @@ import wooga.gradle.unity.models.UnityProjectManifest
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
+import java.time.Duration
+import java.util.regex.Pattern
+
+import static com.wooga.gradle.test.writers.PropertySetInvocation.getAssignment
+import static com.wooga.gradle.test.writers.PropertySetInvocation.getNone
+import static com.wooga.gradle.test.writers.PropertySetInvocation.getProviderSet
+import static com.wooga.gradle.test.writers.PropertySetInvocation.getSetter
 import static wooga.gradle.unity.UnityPluginConventions.getUnityFileTree
 import static wooga.gradle.unity.UnityPluginConventions.getPlatformUnityPath
 
@@ -142,79 +151,174 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     @UnityPluginTestOptions(unityPath = UnityPathResolution.None, addPluginTestDefaults = false,
             disableAutoActivateAndLicense = false)
     @Unroll
-    def "extension property :#property returns '#testValue' if #reason"() {
+    def "property unity.#property is set on #target with #inputType as #rawValue"() {
         given: "an applied plugin"
         setupUnityPlugin()
 
-        and: "a set value"
-        switch (location) {
-            case PropertyLocation.script:
-                buildFile << "${extensionName}.${invocation}"
-                break
-            case PropertyLocation.property:
-                def propertiesFile = createFile("gradle.properties")
-                propertiesFile << "${extensionName}.${property} = ${escapedValue}"
-                break
-            case PropertyLocation.environment:
-                def envPropertyKey = PropertyUtils.envNameFromProperty(extensionName, property)
-                environmentVariables.set(envPropertyKey, value)
-                break
-            default:
-                break
-        }
-
-        and: "the test value with replace placeholders"
-        if (testValue instanceof String) {
-            testValue = testValue.replaceAll("#projectDir#", PlatformUtils.escapedPath(projectDir.path))
-        }
-
         when:
-        def query = new PropertyQueryTaskWriter("${extensionName}.${property}")
-        query.write(buildFile)
-        def result = runTasksSuccessfully(query.taskName)
+        set.location = target == none ? PropertyLocation.none : set.location
+
+        def propertyQuery = runPropertyQuery(get, set)
+                .withSerializer(Long, longGetSerializer)
+                .withSerializer(Duration, durationGetSerializer)
+                .withSerializer("Provider<Duration>", durationGetSerializer)
+                .withSerializer("List<Pattern>", patternsGetSerializer)
+                .withSerializer("Provider<List<Pattern>>", patternsGetSerializer)
+                .withSerializer("List<String>", stringsGetSerializer)
+                .withSerializer("Provider<List<String>>", stringsGetSerializer)
 
         then:
-        query.matches(result, testValue)
+        propertyQuery.matches(rawValue)
 
         where:
-        property                   | method                       | rawValue                  | expectedValue                                                   | type                    | location
-        "unityPath"                | _                            | _                         | getPlatformUnityPath().absolutePath                             | "Provider<RegularFile>" | PropertyLocation.none
-        "unityPath"                | _                            | osPath("/foo/bar/unity1") | _                                                               | _                       | PropertyLocation.environment
-        "unityPath"                | _                            | osPath("/foo/bar/unity2") | _                                                               | _                       | PropertyLocation.property
-        "unityPath"                | "setUnityPath"               | osPath("/foo/bar/unity3") | _                                                               | "Provider<RegularFile>" | PropertyLocation.script
-        "unityPath"                | "unityPath.set"              | osPath("/foo/bar/unity4") | _                                                               | "Provider<RegularFile>" | PropertyLocation.script
+        property                   | target        | rawValue                                                        | inputType                 | outputType
+        "unityPath"                | none          | getPlatformUnityPath().absolutePath                             | "Provider<RegularFile>"   | _
+        "unityPath"                | setter        | osPath("/foo/bar/unity1")                                       | "Provider<RegularFile>"   | _
+        "unityPath"                | setter        | osPath("/foo/bar/unity1")                                       | "RegularFile"             | _
+        "unityPath"                | assignment    | osPath("/foo/bar/unity2")                                       | "Provider<RegularFile>"   | _
+        "unityPath"                | assignment    | osPath("/foo/bar/unity2")                                       | "RegularFile"             | _
+        "unityPath"                | providerSet   | osPath("/foo/bar/unity3")                                       | "Provider<RegularFile>"   | _
+        "unityPath"                | providerSet   | osPath("/foo/bar/unity3")                                       | "RegularFile"             | _
+        "unityPath"                | "environment" | osPath("/foo/bar/unity4")                                       | "RegularFile"             | _
 
-        "unityRootDir"             | _                            | _                         | getUnityFileTree(getPlatformUnityPath()).unityRoot.absolutePath | "Provider<Directory>"   | PropertyLocation.none
+        "unityRootDir"             | none          | getUnityFileTree(getPlatformUnityPath()).unityRoot.absolutePath | "Provider<Directory>"     | _
 
-        "defaultBuildTarget"       | _                            | _                         | null                                                            | _                       | PropertyLocation.none
-        "autoActivateUnity"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
-        "autoActivate"             | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
-        "autoActivate"             | _                            | false                     | false                                                           | Boolean                 | PropertyLocation.property
-        "autoActivate"             | _                            | false                     | false                                                           | Boolean                 | PropertyLocation.environment
-        "autoReturnLicense"        | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
-        "logCategory"              | _                            | _                         | "unity"                                                         | "Property<String>"      | PropertyLocation.none
-        "batchModeForEditModeTest" | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
-        "batchModeForPlayModeTest" | _                            | _                         | true                                                            | Boolean                 | PropertyLocation.none
+        "defaultBuildTarget"       | none          | null                                                            | _                         | _
+        "defaultBuildTarget"       | setter        | "buildTarget"                                                   | String                    | _
+        "defaultBuildTarget"       | setter        | "buildTarget"                                                   | "Provider<String>"        | _
+        "defaultBuildTarget"       | assignment    | "buildTarget"                                                   | String                    | _
+        "defaultBuildTarget"       | assignment    | "buildTarget"                                                   | "Provider<String>"        | _
+        "defaultBuildTarget"       | providerSet   | "buildTarget"                                                   | String                    | _
+        "defaultBuildTarget"       | providerSet   | "buildTarget"                                                   | "Provider<String>"        | _
 
-        "assetsDir"                | _                            | _                         | osPath("#projectDir#/Assets")                                   | "Provider<Directory>"   | PropertyLocation.none
-        "logsDir"                  | _                            | _                         | osPath("#projectDir#/build/logs")                               | "Provider<Directory>"   | PropertyLocation.none
-        "reportsDir"               | _                            | _                         | osPath("#projectDir#/build/reports")                            | "Provider<Directory>"   | PropertyLocation.none
+        "autoActivateUnity"        | none          | true                                                            | Boolean                   | _
+        "autoActivateUnity"        | setter        | false                                                           | Boolean                   | _
+        "autoActivateUnity"        | setter        | false                                                           | "Provider<Boolean>"       | _
+        "autoActivateUnity"        | assignment    | false                                                           | Boolean                   | _
+        "autoActivateUnity"        | assignment    | false                                                           | "Provider<Boolean>"       | _
+        "autoActivateUnity"        | providerSet   | false                                                           | Boolean                   | _
+        "autoActivateUnity"        | providerSet   | false                                                           | "Provider<Boolean>"       | _
 
-        "enableTestCodeCoverage"   | _                            | _                         | false                                                           | Boolean                 | PropertyLocation.none
-        "enableTestCodeCoverage"   | "enableTestCodeCoverage.set" | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
-        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | Boolean                 | PropertyLocation.script
-        "enableTestCodeCoverage"   | "setEnableTestCodeCoverage"  | true                      | _                                                               | "Provider<Boolean>"     | PropertyLocation.script
+        "autoActivate"             | none          | true                                                            | Boolean                   | _
+        "autoActivate"             | setter        | false                                                           | Boolean                   | _
+        "autoActivate"             | setter        | false                                                           | "Provider<Boolean>"       | _
+        "autoActivate"             | assignment    | false                                                           | Boolean                   | _
+        "autoActivate"             | assignment    | false                                                           | "Provider<Boolean>"       | _
+        "autoActivate"             | providerSet   | false                                                           | Boolean                   | _
+        "autoActivate"             | providerSet   | false                                                           | "Provider<Boolean>"       | _
+        "autoActivate"             | "environment" | false                                                           | Boolean                   | _
+        "autoActivate"             | "property"    | false                                                           | Boolean                   | _
 
-        "upmPackages"              | "setUpmPackages"             | _                         | [:]                                                             | _                       | PropertyLocation.none
-        "upmPackages"              | "setUpmPackages"             | ["unity.package": "ver"]  | ["unity.package": "ver"]                                        | Map                     | PropertyLocation.script
-        "upmPackages"              | "upmPackages.set"            | ["unity.package": "ver"]  | ["unity.package": "ver"]                                        | Map                     | PropertyLocation.script
+        "autoReturnLicense"        | none          | true                                                            | Boolean                   | _
+        "autoReturnLicense"        | setter        | false                                                           | Boolean                   | _
+        "autoReturnLicense"        | setter        | false                                                           | "Provider<Boolean>"       | _
+        "autoReturnLicense"        | assignment    | false                                                           | Boolean                   | _
+        "autoReturnLicense"        | assignment    | false                                                           | "Provider<Boolean>"       | _
+        "autoReturnLicense"        | providerSet   | false                                                           | Boolean                   | _
+        "autoReturnLicense"        | providerSet   | false                                                           | "Provider<Boolean>"       | _
 
-        value = (type != _) ? wrapValueBasedOnType(rawValue, type) : rawValue
-        providedValue = (location == PropertyLocation.script) ? type : value
-        testValue = (expectedValue == _) ? rawValue : expectedValue
-        reason = location.reason() + ((location == PropertyLocation.none) ? "" : "  with '$providedValue' ")
-        escapedValue = (value instanceof String) ? PlatformUtils.escapedPath(value) : value
-        invocation = (method != _) ? "${method}(${escapedValue})" : "${property} = ${escapedValue}"
+        "logCategory"              | none          | "unity"                                                         | String                    | _
+        "logCategory"              | setter        | "log"                                                           | String                    | _
+        "logCategory"              | setter        | "log"                                                           | "Provider<String>"        | _
+        "logCategory"              | assignment    | "log"                                                           | String                    | _
+        "logCategory"              | assignment    | "log"                                                           | "Provider<String>"        | _
+        "logCategory"              | providerSet   | "log"                                                           | String                    | _
+        "logCategory"              | providerSet   | "log"                                                           | "Provider<String>"        | _
+
+        "batchModeForEditModeTest" | none          | true                                                            | Boolean                   | _
+        "batchModeForEditModeTest" | setter        | false                                                           | Boolean                   | _
+        "batchModeForEditModeTest" | setter        | false                                                           | "Provider<Boolean>"       | _
+        "batchModeForEditModeTest" | assignment    | false                                                           | Boolean                   | _
+        "batchModeForEditModeTest" | assignment    | false                                                           | "Provider<Boolean>"       | _
+        "batchModeForEditModeTest" | providerSet   | false                                                           | Boolean                   | _
+        "batchModeForEditModeTest" | providerSet   | false                                                           | "Provider<Boolean>"       | _
+
+        "batchModeForPlayModeTest" | none          | true                                                            | Boolean                   | _
+        "batchModeForPlayModeTest" | setter        | false                                                           | Boolean                   | _
+        "batchModeForPlayModeTest" | setter        | false                                                           | "Provider<Boolean>"       | _
+        "batchModeForPlayModeTest" | assignment    | false                                                           | Boolean                   | _
+        "batchModeForPlayModeTest" | assignment    | false                                                           | "Provider<Boolean>"       | _
+        "batchModeForPlayModeTest" | providerSet   | false                                                           | Boolean                   | _
+        "batchModeForPlayModeTest" | providerSet   | false                                                           | "Provider<Boolean>"       | _
+
+        "enableTestCodeCoverage"   | none          | false                                                           | Boolean                   | _
+        "enableTestCodeCoverage"   | setter        | true                                                            | Boolean                   | _
+        "enableTestCodeCoverage"   | setter        | true                                                            | "Provider<Boolean>"       | _
+        "enableTestCodeCoverage"   | assignment    | true                                                            | Boolean                   | _
+        "enableTestCodeCoverage"   | assignment    | true                                                            | "Provider<Boolean>"       | _
+        "enableTestCodeCoverage"   | providerSet   | true                                                            | Boolean                   | _
+        "enableTestCodeCoverage"   | providerSet   | true                                                            | "Provider<Boolean>"       | _
+
+        "upmPackages"              | none          | [:]                                                             | Map                       | _
+        "upmPackages"              | setter        | ["unity.package": "ver"]                                        | Map                       | _
+        "upmPackages"              | setter        | ["unity.package": "ver"]                                        | "Provider<Map>"           | _
+        "upmPackages"              | assignment    | ["unity.package": "ver"]                                        | Map                       | _
+        "upmPackages"              | assignment    | ["unity.package": "ver"]                                        | "Provider<Map>"           | _
+        "upmPackages"              | providerSet   | ["unity.package": "ver"]                                        | Map                       | _
+        "upmPackages"              | providerSet   | ["unity.package": "ver"]                                        | "Provider<Map>"           | _
+
+        "maxRetries"               | none          | 3                                                               | Integer                   | _
+        "maxRetries"               | setter        | 5                                                               | Integer                   | _
+        "maxRetries"               | setter        | 5                                                               | "Provider<Integer>"       | _
+        "maxRetries"               | assignment    | 6                                                               | Integer                   | _
+        "maxRetries"               | assignment    | 6                                                               | "Provider<Integer>"       | _
+        "maxRetries"               | providerSet   | 6                                                               | Integer                   | _
+        "maxRetries"               | providerSet   | 6                                                               | "Provider<Integer>"       | _
+        "maxRetries"               | "environment" | 7                                                               | Integer                   | _
+        "maxRetries"               | "property"    | 7                                                               | Integer                   | _
+
+        "retryWait"                | none          | 30000                                                           | Duration                  | _
+        "retryWait"                | setter        | 500                                                             | "Provider<Duration>"      | _
+        "retryWait"                | setter        | 500                                                             | Duration                  | _
+        "retryWait"                | setter        | 500                                                             | Long                      | "Duration"
+        "retryWait"                | assignment    | 500                                                             | Duration                  | _
+        "retryWait"                | assignment    | 500                                                             | "Provider<Duration>"      | _
+        "retryWait"                | assignment    | 500                                                             | Long                      | "Duration"
+        "retryWait"                | providerSet   | 500                                                             | "Provider<Duration>"      | _
+        "retryWait"                | providerSet   | 500                                                             | Duration                  | _
+        "retryWait"                | "environment" | 500                                                             | Long                      | "Duration"
+        "retryWait"                | "property"    | 500                                                             | Long                      | "Duration"
+
+        "retryRegexes"             | none          | [/^\s*Pro License:\s*NO$/]                                      | "List<Pattern>"           | _
+        "retryRegexes"             | setter        | [/^\s*Pro License:\s*TEST$/]                                    | "Provider<List<Pattern>>" | _
+        "retryRegexes"             | setter        | [/^\s*Pro License:\s*TEST$/]                                    | "List<Pattern>"           | _
+        "retryRegexes"             | setter        | ["^\\s*Pro License:\\s*TEST\$"]                                 | "List<String_>"           | "List<Pattern>"
+        "retryRegexes"             | setter        | [/^\s*Pro License:\s*TEST$/]                                    | "Provider<List<String_>>" | "List<Pattern>"
+        "retryRegexes"             | assignment    | [/^\s*Pro License:\s*TEST$/]                                    | "List<Pattern>"           | _
+        "retryRegexes"             | assignment    | [/^\s*Pro License:\s*TEST$/]                                    | "Provider<List<Pattern>>" | _
+        "retryRegexes"             | assignment    | [/^\s*Pro License:\s*TEST$/]                                    | "List<String_>"           | "List<Pattern>"
+        "retryRegexes"             | assignment    | [/^\s*Pro License:\s*TEST$/]                                    | "Provider<List<String_>>" | "List<Pattern>"
+        "retryRegexes"             | providerSet   | [/^\s*Pro License:\s*TEST$/]                                    | "Provider<List<Pattern>>" | _
+        "retryRegexes"             | providerSet   | [/^\s*Pro License:\s*TEST$/]                                    | "List<Pattern>"           | _
+
+
+        durationWriteSerializer = { value -> "java.time.Duration.ofMillis(${Long.valueOf(value)})" }
+        patternWriteSerializer = { value -> "java.util.regex.Pattern.compile(/$value/)" }
+        stringWriteSerializer = { value ->
+            property == "retryRegexes" ? "/$value/" : wrapValue(value, String)
+        }
+        durationGetSerializer = { value -> Duration.ofMillis(Long.valueOf(value)).toString() }
+        patternsGetSerializer = { List value ->
+            "[" + value.collect { it -> Pattern.compile(it.toString()).pattern() }.join(", ") + "]"
+        }
+        longGetSerializer = { value -> outputType == "Duration" ? durationGetSerializer(value) : value }
+        stringsGetSerializer = { value -> outputType == "List<Pattern>" ? patternsGetSerializer(value) : value }
+
+        location = target instanceof String ? PropertyLocation.valueOf(target) as PropertyLocation : PropertyLocation.script
+        scriptInvocation = target instanceof PropertySetInvocation ? target : null
+
+        set = new PropertySetterWriter(extensionName, property).with {
+            it.set(rawValue, inputType)
+            it.serialize([
+                    new PropertyTypeSerializer("Duration", durationWriteSerializer),
+                    new PropertyTypeSerializer("Pattern", patternWriteSerializer),
+                    //needed to differentiate from the normal string type, because the
+                    // current string serializer (wrapValue) breaks regexes for some reason
+                    new PropertyTypeSerializer("String_", stringWriteSerializer)
+            ], location)
+            return scriptInvocation ? it.toScript(scriptInvocation) : it.to(location)
+        }
+        get = new PropertyGetterTaskWriter(set)
     }
 
     @Unroll("sets buildTarget with #taskConfig #useOverride")
@@ -393,7 +497,7 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
     def "sets extension resolution strategy #value #location"() {
 
         when:
-        def query = runPropertyQuery(getter, setter)
+        def query = runPropertyQuery(getter, set)
 
         then:
         query.matches(expected != _ ? expected : value)
@@ -406,11 +510,11 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         ResolutionStrategy.highestMinor | _        | PropertyLocation.environment
         ""                              | null     | PropertyLocation.environment
 
-        setter = new PropertySetterWriter("unity", "resolutionStrategy")
+        set = new PropertySetterWriter("unity", "resolutionStrategy")
                 .set(value, String)
                 .withKeyComposedFrom("unity")
                 .to(location)
-        getter = new PropertyGetterTaskWriter(setter)
+        getter = new PropertyGetterTaskWriter(set)
     }
 
     @UnityPluginTestOptions(forceMockTaskRun = false)
