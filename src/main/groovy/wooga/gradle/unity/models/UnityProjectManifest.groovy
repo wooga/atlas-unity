@@ -51,14 +51,14 @@ class UnityProjectManifest extends HashMap<String, Object> implements GroovyInte
 
     Map getDependencies() {
         if (!containsKey(dependenciesKey)) {
-            this[dependenciesKey] = [:]
+            setDependencies([:])
         }
 
         (Map)this[dependenciesKey]
     }
 
     void setDependencies(Map<String, Object> map) {
-        this[dependenciesKey] = map
+        this.put(dependenciesKey, map)
     }
 
     void addDependencies(Map<String, Object> map) {
@@ -67,6 +67,10 @@ class UnityProjectManifest extends HashMap<String, Object> implements GroovyInte
 
     void addDependency(String key, Object value) {
         getDependencies()[key] = value
+    }
+
+    Object getDependencyVersion(String key) {
+        return getDependencies()[key]
     }
 }
 

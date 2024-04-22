@@ -6,7 +6,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
 
-class GenerateSolution extends RunCSScript {
+class GenerateSolution extends ExecuteCsharpScript {
     private final DirectoryProperty assetsDir = objects.directoryProperty()
 
     @InputDirectory
@@ -27,9 +27,6 @@ class GenerateSolution extends RunCSScript {
         this.assetsDir.set(assetsDir)
     }
 
-
-
-
     GenerateSolution() {
         outputs.upToDateWhen { false }
 
@@ -46,8 +43,8 @@ class GenerateSolution extends RunCSScript {
             script.asFile.deleteOnExit()
             return script
         }
-        this.sourceCsScript.convention(defaultScript)
-        this.destCsScript.convention(this.sourceCsScript)
+        this.sourceScript.convention(defaultScript)
+        this.destinationScript.convention(this.sourceScript)
         this.executeMethod.set(project.provider {
             unityVersion.majorVersion >= 2022?
                     "Wooga.UnityPlugin.DefaultSolutionGenerator.GenerateSolution" :

@@ -45,6 +45,12 @@ class AddUPMPackages extends ProjectManifestTask
 
     @Override
     void modifyProjectManifest(UnityProjectManifest manifest) {
+        conventionUpmPackages.getOrElse([:]).each {
+            if(!manifest.getDependencyVersion(it.key)) {
+                manifest.addDependency(it.key, it.value)
+            }
+        }
         manifest.addDependencies(upmPackages.get())
+
     }
 }

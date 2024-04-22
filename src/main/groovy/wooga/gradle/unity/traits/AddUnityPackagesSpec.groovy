@@ -2,11 +2,8 @@ package wooga.gradle.unity.traits
 
 import com.wooga.gradle.BaseSpec
 import org.gradle.api.provider.MapProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
-import wooga.gradle.unity.models.ResolutionStrategy
 
 trait AddUnityPackagesSpec extends BaseSpec {
 
@@ -28,5 +25,23 @@ trait AddUnityPackagesSpec extends BaseSpec {
     void setUpmPackages(Map<String, String> values) {
         upmPackages.set(values)
     }
+
+    @Input
+    @Optional
+    MapProperty<String, String> getConventionUpmPackages() {
+        conventionUpmPackages
+    }
+
+    private final MapProperty<String, String> conventionUpmPackages = objects.mapProperty(String, String)
+
+    void setConventionUpmPackages(MapProperty<String, String> values) {
+        conventionUpmPackages.set(values)
+    }
+
+    void setConventionUpmPackages(Map<String, String> values) {
+        conventionUpmPackages.set(values)
+    }
+
+
 }
 

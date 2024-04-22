@@ -89,6 +89,7 @@ class UnityPlugin implements Plugin<Project> {
         generateSolution(GenerateSolution),
         ensureProjectManifest(Unity),
         addUPMPackages(AddUPMPackages),
+        addIdeUPMPackage(AddUPMPackages),
         setResolutionStrategy(SetResolutionStrategy)
 
         private final Class taskClass
@@ -243,7 +244,7 @@ class UnityPlugin implements Plugin<Project> {
         addTestTasks(project, extension)
         addSetAPICompatibilityLevelTasks(project, extension)
         addGenerateSolutionTask(project)
-        addAddUPMPackagesTask(project, extension)
+        addAddUPMPackageTasks(project, extension)
         addActivateAndReturnLicenseTasks(project, extension)
     }
 
@@ -413,28 +414,37 @@ class UnityPlugin implements Plugin<Project> {
         }
     }
 
-    private static void addAddUPMPackagesTask(Project project, final UnityPluginExtension extension) {
-        def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) { task ->
-            task.group = GROUP
+    private static void addAddUPMPackageTasks(Project project, final UnityPluginExtension extension) {
+        project.tasks.withType(AddUPMPackages).configureEach { task ->
+            onlyIf {
+                def upmPackageCount = task.upmPackages.getOrElse([:]).size() +
+                                        task.conventionUpmPackages.getOrElse([:]).size()
+                if(upmPackageCount == 0) {
+                    logger.info("No UPM packages to install, skipping")
+                }
+                return upmPackageCount > 0
+            }
             task.projectManifestFile.convention(extension.projectManifestFile)
-            task.upmPackages.putAll(extension.upmPackages)
-            //needed in order to be able to generate solutions
-            task.upmPackages.put("com.unity.ide.rider", "3.0.28")
-            task.upmPackages.putAll(extension.enableTestCodeCoverage.map {
+        }
+
+        def addUPMPackagesTask = project.tasks.register(Tasks.addUPMPackages.toString(), AddUPMPackages) { it ->
+            it.group = GROUP
+            it.upmPackages.putAll(extension.upmPackages)
+            //needed in order to have coverage reports
+            //TODO: breaking change, detach this similar to addIdeUpmPackage and GenerateSolution
+            it.conventionUpmPackages.putAll(extension.enableTestCodeCoverage.map {
                 it ? ["com.unity.testtools.codecoverage": "1.1.0"] : [:]
             })
         }
         project.tasks.withType(Test).configureEach { testTask ->
             testTask.dependsOn(addUPMPackagesTask)
         }
-        project.tasks.withType(GenerateSolution).configureEach {genSolutionTask ->
-            genSolutionTask.dependsOn(addUPMPackagesTask)
+
+        def addIdeUPMPackage = project.tasks.register(Tasks.addIdeUPMPackage.toString(), AddUPMPackages) {
+            it.conventionUpmPackages.putAll(["com.unity.ide.rider": "3.0.28"])
         }
-        addUPMPackagesTask.configure { task ->
-            task.onlyIf {
-                def upmPackageCount = task.upmPackages.getOrElse([:]).size()
-                upmPackageCount > 0
-            }
+        project.tasks.withType(GenerateSolution).configureEach {genSolutionTask ->
+            genSolutionTask.dependsOn(addIdeUPMPackage)
         }
     }
 

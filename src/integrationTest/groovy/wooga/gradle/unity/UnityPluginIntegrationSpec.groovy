@@ -457,6 +457,28 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         result.wasExecuted("generateSolution")
     }
 
+    @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
+    def "add IDE UPM package when running generateSolution task"() {
+        given:
+        def manifestFile = new File(projectDir, "Packages/manifest.json").with {
+            parentFile.mkdirs()
+            text = new UnityProjectManifest([:]).serialize()
+            return it
+        }
+
+        when:
+        def result = runTasksSuccessfully("generateSolution")
+        then:
+        result.wasExecuted("addIdeUPMPackage")
+        result.wasExecuted("generateSolution")
+        def deps = UnityProjectManifest.deserialize(manifestFile).getDependencies()
+        deps[expectedPackageName] == expectedPackageVersion
+
+        where:
+        expectedPackageName = "com.unity.ide.rider"
+        expectedPackageVersion = "3.0.28"
+    }
+
     @Unroll
     def "runs addUPMPackages task"() {
         given:
