@@ -30,6 +30,7 @@ import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import spock.lang.Unroll
 import wooga.gradle.unity.models.ResolutionStrategy
 import wooga.gradle.unity.models.UnityCommandLineOption
+import wooga.gradle.unity.models.UnityProjectManifest
 import wooga.gradle.unity.tasks.Test
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
@@ -456,9 +457,38 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
         result.wasExecuted("generateSolution")
     }
 
-    @Unroll
-    def "runs addUPMPackages task if there are packages to add"() {
+    @UnityPluginTestOptions(forceMockTaskRun = false, disableAutoActivateAndLicense = false)
+    def "add IDE UPM package when running generateSolution task"() {
         given:
+        def manifestFile = new File(projectDir, "Packages/manifest.json").with {
+            parentFile.mkdirs()
+            text = new UnityProjectManifest([:]).serialize()
+            return it
+        }
+
+        when:
+        def result = runTasksSuccessfully("generateSolution")
+        then:
+        result.wasExecuted("addIdeUPMPackage")
+        result.wasExecuted("generateSolution")
+        def deps = UnityProjectManifest.deserialize(manifestFile).getDependencies()
+        deps[expectedPackageName] == expectedPackageVersion
+
+        where:
+        expectedPackageName = "com.unity.ide.rider"
+        expectedPackageVersion = "3.0.28"
+    }
+
+    @Unroll
+    def "runs addUPMPackages task"() {
+        given:
+        new File(projectDir, manifestFile).with {
+            delete()
+            if (hasManifest) {
+                parentFile.mkdirs()
+                text = new UnityProjectManifest([:]).serialize()
+            }
+        }
         buildFile << """
             unity {
                 enableTestCodeCoverage = ${testCoverageEnabled}
@@ -474,11 +504,15 @@ class UnityPluginIntegrationSpec extends UnityIntegrationSpec {
                 result.standardOutput.contains("Task :addUPMPackages SKIPPED")
 
         where:
-        testCoverageEnabled | packagesToInstall  | shouldRun
-        false               | [:]                | false
-        false               | ["package": "ver"] | true
-        true                | [:]                | true
-        true                | ["package": "ver"] | true
+        hasManifest | testCoverageEnabled | packagesToInstall  | shouldRun
+        false       | false               | [:]                | false
+        true        | false               | [:]                | true
+        true        | false               | ["package": "ver"] | true
+        false       | false               | ["package": "ver"] | true
+        true        | true                | [:]                | true
+        true        | true                | ["package": "ver"] | true
+        false       | true                | ["package": "ver"] | true
+        manifestFile = "Packages/manifest.json"
     }
 
     @Unroll

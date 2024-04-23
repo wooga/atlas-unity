@@ -14,20 +14,27 @@ abstract class ProjectManifestTask extends DefaultTask implements
 
     abstract void modifyProjectManifest(UnityProjectManifest manifest)
 
+    ProjectManifestTask() {
+        onlyIf {
+            def manifestFile = projectManifestFile.asFile.getOrNull()
+            def condition = manifestFile && manifestFile.exists()
+            if(!condition) {
+                project.logger.warn("${manifestFile.name} not found, skipping UPM packages install")
+            }
+            return condition
+        }
+    }
+
     @TaskAction
     void execute() {
         def manifestFile = projectManifestFile.asFile.getOrNull()
-        if (manifestFile && manifestFile.exists()) {
-            // Deserialize
-            def manifest = UnityProjectManifest.deserialize(manifestFile)
-            // Modify
-            modifyProjectManifest(manifest)
-            // Serialize
-            def serialization = manifest.serialize()
-            manifestFile.write(serialization)
-        } else {
-            project.logger.warn("${manifestFileName} not found, skipping UPM packages install: ${upmPackages.get()}")
-        }
+        // Deserialize
+        def manifest = UnityProjectManifest.deserialize(manifestFile)
+        // Modify
+        modifyProjectManifest(manifest)
+        // Serialize
+        def serialization = manifest.serialize()
+        manifestFile.write(serialization)
     }
 }
 

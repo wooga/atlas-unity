@@ -38,10 +38,14 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
     @Requires({ os.macOs })
     @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
     @UnityInstallation(version = "2019.4.24f1", cleanup = false)
-    def "generates .sln file when running generateSolution task"(Installation unity) {
+    def "generates .sln file when running generateSolution task for unity 2019.4"(Installation unity) {
         given: "an unity3D project"
         def project_path = "build/test_project"
-        environmentVariables.set("UNITY_PATH", unity.getExecutable().getPath())
+        buildFile << """
+            unity {
+                unityPath = ${wrapValueBasedOnType(unity.executable, File)}
+            }
+        """
         appendToSubjectTask("""createProject = "${project_path}" """,
                                   """buildTarget = "Android" """)
 
@@ -50,7 +54,36 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
 
         then:"solution file is generated"
         result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
+        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
         fileExists(project_path)
         fileExists(project_path, "test_project.sln")
+        !fileExists(project_path, "Assets/SolutionGenerator.cs")
+        !fileExists(project_path, "Assets/SolutionGenerator.cs.meta")
+    }
+
+
+    @Requires({ os.macOs })
+    @UnityPluginTestOptions(unityPath = UnityPathResolution.Default)
+    @UnityInstallation(version = "2022.3.18f1", cleanup = false)
+    def "generates .sln file when running generateSolution task for unity 2022.3"(Installation unity) {
+        given: "an unity3D project"
+        buildFile << """
+            unity {
+                unityPath = ${wrapValueBasedOnType(unity.executable, File)}
+            }
+        """
+        appendToSubjectTask("""createProject = "${projectDir.absolutePath}" """,
+                """buildTarget = "Android" """)
+
+        when:"generateSolution task is called"
+        def result = runTasks(subjectUnderTestName)
+
+        then:"solution file is generated"
+        result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
+        projectDir.list().any{ it.endsWith(".sln") }
+        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
+        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs")
+        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs.meta")
+
     }
 }
