@@ -40,25 +40,27 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
     @UnityInstallation(version = "2019.4.24f1", cleanup = false)
     def "generates .sln file when running generateSolution task for unity 2019.4"(Installation unity) {
         given: "an unity3D project"
-        def project_path = "build/test_project"
         buildFile << """
             unity {
                 unityPath = ${wrapValueBasedOnType(unity.executable, File)}
+                projectDirectory = file("${projectDir.absolutePath}")
+            }
+            tasks.withType(wooga.gradle.unity.UnityTask).configureEach {
+                createProject = "${projectDir.absolutePath}"
+                buildTarget = "Android" 
             }
         """
-        appendToSubjectTask("""createProject = "${project_path}" """,
-                                  """buildTarget = "Android" """)
+        assert !projectDir.list().any{ it.endsWith(".sln") }
+
 
         when:"generateSolution task is called"
-        def result = runTasksSuccessfully(subjectUnderTestName)
+        def result = runTasks(subjectUnderTestName)
 
         then:"solution file is generated"
+        projectDir.list().any{ it.endsWith(".sln") }
         result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
-        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
-        fileExists(project_path)
-        fileExists(project_path, "test_project.sln")
-        !fileExists(project_path, "Assets/SolutionGenerator.cs")
-        !fileExists(project_path, "Assets/SolutionGenerator.cs.meta")
+        result.standardOutput.contains("-executeMethod")
+        result.standardOutput.contains("UnityEditor.SyncVS.SyncSolution")
     }
 
 
@@ -70,20 +72,22 @@ class GenerateSolutionTaskIntegrationSpec extends UnityTaskIntegrationSpec<Gener
         buildFile << """
             unity {
                 unityPath = ${wrapValueBasedOnType(unity.executable, File)}
+                projectDirectory = file("${projectDir.absolutePath}")
+            }
+            tasks.withType(wooga.gradle.unity.UnityTask).configureEach {
+                createProject = "${projectDir.absolutePath}"
+                buildTarget = "Android" 
             }
         """
-        appendToSubjectTask("""createProject = "${projectDir.absolutePath}" """,
-                """buildTarget = "Android" """)
+        assert !projectDir.list().any{ it.endsWith(".sln") }
 
         when:"generateSolution task is called"
         def result = runTasks(subjectUnderTestName)
 
         then:"solution file is generated"
-        result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
         projectDir.list().any{ it.endsWith(".sln") }
-        result.wasExecuted(":_${subjectUnderTestName}_cleanup")
-        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs")
-        !fileExists(projectDir.absolutePath, "Assets/SolutionGenerator.cs.meta")
-
+        result.standardOutput.contains("Starting process 'command '${unity.getExecutable().getPath()}'")
+        result.standardOutput.contains("-executeMethod")
+        result.standardOutput.contains("Packages.Rider.Editor.RiderScriptEditor.SyncSolution")
     }
 }
