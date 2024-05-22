@@ -7,6 +7,7 @@ ENV RUST_BACKTRACE=1
 ENV RUST_LOG="warning, uvm_core=trace, uvm_jni=trace"
 ENV IN_DOCKER="1"
 
+
 RUN curl -Lo "unity-version-manager-$UVM_VERSION.tar.gz" "https://github.com/Larusso/unity-version-manager/archive/v$UVM_VERSION.tar.gz"
 RUN tar -xzf "unity-version-manager-$UVM_VERSION.tar.gz" && rm "unity-version-manager-$UVM_VERSION.tar.gz"
 
@@ -16,9 +17,9 @@ FROM openjdk:8-jdk-buster
 ARG USER_ID=1001
 ARG GROUP_ID=100
 
-RUN useradd -u ${USER_ID} -g ${GROUP_ID} --create-home ci
+RUN useradd -u ${USER_ID} -g ${GROUP_ID} --create-home jenkins_agent
 
-USER ci
+USER jenkins_agent
 COPY --from=0 /usr/local/bin/uvm* ./usr/local/bin/
 
-RUN uvm install 2019.1.0a7 /home/ci/.local/share/Unity-2019.1.0a7
+RUN uvm install 2019.1.0a7 /home/jenkins_agent/.local/share/Unity-2019.1.0a7

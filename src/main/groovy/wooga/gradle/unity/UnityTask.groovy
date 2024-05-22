@@ -67,12 +67,14 @@ abstract class UnityTask extends DefaultTask
         def retryCount = maxRetries.get();
         def retryWait = retryWait.get();
         def retryPatterns = retryRegexes.get()
-        ByteArrayOutputStream lastStdoutStream
+        ByteArrayOutputStream lastStdoutStream = null
+        ByteArrayOutputStream lastStderrStream = null
 
         def execResult = retryOn(retryCount, retryWait, { ->
             lastStdoutStream = new ByteArrayOutputStream()
+            lastStderrStream = new ByteArrayOutputStream()
             def sout = new ForkedOutputStream(lastStdoutStream, getOutputStream(logFile))
-            def serr = new ByteArrayOutputStream()
+            def serr = lastStderrStream
             sout.withStream { stdoutStream -> serr.withStream { stderrStream ->
                 return ProcessExecutor.from(project)
                             .withExecutable(unityPath.get().asFile)
@@ -100,7 +102,7 @@ abstract class UnityTask extends DefaultTask
             // Only write out the message if not already set to --info
             if (!logger.infoEnabled) {
                 def stdout = logFile.text
-                def stderr = new String(stderrStream.toByteArray())
+                def stderr = lastStderrStream? new String(lastStderrStream.toByteArray()) : ""
                 message = stderr ? stderr : stdout
             }
             throw new UnityExecutionException("Failed during execution of the Unity process with arguments:\n${_arguments}\n${message}")
