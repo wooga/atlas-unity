@@ -13,7 +13,7 @@ RUN tar -xzf "unity-version-manager-$UVM_VERSION.tar.gz" && rm "unity-version-ma
 
 RUN cd "unity-version-manager-$UVM_VERSION" && PATH="${HOME}/.cargo/bin:$PATH" make install
 
-FROM openjdk:8-jdk-buster
+FROM openjdk:11-jdk-buster
 ARG USER_ID=1001
 ARG GROUP_ID=100
 

@@ -38,6 +38,7 @@ import wooga.gradle.unity.models.TestPlatform
 import wooga.gradle.unity.models.UnityCommandLineOption
 import wooga.gradle.unity.tasks.Activate
 import wooga.gradle.unity.tasks.AddUPMPackages
+import wooga.gradle.unity.tasks.ClearDanglingUnityFiles
 import wooga.gradle.unity.tasks.GenerateSolution
 import wooga.gradle.unity.tasks.ProjectManifestTask
 import wooga.gradle.unity.tasks.SetResolutionStrategy
@@ -90,7 +91,8 @@ class UnityPlugin implements Plugin<Project> {
         ensureProjectManifest(Unity),
         addUPMPackages(AddUPMPackages),
         addIdeUPMPackage(AddUPMPackages),
-        setResolutionStrategy(SetResolutionStrategy)
+        setResolutionStrategy(SetResolutionStrategy),
+        cleanupDanglingUnityFiles(ClearDanglingUnityFiles)
 
         private final Class taskClass
 
@@ -246,6 +248,7 @@ class UnityPlugin implements Plugin<Project> {
         addGenerateSolutionTask(project)
         addAddUPMPackageTasks(project, extension)
         addActivateAndReturnLicenseTasks(project, extension)
+        addCleanupDanglingUnityFilesTask(project, extension)
     }
 
     private static void addTestTasks(Project project, UnityPluginExtension extension) {
@@ -490,6 +493,14 @@ class UnityPlugin implements Plugin<Project> {
         project.tasks.register(Tasks.setResolutionStrategy.toString(), SetResolutionStrategy) {
             it.description = "Sets the project package resolution strategy"
             it.resolutionStrategy.convention(extension.resolutionStrategy)
+        }
+    }
+
+    public static void addCleanupDanglingUnityFilesTask(Project project, UnityPluginExtension extension) {
+        project.tasks.register(Tasks.cleanupDanglingUnityFiles.toString(), ClearDanglingUnityFiles) { it ->
+            it.group = GROUP
+            it.projectDirectory.convention(extension.projectDirectory)
+            it.terminateOpenProcess.set(false)
         }
     }
 

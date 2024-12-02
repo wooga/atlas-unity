@@ -16,11 +16,14 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '5.0.0-rc.2'
+    id 'net.wooga.plugins' version '5.0.0'
     id 'net.wooga.snyk' version '0.12.0'
     id 'net.wooga.snyk-gradle-plugin' version '0.6.0'
     id "net.wooga.cve-dependency-resolution" version "0.4.0"
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 group 'net.wooga.gradle'
 description = 'a Unity 3D gradle plugin.'
@@ -58,7 +61,7 @@ dependencies {
     implementation 'net.wooga:unity-version-manager-jni:[1,2['
     implementation 'org.apache.commons:commons-compress:1.24.0'
 
-    testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:+') {
+    testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:2.19.0') {
         exclude module: 'logback-classic'
     }
 
