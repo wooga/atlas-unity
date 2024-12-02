@@ -22,6 +22,9 @@ plugins {
     id "net.wooga.cve-dependency-resolution" version "0.4.0"
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
 group 'net.wooga.gradle'
 description = 'a Unity 3D gradle plugin.'
 
