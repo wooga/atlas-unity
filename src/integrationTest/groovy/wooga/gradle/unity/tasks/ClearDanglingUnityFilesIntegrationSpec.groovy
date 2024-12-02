@@ -2,11 +2,13 @@ package wooga.gradle.unity.tasks
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.IntegrationSpec
+import spock.lang.IgnoreIf
 
 import java.util.concurrent.TimeUnit
 
 class ClearDanglingUnityFilesIntegrationSpec extends IntegrationSpec {
 
+    @IgnoreIf({ os.windows })
     def "#prefix unity project Temp folder if there is #suffix"() {
         given:
         def tempFolder = new File(projectDir, "Temp").with {
