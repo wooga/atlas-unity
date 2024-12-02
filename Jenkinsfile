@@ -28,5 +28,6 @@ withCredentials([usernameColonPassword(credentialsId: 'artifactory_publish', var
 
     buildGradlePlugin platforms: ['macos','windows','linux'],
                       sonarToken: sonar_token,
-                      testEnvironment: testEnvironment
+                      testEnvironment: testEnvironment,
+                      dockerArgs: [ dockerArgs: ['-v', '/home/jenkins_agent/.gradle:/home/jenkins_agent/.gradle'] ]
 }
