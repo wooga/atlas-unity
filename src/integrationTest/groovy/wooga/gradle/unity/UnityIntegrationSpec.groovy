@@ -20,6 +20,7 @@ package wooga.gradle.unity
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.IntegrationSpec
 import com.wooga.gradle.test.executable.FakeExecutables
+import com.wooga.gradle.test.mock.MockExecutable
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
@@ -133,38 +134,47 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     }
 
     protected File createMockUnity(String extraLog = null, int exitValue=0) {
-        def mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory).with {
-            delete()
-            createNewFile()
-            return it
+
+        def mockFile = new MockExecutable("fakeUnity.bat")
+        mockFile.withText(mockUnityStartupMessage)
+        mockFile.withExitValue(exitValue)
+        if (extraLog != null) {
+            mockFile.text += "\n${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}"
         }
-        mockUnityFile.executable = true
-        if (PlatformUtils.windows) {
-            mockUnityFile << """
-                @echo off
-                echo [ENVIRONMENT]:
-                set
-                echo [ARGUMENTS]:
-                echo %*
-                echo [LOG]:
-                echo ${mockUnityStartupMessage}
-                ${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}
-                EXIT /b $exitValue
-            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
-        } else {
-            mockUnityFile << """
-                #!/usr/bin/env bash
-                echo [ENVIRONMENT]:
-                env
-                echo [ARGUMENTS]:
-                echo \$@
-                echo [LOG]:
-                echo ${mockUnityStartupMessage}
-                ${extraLog? "echo '$extraLog'" : ""}
-                exit $exitValue
-            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
-        }
-        return mockUnityFile
+        mockFile.toDirectory(unityMainDirectory)
+
+//        def mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory).with {
+//            delete()
+//            createNewFile()
+//            return it
+//        }
+//        mockUnityFile.executable = true
+//        if (PlatformUtils.windows) {
+//            mockUnityFile << """
+//                @echo off
+//                echo [ENVIRONMENT]:
+//                set
+//                echo [ARGUMENTS]:
+//                echo %*
+//                echo [LOG]:
+//                echo ${mockUnityStartupMessage}
+//                ${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}
+//                EXIT /b $exitValue
+//            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
+//        } else {
+//            mockUnityFile << """
+//                #!/usr/bin/env bash
+//                echo [ENVIRONMENT]:
+//                env
+//                echo [ARGUMENTS]:
+//                echo \$@
+//                echo [LOG]:
+//                echo ${mockUnityStartupMessage}
+//                ${extraLog? "echo '$extraLog'" : ""}
+//                exit $exitValue
+//            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
+//        }
+//        return mockUnityFile
 
     }
 
