@@ -24,12 +24,18 @@ import com.wooga.gradle.test.mock.MockExecutable
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.ClosureSignatureHint
+import groovy.transform.stc.FirstParam
+import groovy.transform.stc.FromString
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
+import java.util.function.Function
+
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
-    File mockUnityFile
+    MockExecutable mockUnityFile = createMockUnity()
     final String mockUnityStartupMessage = "Mock Unity Started"
 
     File unityMainDirectory
@@ -101,8 +107,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         switch (options.unityPath()) {
             case UnityPathResolution.Mock:
-                mockUnityFile = createMockUnity()
-                addUnityPathToExtension(mockUnityFile.path)
+                if (options.writeMockExecutable()) {
+                    writeMockExecutable()
+                }
                 break
 
             case UnityPathResolution.Default:
@@ -114,6 +121,19 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         }
 
         initialized = true
+    }
+
+    /**
+     * Writes the mock executable with a predetermined location
+     */
+    protected void writeMockExecutable(@ClosureParams(value= FromString, options = "com.wooga.gradle.test.mock.MockExecutable")
+                                           Closure<MockExecutable> configure = null) {
+        mockUnityFile = createMockUnity()
+        if (configure != null) {
+            configure(mockUnityFile)
+        }
+        def file = mockUnityFile.toDirectory(unityMainDirectory)
+        addUnityPathToExtension(file.path)
     }
 
     private void applyUnityPlugin() {
@@ -133,7 +153,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         projectSettingsFile
     }
 
-    protected File createMockUnity(String extraLog = null, int exitValue=0) {
+    protected MockExecutable createMockUnity(String extraLog = null, int exitValue=0) {
 
         def mockFile = new MockExecutable("fakeUnity.bat")
         mockFile.withText(mockUnityStartupMessage)
@@ -141,41 +161,7 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         if (extraLog != null) {
             mockFile.text += "\n${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}"
         }
-        mockFile.toDirectory(unityMainDirectory)
-
-//        def mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory).with {
-//            delete()
-//            createNewFile()
-//            return it
-//        }
-//        mockUnityFile.executable = true
-//        if (PlatformUtils.windows) {
-//            mockUnityFile << """
-//                @echo off
-//                echo [ENVIRONMENT]:
-//                set
-//                echo [ARGUMENTS]:
-//                echo %*
-//                echo [LOG]:
-//                echo ${mockUnityStartupMessage}
-//                ${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}
-//                EXIT /b $exitValue
-//            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
-//        } else {
-//            mockUnityFile << """
-//                #!/usr/bin/env bash
-//                echo [ENVIRONMENT]:
-//                env
-//                echo [ARGUMENTS]:
-//                echo \$@
-//                echo [LOG]:
-//                echo ${mockUnityStartupMessage}
-//                ${extraLog? "echo '$extraLog'" : ""}
-//                exit $exitValue
-//            """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
-//        }
-//        return mockUnityFile
-
+        return mockFile
     }
 
     void setLicenseDirectory() {

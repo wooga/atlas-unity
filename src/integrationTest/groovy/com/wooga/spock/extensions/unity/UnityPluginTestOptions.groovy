@@ -41,6 +41,8 @@ import java.lang.annotation.Target
 
     UnityPathResolution unityPath() default UnityPathResolution.Mock
 
+    boolean writeMockExecutable() default true
+
     boolean addPluginTestDefaults() default true
 
     boolean disableAutoActivateAndLicense() default true

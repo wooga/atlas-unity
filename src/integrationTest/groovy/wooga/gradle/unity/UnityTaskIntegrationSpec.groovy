@@ -353,7 +353,8 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     def "unity #message #maxRetries times with #retryWait wait times when line in log matches #retryRegexes"() {
         given:
         def fakeUnity = createMockUnity(unityLog, 1)
-        addUnityPathToExtension(fakeUnity.absolutePath)
+        def fakeUnityFile = fakeUnity.toDirectory(unityMainDirectory)
+        addUnityPathToExtension(fakeUnityFile.absolutePath)
         buildFile << """
         $subjectUnderTestName {
             maxRetries = ${wrapValue(maxRetries, Integer)}
