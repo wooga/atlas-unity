@@ -57,7 +57,7 @@ dependencies {
 
     api 'com.wooga.gradle:gradle-commons:[1.7.0,2['
     implementation 'org.apache.maven:maven-artifact:3.8.5'
-    implementation "org.yaml:snakeyaml:1.30"
+    implementation "org.yaml:snakeyaml:2.3"
     implementation 'net.wooga:unity-version-manager-jni:[1,2['
     implementation 'org.apache.commons:commons-compress:1.24.0'
 
