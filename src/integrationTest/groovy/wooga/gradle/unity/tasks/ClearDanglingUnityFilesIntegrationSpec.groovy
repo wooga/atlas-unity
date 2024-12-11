@@ -47,55 +47,98 @@ class ClearDanglingUnityFilesIntegrationSpec extends IntegrationSpec {
         assert tempFolder.exists()
         assert fakeProcess ? fakeProcess.alive : true
         assert editorInstanceFile.exists() == hasEditorInstanceFile
-         runTasksSuccessfully("testTask")
+        def result = runTasksSuccessfully("testTask")
 
         then:
+        println result.standardOutput
         tempFolder.exists() == !shouldCleanup
 
         cleanup:
-        fakeProcess?.destroy()
+        fakeProcess?.destroyForcibly()
         editorInstanceFile.delete()
 
 
         where:
         hasOpenProcess | hasEditorInstanceFile | terminateProcess | shouldCleanup | prefix            | suffix
-        false          | false                 | false            | true          | "should delete"   | "no running Unity process with the project [0]"
-        false          | false                 | true             | true          | "should delete"   | "no running Unity process with the project [1]"
-        true           | true                  | true             | true          | "should delete"   | "running process with the project [1]"
-        true           | false                 | false            | true          | "should delete"   | "running process with the project [2]"
-        true           | true                  | false            | false         | "shouldnt delete" | "running process with the project"
+        false          | false                 | false            | true          | "should delete"   | "no running Unity process with the project [terminate=false]"
+        false          | false                 | true             | true          | "should delete"   | "no running Unity process with the project [terminate=true]"
+        true           | true                  | true             | true          | "should delete"   | "running process with the project [terminate=true, EditorInstance.json]"
+        true           | false                 | false            | true          | "should delete"   | "running process with the project [terminate=false, no EditorInstance.json]"
+        true           | true                  | false            | false         | "shouldnt delete" | "running process with the project [terminate=false, EditorInstance.json]"
     }
 
-    def createFakeFrozenUnityExecutable() {
+    @IgnoreIf({ os.windows })
+    def "#prefix terminate Unity process if there is a #suffix"() {
+        given:
+        def tempFolder = new File(projectDir, "Temp").with {
+            it.mkdir()
+            new File(it, "UnityLockfile").createNewFile()
+            return it
+        }
+        and:
+        def fakeUnityExec = createFakeFrozenUnityExecutable(processIgnoring)
+        def fakeProcess = "$fakeUnityExec.absolutePath -projectPath ${projectDir.absolutePath}".execute()
+        fakeProcess.waitFor(10, TimeUnit.MILLISECONDS)
+        File editorInstanceFile = new File(projectDir, "Library/EditorInstance.json")
+        editorInstanceFile.parentFile.mkdir()
+        editorInstanceFile << """
+        {
+            "process_id" : ${wrapValueBasedOnType(fakeProcess.pid(), Integer)},
+            "version" : "any",
+            "app_path" : "any",
+            "app_contents_path" : "any"
+        }  
+        """
+        and:
+        buildFile << """
+        tasks.register("testTask", wooga.gradle.unity.tasks.ClearDanglingUnityFiles) {
+            projectDirectory.set(${wrapValueBasedOnType(projectDir, File)})
+            terminateOpenProcess.set($terminateProcess)
+        }
+        """
+
+        when:
+        assert tempFolder.exists()
+        assert fakeProcess ? fakeProcess.alive : true
+        def result = runTasksSuccessfully("testTask")
+
+        then:
+        println result.standardOutput
+        terminateProcess == !fakeProcess.alive
+
+        cleanup:
+        fakeProcess?.destroyForcibly()
+        editorInstanceFile.delete()
+
+
+        where:
+        terminateProcess | processIgnoring       | prefix      | suffix
+        false            | []                    | "shouldn't" | "normal running process"
+        false            | ["SIGINT", "SIGTERM"] | "shouldn't" | "frozen process"
+        true             | []                    | "should"    | "normal running process"
+        true             | ["SIGINT", "SIGTERM"] | "should"    | "frozen process"
+    }
+
+    def createFakeFrozenUnityExecutable(List<String> signalsToIgnore = []) {
         def fakeFrozenUnity = new File(projectDir, "Unity").with {
             it.createNewFile()
             it.executable = true
             return it
         }
-        if (PlatformUtils.windows) {
-            fakeFrozenUnity <<
-                    """@echo off
-            echo 'started'
-            :loop
-            timeout /t 0.010 >nul
-            goto loop
-            """
-        } else {
-            fakeFrozenUnity <<
-                    """
-            #!/bin/bash
-            
-            # Trap the SIGINT signal (Ctrl+C) and execute a function
-            trap 'exit' SIGINT
-            
-            echo "started"
-            # Infinite loop
-            while true
-            do
-                sleep 0.010
-            done
-            """
-        }
+        fakeFrozenUnity <<
+                """
+        #!/bin/bash
+        
+        # Trap the SIGINT signal (Ctrl+C) and SIGTERM (kill)
+        trap -- '' ${signalsToIgnore.join(" ")}
+        
+        echo "started"
+        # Infinite loop
+        while true
+        do
+            sleep 0.010
+        done
+        """
         return fakeFrozenUnity
     }
 }
