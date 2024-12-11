@@ -61,7 +61,7 @@ dependencies {
     implementation 'net.wooga:unity-version-manager-jni:[1,2['
     implementation 'org.apache.commons:commons-compress:1.24.0'
 
-    testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:2.19.0') {
+    testImplementation('org.jfrog.artifactory.client:artifactory-java-client-services:2.19.1') {
         exclude module: 'logback-classic'
     }
 
