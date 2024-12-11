@@ -13,6 +13,9 @@ import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+
 public class ClearDanglingUnityFiles extends DefaultTask implements BaseSpec {
 
     @InputDirectory
@@ -52,25 +55,47 @@ public class ClearDanglingUnityFiles extends DefaultTask implements BaseSpec {
         def terminateProcess = terminateOpenProcess.getOrElse(false)
 
         def maybeProjectProcess = findOpenUnityProcessForProject(projectDir)
-        if (terminateProcess && maybeProjectProcess.isPresent()) {
-            def terminated = destroyProcess(maybeProjectProcess.get())
-            if (!terminated) {
-                logger.warn("Failed to terminate Unity process with PID ${it.pid()}")
+        maybeProjectProcess.ifPresent {projectProcess ->
+            if (terminateProcess) {
+                def terminated = destroyProcess(projectProcess)
+                if (!terminated) {
+                    logger.warn("Failed to terminate Unity process with PID ${projectProcess.pid()}")
+                }
+            } else {
+                logger.info("Found Unity process with PID ${projectProcess.pid()}, but not terminating as terminateOpenProcess=false. " +
+                            "Also won't delete Temp folder.")
             }
         }
         if(maybeProjectProcess.empty || terminateProcess) {
             def tempFolder = new File(projectDir, "Temp")
+            logger.info("Deleting the ${tempFolder.absolutePath} folder.")
             tempFolder.deleteDir()
         }
     }
 
 
-    static boolean destroyProcess(ProcessHandle process) {
-        def terminated = process.destroy()
+    boolean destroyProcess(ProcessHandle process) {
+        logger.info("Terminating Unity process with PID ${process.pid()} (SIGTERM).")
+        process.destroy()
+        logger.info("Waiting up to 5s for the process to terminate gracefully.")
+        def terminated = waitForTermination(process, 5, TimeUnit.SECONDS)
         if (!terminated) {
+            logger.info("Unity process with PID ${process.pid()} is still alive, trying to forcibly terminate it (SIGKILL)")
             return process.destroyForcibly()
         }
+        logger.info("Process with PID ${process.pid()} terminated gracefully.")
         return terminated
+    }
+
+    static boolean waitForTermination(ProcessHandle process, long timeout, TimeUnit timeUnit) {
+        try {
+            process.onExit().get(timeout, timeUnit)
+            return true
+        } catch (TimeoutException e) {
+            return false
+        } catch (Exception e) {
+            throw e
+        }
     }
 
     java.util.Optional<ProcessHandle> findOpenUnityProcessForProject(File projectDir) {
