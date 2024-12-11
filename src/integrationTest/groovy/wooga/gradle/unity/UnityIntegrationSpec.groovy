@@ -19,23 +19,19 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.IntegrationSpec
-import com.wooga.gradle.test.executable.FakeExecutables
 import com.wooga.gradle.test.mock.MockExecutable
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
 import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.ClosureSignatureHint
-import groovy.transform.stc.FirstParam
 import groovy.transform.stc.FromString
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
-import java.util.function.Function
-
 abstract class UnityIntegrationSpec extends IntegrationSpec {
 
-    MockExecutable mockUnityFile = createMockUnity()
+    MockExecutable mockUnity
+    File mockUnityFile
     final String mockUnityStartupMessage = "Mock Unity Started"
 
     File unityMainDirectory
@@ -126,14 +122,14 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
     /**
      * Writes the mock executable with a predetermined location
      */
-    protected void writeMockExecutable(@ClosureParams(value= FromString, options = "com.wooga.gradle.test.mock.MockExecutable")
+    protected void writeMockExecutable(@ClosureParams(value = FromString, options = "com.wooga.gradle.test.mock.MockExecutable")
                                            Closure<MockExecutable> configure = null) {
-        mockUnityFile = createMockUnity()
+        mockUnity = createMockUnity()
         if (configure != null) {
-            configure(mockUnityFile)
+            configure(mockUnity)
         }
-        def file = mockUnityFile.toDirectory(unityMainDirectory)
-        addUnityPathToExtension(file.path)
+        mockUnityFile = mockUnity.toDirectory(unityMainDirectory)
+        addUnityPathToExtension(mockUnityFile.path)
     }
 
     private void applyUnityPlugin() {
@@ -153,13 +149,13 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         projectSettingsFile
     }
 
-    protected MockExecutable createMockUnity(String extraLog = null, int exitValue=0) {
+    protected MockExecutable createMockUnity(String extraLog = null, int exitValue = 0) {
 
         def mockFile = new MockExecutable("fakeUnity.bat")
         mockFile.withText(mockUnityStartupMessage)
         mockFile.withExitValue(exitValue)
         if (extraLog != null) {
-            mockFile.text += "\n${extraLog? extraLog.readLines().collect{"echo $it"}.join("\n") : ""}"
+            mockFile.text += "\n${extraLog ? extraLog.readLines().collect { "echo $it" }.join("\n") : ""}"
         }
         return mockFile
     }
