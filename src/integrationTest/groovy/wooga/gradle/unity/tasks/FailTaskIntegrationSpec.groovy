@@ -40,7 +40,7 @@ class FailTaskIntegrationSpec extends UnityTaskIntegrationSpec<FailingTask>{
 
         given:
         writeMockExecutable({
-            it.text += "\n${FailingTask.expectedErrorMessage.readLines().collect{"echo $it 1>&2"}.join("\n")}"
+            it.text += "\n${FailingTask.expectedErrorMessage.readLines().collect{"echo $it >&2"}.join("\n")}"
             it.printEnvironment = false
             it.exitValue = 666
         })

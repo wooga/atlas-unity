@@ -1,5 +1,6 @@
 package wooga.gradle.unity.testutils
 
+import com.wooga.gradle.test.mock.MockExecutable
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils
 
 class GradleRunResult {
@@ -46,14 +47,14 @@ class GradleRunResult {
     }
 
     private static ArrayList<String> loadArgs(String stdOutput) {
-        def argumentsStartToken = "[ARGUMENTS]:"
+        def argumentsStartToken = MockExecutable.ARGUMENTS_START_MARKER
         def lastExecutionOffset = stdOutput.lastIndexOf(argumentsStartToken)
         if(lastExecutionOffset < 0) {
             System.out.println(stdOutput)
             throw new IllegalArgumentException("couldn't find arguments list in stdout")
         }
         def lastExecTailString = stdOutput.substring(lastExecutionOffset)
-        def argsString = substringBetween(lastExecTailString, argumentsStartToken, "[LOG]").
+        def argsString = substringBetween(lastExecTailString, argumentsStartToken, MockExecutable.ARGUMENTS_END_MARKER).
                 replace(argumentsStartToken, "")
         def parts = argsString.split(" ").
                 findAll {!StringUtils.isEmpty(it) }.collect{ it.trim() }
@@ -61,8 +62,8 @@ class GradleRunResult {
     }
 
     private static Map<String, String> loadEnvs(String stdOutput) {
-        String environmentStartToken = "[ENVIRONMENT]:"
-        def argsString = substringBetween(stdOutput, environmentStartToken, "[ARGUMENTS]").
+        String environmentStartToken = MockExecutable.ENVIRONMENT_START_MARKER
+        def argsString = substringBetween(stdOutput, environmentStartToken, MockExecutable.ENVIRONMENT_END_MARKER).
                 replace(environmentStartToken, "")
         def parts = argsString.split(System.lineSeparator()).
                 findAll {!StringUtils.isEmpty(it) }.collect{ it.trim() }
