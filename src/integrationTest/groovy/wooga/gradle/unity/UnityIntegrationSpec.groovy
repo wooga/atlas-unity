@@ -19,10 +19,12 @@ package wooga.gradle.unity
 
 import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.IntegrationSpec
-import com.wooga.gradle.test.executable.FakeExecutables
+import com.wooga.gradle.test.mock.MockExecutable
 import com.wooga.spock.extensions.unity.DefaultUnityPluginTestOptions
 import com.wooga.spock.extensions.unity.UnityPathResolution
 import com.wooga.spock.extensions.unity.UnityPluginTestOptions
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FromString
 import wooga.gradle.unity.tasks.Unity
 import wooga.gradle.unity.utils.ProjectSettingsFile
 
@@ -100,8 +102,9 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
 
         switch (options.unityPath()) {
             case UnityPathResolution.Mock:
-                mockUnityFile = createMockUnity()
-                addUnityPathToExtension(mockUnityFile.path)
+                if (options.writeMockExecutable()) {
+                    writeMockExecutable()
+                }
                 break
 
             case UnityPathResolution.Default:
@@ -132,6 +135,24 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
         projectSettingsFile
     }
 
+    /**
+     * Writes the mock executable with a predetermined location
+     */
+    protected void writeMockExecutable(@ClosureParams(value = FromString, options = "com.wooga.gradle.test.mock.MockExecutable")
+                                           Closure<MockExecutable> configure = null) {
+        // Create and configure the file to be written
+        def mockUnity = new MockExecutable("fakeUnity.bat")
+        mockUnity.withText(mockUnityStartupMessage)
+        if (configure != null) {
+            configure(mockUnity)
+        }
+        // Write the file
+        mockUnityFile = mockUnity.toDirectory(unityMainDirectory)
+        // Write its location onto the unity extension
+        addUnityPathToExtension(mockUnityFile.path)
+    }
+
+    // TODO: Refactor away
     protected File createMockUnity(String extraLog = null, int exitValue=0) {
         def mockUnityFile = createFile("fakeUnity.bat", unityMainDirectory).with {
             delete()
@@ -165,7 +186,6 @@ abstract class UnityIntegrationSpec extends IntegrationSpec {
             """.readLines().collect{it.stripIndent().trim() }.findAll {!it.empty}.join("\n")
         }
         return mockUnityFile
-
     }
 
     void setLicenseDirectory() {

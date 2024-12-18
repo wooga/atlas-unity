@@ -98,17 +98,25 @@ abstract class UnityTask extends DefaultTask
         })
 
         if (execResult.exitValue != 0) {
-            String message = ""
-            // Only write out the message if not already set to --info
-            if (!logger.infoEnabled) {
-                def stdout = logFile.text
-                def stderr = lastStderrStream? new String(lastStderrStream.toByteArray()) : ""
-                message = stderr ? stderr : stdout
-            }
+            def stdout = logFile.text
+            def stderr = lastStderrStream ? new String(lastStderrStream.toByteArray()) : ""
+            String message = composeExceptionMessage(stdout, stderr)
             throw new UnityExecutionException("Failed during execution of the Unity process with arguments:\n${_arguments}\n${message}")
         }
 
         postExecute(execResult)
+    }
+
+    /**
+     * Composes the message to be included in an exception thrown when the task fails
+     * Override this in your custom task in order to improve reporting.
+     */
+    protected String composeExceptionMessage(String stdout, String stderr) {
+        String message = ""
+        if (!logger.infoEnabled) {
+            message = stderr ? stderr : stdout
+        }
+        return message
     }
 
     /**

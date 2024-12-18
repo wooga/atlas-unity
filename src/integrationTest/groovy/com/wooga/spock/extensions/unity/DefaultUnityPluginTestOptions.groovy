@@ -27,6 +27,7 @@ class DefaultUnityPluginTestOptions implements UnityPluginTestOptions {
     Boolean addMockTask = true
     Boolean forceMockTaskRun = true
     Boolean clearMockTaskActions = false
+    Boolean writeMockExecutable = true
 
     boolean applyPlugin() {
         applyPlugin
@@ -34,6 +35,11 @@ class DefaultUnityPluginTestOptions implements UnityPluginTestOptions {
 
     UnityPathResolution unityPath() {
         unityPath
+    }
+
+    @Override
+    boolean writeMockExecutable() {
+        writeMockExecutable
     }
 
     boolean addPluginTestDefaults() {

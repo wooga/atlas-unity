@@ -21,14 +21,11 @@ import com.wooga.gradle.PlatformUtils
 import com.wooga.gradle.test.PropertyQueryTaskWriter
 import com.wooga.gradle.test.TaskIntegrationSpec
 import com.wooga.gradle.test.writers.PropertyGetterTaskWriter
-import com.wooga.gradle.test.writers.PropertySetterWriter
 import org.gradle.api.logging.LogLevel
 import spock.lang.Unroll
 import wooga.gradle.unity.testutils.GradleRunResult
 import wooga.gradle.unity.models.UnityCommandLineOption
-import wooga.gradle.unity.tasks.Unity
 
-import java.lang.reflect.ParameterizedType
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.Duration
@@ -352,8 +349,10 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
     @Unroll
     def "unity #message #maxRetries times with #retryWait wait times when line in log matches #retryRegexes"() {
         given:
+
         def fakeUnity = createMockUnity(unityLog, 1)
         addUnityPathToExtension(fakeUnity.absolutePath)
+
         buildFile << """
         $subjectUnderTestName {
             maxRetries = ${wrapValue(maxRetries, Integer)}
