@@ -353,11 +353,6 @@ abstract class UnityTaskIntegrationSpec<T extends UnityTask> extends UnityIntegr
         def fakeUnity = createMockUnity(unityLog, 1)
         addUnityPathToExtension(fakeUnity.absolutePath)
 
-//        writeMockExecutable ({
-//            it.withText(unityLog)
-//            it.exitValue = 1
-//        })
-
         buildFile << """
         $subjectUnderTestName {
             maxRetries = ${wrapValue(maxRetries, Integer)}
