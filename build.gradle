@@ -16,10 +16,12 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '5.0.0'
+    id "net.wooga.plugins-private" version "5.0.0"
+    id 'com.jfrog.artifactory' version '4.28.1'
     id 'net.wooga.snyk' version '0.12.0'
-    id 'net.wooga.snyk-gradle-plugin' version '0.6.0'
-    id "net.wooga.cve-dependency-resolution" version "0.4.0"
+    id 'net.wooga.snyk-gradle-plugin' version '0.7.0'
+    id "net.wooga.cve-dependency-resolution" version "0.5.0"
+    id 'java-library'
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -27,12 +29,6 @@ java.targetCompatibility = JavaVersion.VERSION_11
 
 group 'net.wooga.gradle'
 description = 'a Unity 3D gradle plugin.'
-
-pluginBundle {
-    website = 'https://wooga.github.io/atlas-unity/'
-    vcsUrl = 'https://github.com/wooga/atlas-unity'
-    tags = ['Unity3D']
-}
 
 gradlePlugin {
     plugins {
@@ -45,12 +41,33 @@ gradlePlugin {
     }
 }
 
+artifactory {
+    contextUrl = 'https://wooga.jfrog.io/wooga/'
+    publish {
+        repository {
+            repoKey = 'atlas-maven'
+            username = project.properties.get("artifactory.user")
+            password = project.properties.get("artifactory.password")
+        }
+        defaults {
+            properties = ['environment': 'ci']
+            publications('ALL_PUBLICATIONS')
+            publishPom = true
+            publishIvy = false
+        }
+    }
+}
+
 cveHandler {
     configurations("compileClasspath", "runtimeClasspath", "testCompileClasspath", "testRuntimeClasspath", "integrationTestCompileClasspath", "integrationTestRuntimeClasspath")
 }
 
 github {
     repositoryName = "wooga/atlas-unity"
+}
+
+tasks.named("publish").configure {
+    dependsOn artifactoryPublish
 }
 
 dependencies {
@@ -67,4 +84,8 @@ dependencies {
 
     testImplementation 'com.wooga.gradle:gradle-commons-test:[2.1,3['
     testImplementation "com.wooga.spock.extensions:spock-unity-version-manager-extension:0.4.0"
+}
+
+tasks.withType(Test) {
+    jvmArgs '--add-opens', 'java.base/java.util=ALL-UNNAMED'
 }
